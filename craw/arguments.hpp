@@ -19,6 +19,8 @@ extern std::string
 
 	d2_arguments,
 
-	python_script;
+	python_script,
+
+	hide_modules_file;
 
 void process_command_line();

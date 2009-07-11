@@ -91,3 +91,13 @@ void exit_process()
 {
 	ExitProcess(1);
 }
+
+void attach_point()
+{
+	error("Attach");
+
+	__asm
+	{
+		int 3
+	}
+}

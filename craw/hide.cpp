@@ -1,42 +1,35 @@
-#include <windows.h>
 #include <cstring>
+#include <string>
+#include <vector>
+#include <ail/file.hpp>
+#include <ail/random.hpp>
+#include <boost/foreach.hpp>
 #include "hide.hpp"
+#include "arguments.hpp"
+#include "utility.hpp"
 
-//from Darawk
-
-struct UNICODE_STRING
+namespace
 {
-	USHORT Length;
-	USHORT MaximumLength;
-	PWSTR Buffer;
-};
+	std::vector<hidden_module> hidden_modules;
+}
 
-struct MODULE_INFO_NODE
+hidden_module::hidden_module()
 {
-	LIST_ENTRY LoadOrder;
-	LIST_ENTRY InitOrder;
-	LIST_ENTRY MemoryOrder;
-	HMODULE baseAddress;
-	unsigned long entryPoint;
-	unsigned int size;
-	UNICODE_STRING fullPath;
-	UNICODE_STRING name;
-	unsigned long flags;
-	unsigned short LoadCount;
-	unsigned short TlsIndex;
-	LIST_ENTRY HashTable;
-	unsigned long timestamp;
-};
+}
 
-struct PROCESS_MODULE_INFO
+hidden_module::hidden_module(void * address, std::size_t size):
+	start_address(reinterpret_cast<unsigned>(address)),
+		size(static_cast<unsigned>(size))
 {
-	unsigned int size;
-	unsigned int initialized;
-	HANDLE SsHandle;
-	LIST_ENTRY LoadOrder;
-	LIST_ENTRY InitOrder;
-	LIST_ENTRY MemoryOrder;
-};
+}
+
+bool hidden_module::operator==(void * address) const
+{
+	unsigned target_address = reinterpret_cast<unsigned>(address);
+	return target_address >= start_address && target_address <= start_address + size;
+}
+
+//originally by Darawk, slightly modified
 
 void unlink_entry(LIST_ENTRY & entry)
 {
@@ -79,6 +72,82 @@ bool hide_module(void * module_base)
 
 	std::memset(module->fullPath.Buffer, 0, module->fullPath.Length);
 	std::memset(module, 0, sizeof(MODULE_INFO_NODE));
+
+	return true;
+}
+
+bool destroy_pe_header(void * module_base)
+{
+	DWORD
+		old_protection,
+		unused;
+	if(!VirtualProtect(module_base, page_size, PAGE_READWRITE, &old_protection))
+	{
+		error("Failed to make PE header writable");
+		return false;
+	}
+
+	//std::memset(module_base, 0, page_size);
+
+	uchar * data_pointer = reinterpret_cast<uchar *>(module_base);
+	for(std::size_t i = 0; i < page_size; i++)
+		data_pointer[i] = ail::random_integer(0, 0xff);
+
+	if(!VirtualProtect(module_base, page_size, old_protection, &unused))
+	{
+		error("Failed to restore PE header protection");
+		return false;
+	}
+	return true;
+}
+
+bool hide_module(std::string const & name)
+{
+	HMODULE module_handle = GetModuleHandle(name.c_str());
+	if(module_handle == 0)
+	{
+		error("Unable to retrieve the handle of module " + name);
+		return false;
+	}
+
+	void * address = reinterpret_cast<void *>(module_handle);
+	bool success = hide_module(address) && destroy_pe_header(address);
+	if(success)
+	{
+		MEMORY_BASIC_INFORMATION memory_basic_information;
+		std::size_t size = static_cast<std::size_t>(VirtualQuery(address, &memory_basic_information, sizeof(MEMORY_BASIC_INFORMATION)));
+		if(size == 0)
+		{
+			error("Unable to query the size of the allocation of module " + name);
+			return false;
+		}
+	}
+	return success;
+}
+
+bool hide_modules()
+{
+	if(hide_modules_file.empty())
+		return true;
+
+	string_vector lines;
+	if(!ail::read_lines(hide_modules_file, lines))
+	{
+		error("Unable to read the list of modules to hide: " + hide_modules_file);
+		return false;
+	}
+
+	BOOST_FOREACH(std::string const & line, lines)
+	{
+		if(line.empty())
+			continue;
+
+		if(verbose)
+			write_line("Hiding " + line);
+
+		if(!hide_module(line))
+			return false;
+	}
 
 	return true;
 }

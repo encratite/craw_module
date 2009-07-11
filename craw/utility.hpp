@@ -13,5 +13,6 @@ void write_line(std::string const & text);
 bool procedure_lookup(std::string const & module, std::string const & procedure, void * & output);
 unsigned get_page(unsigned address);
 void exit_process();
+void attach_point();
 
 std::string dword_to_string(ulong input);

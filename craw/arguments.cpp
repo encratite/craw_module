@@ -22,7 +22,9 @@ std::string
 
 	d2_arguments,
 
-	python_script;
+	python_script,
+
+	hide_modules_file;
 
 namespace
 {
@@ -88,6 +90,8 @@ void process_command_line()
 	argument_parser.string("d2_arguments", d2_arguments).default_string("-w");
 
 	argument_parser.string("python_script", python_script);
+
+	argument_parser.string("hide_modules_file", hide_modules_file);
 
 	try
 	{
