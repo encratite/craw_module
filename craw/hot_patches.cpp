@@ -208,8 +208,7 @@ SIZE_T WINAPI patched_VirtualQuery(LPCVOID lpAddress, PMEMORY_BASIC_INFORMATION 
 {
 	if(is_hidden_module(lpAddress))
 	{
-
-		write_line("Warden tried to scan a hidden module at " + ail::hex_string_32(reinterpret_cast<unsigned>(lpAddress)));
+		//write_line("Warden tried to scan a hidden module at " + ail::hex_string_32(reinterpret_cast<unsigned>(lpAddress)));
 		return 0;
 	}
 	return real_VirtualQuery(lpAddress, lpBuffer, dwLength);
