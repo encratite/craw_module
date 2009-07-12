@@ -9,6 +9,13 @@
 #include "reveal_map.hpp"
 #include "utility.hpp"
 
+//#define MAPHACK_TEST
+
+#ifdef MAPHACK_TEST
+//#include "gMap.h"
+#include "mMap.h"
+#endif
+
 namespace
 {
 	console_command commands[] =
@@ -19,6 +26,7 @@ namespace
 		console_command("exit", "", "See 'quit'", 0, &quit_program),
 		console_command("life", "", "Print your character's life", 0, &print_life),
 		console_command("reveal", "", "Reveal the map of the current act your character is in", 0, &reveal_act_command),
+		//console_command("test", "", "Perform maphack test", 0, &maphack_test),
 	};
 }
 
@@ -47,9 +55,21 @@ void print_life(string_vector const & arguments)
 		std::cout << "Your character is not in a game" << std::endl;
 }
 
-void reveal_act_command(string_vector const & arguments)
+void maphack_test(string_vector const & arguments)
 {
-	std::cout << "Revealing the map" << std::endl;
+	#ifdef MAPHACK_TEST
+
+	std::cout << "Running the maphack test" << std::endl;
+
+	DefineOffsets();
+
+	std::cout << "Defined the offsets" << std::endl;
+
+	if(!GameReady())
+	{
+		std::cout << "The game is not ready" << std::endl;
+		return;
+	}
 
 	thread_controller controller;
 	if(!controller.suspend())
@@ -59,9 +79,37 @@ void reveal_act_command(string_vector const & arguments)
 		return;
 	}
 
+	std::cout << "Revealing the act" << std::endl;
+
+	if(RevealAct())
+		std::cout << "Done revealing the map" << std::endl;
+	else
+		std::cout << "Failed to reveal the act" << std::endl;
+
+	#endif
+}
+
+void reveal_act_command(string_vector const & arguments)
+{
+	std::cout << "Revealing the map" << std::endl;
+
+	thread_controller controller;
+
+	/*
+	if(!controller.suspend())
+	{
+		std::cout << "Failed to suspend all threads, resuming them" << std::endl;
+		controller.resume();
+		return;
+	}
+	|*/
+
 	bool success = reveal_act();
+
+	/*
 	if(!controller.resume())
 		return;
+	*/
 
 	if(success)
 		std::cout << "Done revealing the map" << std::endl;

@@ -22,6 +22,8 @@ level_data * get_level_pointer(miscellaneous_act_data * act_pointer, unsigned le
 	return d2_get_level(act_pointer, level_number);
 }
 
+#define DEBUG_HACK(STRING) write_line(#STRING " == " + ail::hex_string_32((unsigned)STRING));
+
 bool reveal_level(level_data * level_pointer)
 {
 	if(!level_pointer)
@@ -43,6 +45,13 @@ bool reveal_level(level_data * level_pointer)
 		if(!room_type_2_pointer->room_1)
 		{
 			write_line("d2_add_room_data");
+			DEBUG_HACK(level_pointer->act_pointer->act_data_pointer);
+			DEBUG_HACK(level_pointer->level_number);
+			DEBUG_HACK(room_type_2_pointer->position_x);
+			DEBUG_HACK(room_type_2_pointer->position_y);
+			DEBUG_HACK(level_pointer->act_pointer->act_data_pointer);
+			DEBUG_HACK(unit_pointer->path_data_pointer->room_1);
+
 			d2_add_room_data(level_pointer->act_pointer->act_data_pointer, level_pointer->level_number, room_type_2_pointer->position_x, room_type_2_pointer->position_y, unit_pointer->path_data_pointer->room_1);
 			room_data_has_been_added = true;
 		}

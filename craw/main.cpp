@@ -19,6 +19,11 @@ namespace
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
+	/*
+	initialise_console();
+	write_line("DllMain");
+	*/
+
 	if(fdwReason == DLL_PROCESS_ATTACH)
 	{
 		process_command_line();
@@ -51,6 +56,8 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 
 		//LoadLibrary("D2Client.dll");
 	}
+
+	//write_line("Returning from DllMain");
 
 	return TRUE;
 }

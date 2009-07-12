@@ -18,7 +18,7 @@ typedef unit * (__stdcall * get_player_unit_type)();
 typedef uchar (__stdcall * get_difficulty_type)();
 typedef level_data * (__fastcall * get_level_type)(miscellaneous_act_data * act, unsigned level_number);
 typedef automap_layer_type_2 * (__fastcall * get_layer_type)(unsigned level_number);
-typedef void (__stdcall * add_room_data_tye)(void * act, unsigned level_id, unsigned x, unsigned y, room_data_type_1 * room);
+typedef void (__stdcall * add_room_data_tye)(act_data * act, unsigned level_id, unsigned x, unsigned y, room_data_type_1 * room);
 typedef void (__stdcall * reveal_automap_room_type)(room_data_type_1 * room, unsigned clip_flag, void * layer);
 typedef void (__stdcall * remove_room_data_type)(void * act, unsigned level_id, unsigned x, unsigned y, room_data_type_1 * room);
 typedef void (__stdcall * initialise_level_type)(level_data * level);
