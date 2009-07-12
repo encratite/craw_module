@@ -19,6 +19,13 @@ public:
 		function = reinterpret_cast<type>(module_base + offset - image_base);
 	}
 
+	template <>
+		void fix<unsigned>(unsigned & function, unsigned offset)
+	{
+		function = module_base + offset - image_base;
+	}
+
+
 private:
 	unsigned
 		image_base,
@@ -34,6 +41,11 @@ namespace
 		d2client_base = 0x6FAB0000;
 
 	unsigned const life_mana_shift = 8;
+
+	unsigned data_tables;
+	unsigned roster_list;
+
+	unsigned player_pointer;
 }
 
 //D2Win.dll
@@ -72,6 +84,8 @@ void initialise_d2common_functions(unsigned base)
 	module_offset_handler offset_handler(d2common_base, base);
 
 	offset_handler.fix(d2_get_unit_stat, 0x6FD84E20);
+
+	offset_handler.fix(data_tables, 0x6FDEB500);
 }
 
 void initialise_d2client_functions(unsigned base)
@@ -80,6 +94,9 @@ void initialise_d2client_functions(unsigned base)
 
 	offset_handler.fix(d2_get_player_unit, 0x6FACE490);
 	offset_handler.fix(d2_get_difficulty, 0x6FB29CD0);
+
+	offset_handler.fix(roster_list, 0x6FBCC080);
+	offset_handler.fix(player_pointer, 0x6FBCC3D0);
 }
 
 void draw_text(std::string const & text, int x, int y, unsigned colour, bool centered)
@@ -169,4 +186,26 @@ bool get_life(unsigned & current_life, unsigned & maximum_life)
 	current_life = d2_get_unit_stat(player_unit, 6, 0) >> life_mana_shift;
 	maximum_life = d2_get_unit_stat(player_unit, 7, 0) >> life_mana_shift;
 	return true;
+}
+
+monster_statistics & get_monster_statistics(std::size_t index)
+{
+	char * root = *reinterpret_cast<char **>(data_tables);
+	monster_statistics * table = *reinterpret_cast<monster_statistics **>(root + 0xA78);
+	return table[index];
+}
+
+roster_unit * get_player_roster(unsigned player_id)
+{
+	for(roster_unit * i = reinterpret_cast<roster_unit *>(roster_list); i; i = i->next_roster)
+	{
+		if(i->unit_id == player_id)
+			return i;
+	}
+	return 0;
+}
+
+unit * get_player()
+{
+	return *reinterpret_cast<unit **>(player_pointer);
 }

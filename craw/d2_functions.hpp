@@ -28,3 +28,6 @@ extern get_difficulty_type d2_get_difficulty;
 void draw_text(std::string const & text, int x, int y, unsigned colour, bool centered);
 void __stdcall draw_box(int x, int y, unsigned colour);
 bool get_life(unsigned & current_life, unsigned & maximum_life);
+monster_statistics & get_monster_statistics(std::size_t index);
+roster_unit * get_player_roster(unsigned player_id);
+unit * get_player();

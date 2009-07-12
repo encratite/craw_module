@@ -198,7 +198,3 @@ struct room_data_type_2
 	unsigned unknown5;
 	room_data_type_2 * next_room_2;
 };
-
-monster_statistics & get_monster_statistics(std::size_t index);
-roster_unit * get_player_roster(unsigned player_id);
-unit * get_player();
