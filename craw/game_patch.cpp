@@ -279,7 +279,7 @@ void hook_main_thread()
 
 bool process_thread_entry(DWORD process_id, DWORD current_thread_id, THREADENTRY32 & thread_entry)
 {
-	if(thread_entry.th32OwnerProcessID != process_id)
+	if(process_id != thread_entry.th32OwnerProcessID)
 		return false;
 	DWORD thread_id = thread_entry.th32ThreadID;
 	if(thread_id == current_thread_id)
@@ -294,26 +294,25 @@ bool process_thread_entry(DWORD process_id, DWORD current_thread_id, THREADENTRY
 
 bool process_main_thread()
 {
+	DWORD process_id = GetCurrentProcessId();
 	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
 	if(snapshot == INVALID_HANDLE_VALUE)
 	{
-		error("CreateToolhelp32Snapshot failed: " + ail::hex_string_32(GetLastError()));
+		last_error("CreateToolhelp32Snapshot failed");
 		CloseHandle(snapshot);
 		return false;
 	}
-	DWORD process_id = GetCurrentProcessId();
 	DWORD current_thread_id = GetCurrentThreadId();
 	THREADENTRY32 thread_entry;
 	thread_entry.dwSize = sizeof(THREADENTRY32);
-	if(!Thread32First(snapshot, &thread_entry))
-	if(snapshot == INVALID_HANDLE_VALUE)
+	if(Thread32First(snapshot, &thread_entry) == FALSE)
 	{
-		error("Thread32First failed: " + ail::hex_string_32(GetLastError()));
+		last_error("Thread32First failed");
 		CloseHandle(snapshot);
 		return false;
 	}
 	bool success = process_thread_entry(process_id, current_thread_id, thread_entry);
-	while(Thread32Next(snapshot, &thread_entry))
+	while(Thread32Next(snapshot, &thread_entry) == TRUE)
 		success = success || process_thread_entry(process_id, current_thread_id, thread_entry);
 	if(!success)
 	{

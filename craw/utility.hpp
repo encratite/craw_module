@@ -7,6 +7,7 @@
 extern unsigned page_size;
 
 void error(std::string const & message);
+void last_error(std::string const & message);
 void initialise_console();
 void write_text(std::string const & text);
 void write_line(std::string const & text);
@@ -27,7 +28,7 @@ private:
 	thread_id_vector thread_ids;
 	DWORD current_thread_id;
 
-	bool get_thread_ids(thread_id_vector & output);
+	bool get_thread_ids();
 };
 
 std::string dword_to_string(ulong input);

@@ -54,6 +54,7 @@ void reveal_act_command(string_vector const & arguments)
 	thread_controller controller;
 	if(!controller.suspend())
 	{
+		std::cout << "Failed to suspend all threads, resuming them" << std::endl;
 		controller.resume();
 		return;
 	}

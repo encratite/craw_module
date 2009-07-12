@@ -1,3 +1,5 @@
+#include <ail/string.hpp>
+#include "utility.hpp"
 #include "reveal_map.hpp"
 #include "d2_functions.hpp"
 
@@ -34,10 +36,13 @@ bool reveal_level(level_data * level_pointer)
 
 	for(room_data_type_2 * room_type_2_pointer = level_pointer->first_room; room_type_2_pointer; room_type_2_pointer = room_type_2_pointer->other_room_2)
 	{
+		write_line("reveal_level room_type_2_pointer == " + ail::hex_string_32(reinterpret_cast<unsigned>(room_type_2_pointer)));
+
 		bool room_data_has_been_added = false;
 
 		if(!room_type_2_pointer->room_1)
 		{
+			write_line("d2_add_room_data");
 			d2_add_room_data(level_pointer->act_pointer->act_data_pointer, level_pointer->level_number, room_type_2_pointer->position_x, room_type_2_pointer->position_y, unit_pointer->path_data_pointer->room_1);
 			room_data_has_been_added = true;
 		}
@@ -46,12 +51,16 @@ bool reveal_level(level_data * level_pointer)
 			continue;
 	
 		//watch out for the automap layer pointer
+		write_line("d2_reveal_automap_room");
 		d2_reveal_automap_room(room_type_2_pointer->room_1, 1, get_automap_layer());
 
 		draw_presets(room_type_2_pointer);
 
 		if(room_data_has_been_added)
+		{
+			write_line("d2_remove_room_data");
 			d2_remove_room_data(level_pointer->act_pointer->act_data_pointer, level_pointer->level_number, room_type_2_pointer->position_x, room_type_2_pointer->position_y, unit_pointer->path_data_pointer->room_1);
+		}
 	}
 
 	initialise_automap_layer(unit_pointer->path_data_pointer->room_1->room_2->level->level_number);
@@ -70,6 +79,8 @@ bool reveal_act()
 	
 	for(unsigned level_number = town_level_numbers[unit_pointer->act] + 1; level_number < town_level_numbers[unit_pointer->act + 1]; level_number++)
 	{
+		write_line("Processing level " + ail::hex_string_32(level_number));
+
 		level_data * level_pointer = get_level_pointer(unit_pointer->act_data_pointer->miscellaneous_act_data_pointer, level_number);
 
 		if(!level_pointer)
@@ -80,6 +91,8 @@ bool reveal_act()
 			d2_initialise_level(level_pointer);
 			continue;
 		}
+
+		write_line("Revealing the level");
 
 		reveal_level(level_pointer);
 	}
@@ -93,7 +106,8 @@ void draw_presets(room_data_type_2 * room_type_2_pointer)
 	{
 		int cell = -1;
 
-		if(preset_unit_pointer->type == 1)//Special NPCs.
+		//Special NPCs.
+		if(preset_unit_pointer->type == 1)
 		{
 			//Izual
 			if(preset_unit_pointer->table_index == 256)

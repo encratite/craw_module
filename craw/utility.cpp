@@ -21,7 +21,7 @@ void error(std::string const & message)
 
 void last_error(std::string const & message)
 {
-	error(message + ": " + ail::hex_string_32(GetLastError()));
+	error(message + ": " + ail::number_to_string(GetLastError()));
 }
 
 void initialise_console()
@@ -113,13 +113,15 @@ bool thread_controller::suspend()
 {
 	current_thread_id = GetCurrentThreadId();
 
-	if(!get_thread_ids(thread_ids))
+	if(!get_thread_ids())
 		return false;
 
 	BOOST_FOREACH(DWORD thread_id, thread_ids)
 	{
 		if(thread_id == current_thread_id)
 			continue;
+
+		//write_line("Suspending thread with ID " + ail::hex_string_32(thread_id));
 
 		HANDLE thread_handle = OpenThread(THREAD_SUSPEND_RESUME, FALSE, thread_id);
 		if(thread_handle == 0)
@@ -137,7 +139,8 @@ bool thread_controller::suspend()
 
 		CloseHandle(thread_handle);
 	}
-	return false;
+
+	return true;
 }
 
 bool thread_controller::resume()
@@ -146,6 +149,8 @@ bool thread_controller::resume()
 	{
 		if(thread_id == current_thread_id)
 			continue;
+
+		//write_line("Resuming thread with ID " + ail::hex_string_32(thread_id));
 
 		HANDLE thread_handle = OpenThread(THREAD_SUSPEND_RESUME, FALSE, thread_id);
 		if(thread_handle == 0)
@@ -163,36 +168,41 @@ bool thread_controller::resume()
 
 		CloseHandle(thread_handle);
 	}
-	return false;
+
+	return true;
 }
 
-bool thread_controller::get_thread_ids(thread_id_vector & output)
+bool thread_controller::get_thread_ids()
 {
 	THREADENTRY32 thread_entry;
 	thread_entry.dwSize = static_cast<DWORD>(sizeof(THREADENTRY32));
 
-	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, GetCurrentProcessId());
+	DWORD process_id = GetCurrentProcessId();
+
+	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
 	if(snapshot == INVALID_HANDLE_VALUE)
 	{
 		last_error("Failed to create toolhelp snapshot");
 		return false;
 	}
 
-	if(Thread32First(snapshot, &thread_entry) != TRUE)
+	if(Thread32First(snapshot, &thread_entry) == FALSE)
 	{
 		last_error("Failed to retrieve the first snapshot");
 		CloseHandle(snapshot);
 		return false;
 	}
 
-	output.push_back(thread_entry.th32ThreadID);
+	if(process_id == thread_entry.th32OwnerProcessID)
+		thread_ids.push_back(thread_entry.th32ThreadID);
 
 	while(true)
 	{
-		if(Thread32Next(snapshot, &thread_entry) != TRUE)
+		if(Thread32Next(snapshot, &thread_entry) == FALSE)
 			break;
 
-		output.push_back(thread_entry.th32ThreadID);
+		if(process_id == thread_entry.th32OwnerProcessID)
+			thread_ids.push_back(thread_entry.th32ThreadID);
 	}
 
 	CloseHandle(snapshot);
