@@ -39,8 +39,8 @@ class automap_handler:
 					draw_box(coordinate, monster_data.colour)
 				return
 				
-			if monster_data.colour == self.original_npc_colour:
-				colour = self.npc_colour
+			if monster_data.colour != 0x00:
+				draw_box(coordinate, monster_data.colour)
 			else:
 				if monster_data.mode in [0, 12]:
 					return
@@ -79,7 +79,7 @@ class automap_handler:
 				if len(immunity_string) > 0:
 					draw_automap_text(immunity_string, coordinate)
 					
-			draw_box(coordinate, colour)
+				draw_box(coordinate, colour)
 			
 		except:
 			traceback.print_exc(file = sys.stdout)
