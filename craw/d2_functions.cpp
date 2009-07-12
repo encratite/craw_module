@@ -46,6 +46,9 @@ namespace
 	unsigned roster_list;
 
 	unsigned player_pointer;
+	unsigned automap_layer_address;
+
+	unsigned initalise_automap_layer_address;
 }
 
 //D2Win.dll
@@ -58,12 +61,21 @@ draw_line_type d2_draw_line;
 
 //D2Common.dll
 get_unit_stat_type d2_get_unit_stat;
+get_level_type d2_get_level;
+get_layer_type d2_get_layer;
+add_room_data_tye d2_add_room_data;
+remove_room_data_type d2_remove_room_data;
+initialise_level_type d2_initialise_level;
+get_object_table_entry_type d2_get_object_table_entry;
 
 //D2Client.dll
 get_player_unit_type d2_get_player_unit;
 get_difficulty_type d2_get_difficulty;
+reveal_automap_room_type d2_reveal_automap_room;
+new_automap_cell_type d2_new_automap_cell;
+add_automap_cell_type d2_add_automap_cell;
 
-void initialise_d2win_functions(unsigned base)
+void initialise_d2win_addresses(unsigned base)
 {
 	module_offset_handler offset_handler(d2win_base, base);
 
@@ -72,31 +84,42 @@ void initialise_d2win_functions(unsigned base)
 	offset_handler.fix(d2_get_text_width, 0x6F8EFFF0);
 }
 
-void initialise_d2gfx_functions(unsigned base)
+void initialise_d2gfx_addresses(unsigned base)
 {
 	module_offset_handler offset_handler(d2gfx_base, base);
 
 	offset_handler.fix(d2_draw_line, 0x6FA87CA0);
 }
 
-void initialise_d2common_functions(unsigned base)
+void initialise_d2common_addresses(unsigned base)
 {
 	module_offset_handler offset_handler(d2common_base, base);
 
 	offset_handler.fix(d2_get_unit_stat, 0x6FD84E20);
+	offset_handler.fix(d2_get_level, 0x6FDC2520);
+	offset_handler.fix(d2_get_layer, 0x6FDC3870);
+	offset_handler.fix(d2_add_room_data, 0x6FDA68F0);
+	offset_handler.fix(d2_remove_room_data, 0x6FDA6830);
+	offset_handler.fix(d2_initialise_level, 0x6FDC2C40);
+	offset_handler.fix(d2_get_object_table_entry, 0x6FD87300);
 
 	offset_handler.fix(data_tables, 0x6FDEB500);
 }
 
-void initialise_d2client_functions(unsigned base)
+void initialise_d2client_addresses(unsigned base)
 {
 	module_offset_handler offset_handler(d2client_base, base);
 
 	offset_handler.fix(d2_get_player_unit, 0x6FACE490);
 	offset_handler.fix(d2_get_difficulty, 0x6FB29CD0);
+	offset_handler.fix(d2_reveal_automap_room, 0x6FAF04C0);
+	offset_handler.fix(d2_new_automap_cell, 0x6FAED5B0);
+	offset_handler.fix(d2_add_automap_cell, 0x6FAEF090);
 
 	offset_handler.fix(roster_list, 0x6FBCC080);
 	offset_handler.fix(player_pointer, 0x6FBCC3D0);
+	offset_handler.fix(automap_layer_address, 0x6FBCC2B4);
+	offset_handler.fix(initalise_automap_layer_address, 0x6FAF0650);
 }
 
 void draw_text(std::string const & text, int x, int y, unsigned colour, bool centered)
@@ -208,4 +231,34 @@ roster_unit * get_player_roster(unsigned player_id)
 unit * get_player()
 {
 	return *reinterpret_cast<unit **>(player_pointer);
+}
+
+automap_layer * get_automap_layer()
+{
+	return *reinterpret_cast<automap_layer **>(automap_layer_address);
+}
+
+unsigned __declspec(naked) __fastcall initialise_automap_layer_stub(unsigned layer_number)
+{
+	__asm 
+	{
+		push eax
+		mov eax, ecx
+		call initialise_automap_layer_address
+		pop eax
+		ret
+	}
+}
+
+automap_layer_type_2 * initialise_automap_layer(unsigned level_number)
+{
+	automap_layer_type_2 * layer = d2_get_layer(level_number);
+	if(!layer)
+		return 0;
+	return initialise_automap_layer_stub(layer->layer_number);
+}
+
+automap_cell ** get_layer_objects_pointer()
+{
+	return &(get_automap_layer()->objects);
 }

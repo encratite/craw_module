@@ -2,6 +2,8 @@
 
 #include <ail/types.hpp>
 
+//Cthulhon etc
+
 enum
 {
 	difficulty_count = 3
@@ -14,6 +16,8 @@ enum
 	difficulty_hell
 };
 
+struct act_data;
+
 struct unit
 {
 	unsigned type;
@@ -23,7 +27,7 @@ struct unit
 	unsigned mode;
 	void * unit_data;
 	unsigned act;
-	void * act_data;
+	act_data * act_data_pointer;
 	unsigned seed[2];
 	unsigned unknown1;
 	void * path_data;
@@ -41,12 +45,32 @@ struct monster_data
 	bool get_flag(unsigned offset);
 };
 
-struct path
+struct room_data_type_1;
+
+struct path_data
 {
-	short offset_x;
-	short position_x;
-	short offset_y;
-	short position_y;
+	ushort offset_x;
+	ushort position_x;
+	ushort offset_y;
+	ushort position_y;
+	unsigned unknown1[2];
+	ushort target_x;
+	ushort target_y;
+	unsigned unknown2[2];
+	room_data_type_1 * room_1;
+	room_data_type_1 * unknown_room;
+	unsigned unknown3[3];
+	unit * unit_pointer;
+	unsigned flags;
+	unsigned unknown4;
+	unsigned path_type;
+	unsigned previous_path_type;
+	unsigned unit_size;
+	unsigned unknown5[4];
+	unit * target_unit;
+	unsigned target_type;
+	unsigned target_id;
+	uchar direction;
 };
 
 struct treasure_class_entry
@@ -105,19 +129,30 @@ struct roster_unit
 	uchar * unknown5;
 	unsigned unknown6[11];
 	ushort unknown7;
-	char szName2[16];
+	char name[16];
 	ushort unknown8;
 	unsigned unknown9[2];
 	roster_unit * next_roster;
 };
 
 struct level_data;
+struct room_data_type_1;
 struct room_data_type_2;
+struct miscellaneous_act_data;
+
+struct act_data
+{
+	unsigned unknown1[13];
+	room_data_type_1 * room_1;
+	miscellaneous_act_data * miscellaneous_act_data_pointer;
+	unsigned unknown2;
+	unsigned act_number;
+};
 
 struct miscellaneous_act_data
 {
 	unsigned unknown1;
-	void * act_data;
+	act_data * act_data_pointer;
 	unsigned unknown2[282];
 	level_data * first_level;
 };
@@ -197,4 +232,51 @@ struct room_data_type_2
 	unsigned seed[2];
 	unsigned unknown5;
 	room_data_type_2 * next_room_2;
+};
+
+struct automap_cell
+{
+	unsigned saved;
+	ushort cell_number;
+	ushort x;
+	ushort y;
+	ushort weight;
+	automap_cell * less;
+	automap_cell * more;
+};
+
+struct automap_layer
+{
+	unsigned layer_number;
+	unsigned saved;
+	automap_cell * floors;
+	automap_cell * walls;
+	automap_cell * objects;
+	automap_cell * extras;
+	automap_layer * next_layer;
+};
+
+struct automap_layer_type_2
+{
+	unsigned unknown1[2];
+	unsigned layer_number;
+};
+
+struct object_table_entry
+{
+	char name[0x40];
+	wchar_t unicode_name[0x40];
+	uchar unknown1[4];
+	uchar selectable;
+	uchar unknown2[0x87];
+	uchar orientation;
+	uchar unknown2b[0x19];
+	uchar sub_class;
+	uchar unknown3[0x11];
+	uchar parameter;
+	uchar unknown4[0x39];
+	uchar populate;
+	uchar operate;
+	uchar unknown5[8];
+	unsigned automap;
 };

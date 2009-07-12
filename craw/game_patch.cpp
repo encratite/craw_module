@@ -173,14 +173,14 @@ void d2client(unsigned base)
 	write_line("Automap code address: " + ail::hex_string_32(reinterpret_cast<ulong>(&automap_blobs)));
 	*/
 
-	initialise_d2client_functions(base);
+	initialise_d2client_addresses(base);
 }
 
 void initialise_dll_vector()
 {
-	dll_vector.push_back(dll_load_event("D2Win.dll", &initialise_d2win_functions));
-	dll_vector.push_back(dll_load_event("D2Gfx.dll", &initialise_d2gfx_functions));
-	dll_vector.push_back(dll_load_event("D2Common.dll", &initialise_d2common_functions));
+	dll_vector.push_back(dll_load_event("D2Win.dll", &initialise_d2win_addresses));
+	dll_vector.push_back(dll_load_event("D2Gfx.dll", &initialise_d2gfx_addresses));
+	dll_vector.push_back(dll_load_event("D2Common.dll", &initialise_d2common_addresses));
 	dll_vector.push_back(dll_load_event("D2Client.dll", &d2client));
 
 	dll_vector.push_back(dll_load_event("D2Net.dll", &d2net));
