@@ -94,7 +94,13 @@ bool destroy_pe_header(void * module_base)
 	//std::memset(module_base, 0, page_size);
 
 	uchar * data_pointer = reinterpret_cast<uchar *>(module_base);
-	for(std::size_t i = 0; i < page_size; i++)
+	std::size_t magic_end = 2;
+
+	//to avoid the accidental generation of "MZ"
+	for(std::size_t i = 0; i < magic_end; i++)
+		data_pointer[i] = ail::random_integer(0x80, 0xff);
+
+	for(std::size_t i = magic_end; i < page_size; i++)
 		data_pointer[i] = ail::random_integer(0, 0xff);
 
 	if(!VirtualProtect(module_base, page_size, old_protection, &unused))
