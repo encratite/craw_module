@@ -17,6 +17,7 @@ enum
 };
 
 struct act_data;
+struct path_data;
 
 struct unit
 {
@@ -30,7 +31,7 @@ struct unit
 	act_data * act_data_pointer;
 	unsigned seed[2];
 	unsigned unknown1;
-	void * path_data;
+	path_data * path_data_pointer;
 };
 
 struct monster_data
@@ -129,7 +130,7 @@ struct roster_unit
 	uchar * unknown5;
 	unsigned unknown6[11];
 	ushort unknown7;
-	char name[16];
+	char name2[16];
 	ushort unknown8;
 	unsigned unknown9[2];
 	roster_unit * next_roster;

@@ -1,3 +1,4 @@
+#include "reveal_map.hpp"
 #include "d2_functions.hpp"
 
 //from mMap, with a few changes
@@ -24,20 +25,20 @@ bool reveal_level(level_data * level_pointer)
 	if(!level_pointer)
 		return false;
 
-	if(!InitAutomapLayer(level_pointer->level_number))
+	if(!initialise_automap_layer(level_pointer->level_number))
 		return false;
 
 	unit * unit_pointer = d2_get_player_unit();
 	if(!unit_pointer)
 		return false;
 
-	for(room_date_type_2 * room_type_2_pointer = level_pointer->first_room; room_type_2_pointer; room_type_2_pointer = room_type_2_pointer->other_room_2)
+	for(room_data_type_2 * room_type_2_pointer = level_pointer->first_room; room_type_2_pointer; room_type_2_pointer = room_type_2_pointer->other_room_2)
 	{
 		bool room_data_has_been_added = false;
 
 		if(!room_type_2_pointer->room_1)
 		{
-			d2_add_room_data(level_pointer->act_pointer->act_data_pointer, level_pointer->level_number, room_type_2_pointer->position_x, room_type_2_pointer->position_y, unit_pointer->path_data->room_1);
+			d2_add_room_data(level_pointer->act_pointer->act_data_pointer, level_pointer->level_number, room_type_2_pointer->position_x, room_type_2_pointer->position_y, unit_pointer->path_data_pointer->room_1);
 			room_data_has_been_added = true;
 		}
 
@@ -50,17 +51,17 @@ bool reveal_level(level_data * level_pointer)
 		draw_presets(room_type_2_pointer);
 
 		if(room_data_has_been_added)
-			d2_remove_room_data(level_pointer->act_pointer->act_data_pointer, level_pointer->level_number, room_type_2_pointer->position_x, room_type_2_pointer->position_y, unit_pointer->path_data->room_1);
+			d2_remove_room_data(level_pointer->act_pointer->act_data_pointer, level_pointer->level_number, room_type_2_pointer->position_x, room_type_2_pointer->position_y, unit_pointer->path_data_pointer->room_1);
 	}
 
-	initialise_automap_layer(unit_pointer->path_data->room_1->room_type_2_pointer->level->level_number);
+	initialise_automap_layer(unit_pointer->path_data_pointer->room_1->room_2->level->level_number);
 
 	return true;
 }
 
 bool reveal_act()
 {
-	unit * unit_pointer = get_player_unit();
+	unit * unit_pointer = d2_get_player_unit();
 	if(!unit_pointer)
 		return false;
 
@@ -86,9 +87,9 @@ bool reveal_act()
 	return true;
 }
 
-void draw_presets(room_date_type_2 * room_type_2_pointer)
+void draw_presets(room_data_type_2 * room_type_2_pointer)
 {
-	for(preset_unit * preset_unit_pointer = room_type_2_pointer->pPreset; preset_unit_pointer; preset_unit_pointer = preset_unit_pointer->pPresetNext)
+	for(preset_unit * preset_unit_pointer = room_type_2_pointer->preset; preset_unit_pointer; preset_unit_pointer = preset_unit_pointer->next)
 	{
 		int cell = -1;
 
@@ -125,13 +126,13 @@ void draw_presets(room_date_type_2 * room_type_2_pointer)
 				cell = 1468;
 
 			//Canyon/Arcane Waypoint
-			else if((preset_unit_pointer->table_index == 402) && (room_type_2_pointer->level_pointer->level_number == 46))
+			else if((preset_unit_pointer->table_index == 402) && (room_type_2_pointer->level->level_number == 46))
 				cell = 0;
 
-			else if((preset_unit_pointer->table_index == 267) && (room_type_2_pointer->level_pointer->level_number != 75) && (room_type_2_pointer->level_pointer->level_number != 103))
+			else if((preset_unit_pointer->table_index == 267) && (room_type_2_pointer->level->level_number != 75) && (room_type_2_pointer->level->level_number != 103))
 				cell = 0;
 
-			else if((preset_unit_pointer->table_index == 376) && (room_type_2_pointer->level_pointer->level_number == 107))
+			else if((preset_unit_pointer->table_index == 376) && (room_type_2_pointer->level->level_number == 107))
 				cell = 376;
 
 			if(cell == -1)

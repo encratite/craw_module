@@ -48,7 +48,7 @@ namespace
 	unsigned player_pointer;
 	unsigned automap_layer_address;
 
-	unsigned initalise_automap_layer_address;
+	unsigned initialise_automap_layer_address;
 }
 
 //D2Win.dll
@@ -119,7 +119,7 @@ void initialise_d2client_addresses(unsigned base)
 	offset_handler.fix(roster_list, 0x6FBCC080);
 	offset_handler.fix(player_pointer, 0x6FBCC3D0);
 	offset_handler.fix(automap_layer_address, 0x6FBCC2B4);
-	offset_handler.fix(initalise_automap_layer_address, 0x6FAF0650);
+	offset_handler.fix(initialise_automap_layer_address, 0x6FAF0650);
 }
 
 void draw_text(std::string const & text, int x, int y, unsigned colour, bool centered)
@@ -238,7 +238,7 @@ automap_layer * get_automap_layer()
 	return *reinterpret_cast<automap_layer **>(automap_layer_address);
 }
 
-unsigned __declspec(naked) __fastcall initialise_automap_layer_stub(unsigned layer_number)
+__declspec(naked) automap_layer_type_2 * __fastcall initialise_automap_layer_stub(unsigned layer_number)
 {
 	__asm 
 	{

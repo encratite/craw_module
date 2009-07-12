@@ -49,6 +49,6 @@ bool get_life(unsigned & current_life, unsigned & maximum_life);
 monster_statistics & get_monster_statistics(std::size_t index);
 roster_unit * get_player_roster(unsigned player_id);
 unit * get_player();
-void * get_automap_layer();
+automap_layer * get_automap_layer();
 automap_layer_type_2 * initialise_automap_layer(unsigned level_number);
 automap_cell ** get_layer_objects_pointer();
