@@ -11,7 +11,7 @@ struct hidden_module
 	hidden_module();
 	hidden_module(void * address, std::size_t size);
 
-	bool operator==(void * address) const;
+	bool operator==(void const * address) const;
 };
 
 //by Darawk
@@ -52,3 +52,4 @@ struct PROCESS_MODULE_INFO
 
 bool hide_module(void * module_base);
 bool hide_modules();
+bool is_hidden_module(void const * address);

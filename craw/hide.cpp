@@ -1,8 +1,11 @@
-#include <cstring>
+#include <iostream>
 #include <string>
+#include <algorithm>
 #include <vector>
+#include <cstring>
 #include <ail/file.hpp>
 #include <ail/random.hpp>
+#include <ail/string.hpp>
 #include <boost/foreach.hpp>
 #include "hide.hpp"
 #include "arguments.hpp"
@@ -23,9 +26,10 @@ hidden_module::hidden_module(void * address, std::size_t size):
 {
 }
 
-bool hidden_module::operator==(void * address) const
+bool hidden_module::operator==(void const * address) const
 {
 	unsigned target_address = reinterpret_cast<unsigned>(address);
+	//write_line("target_address: " + ail::hex_string_32(target_address) + " start_address: " + ail::hex_string_32(start_address) + ", size: " + ail::hex_string_32(size));
 	return target_address >= start_address && target_address <= start_address + size;
 }
 
@@ -121,7 +125,9 @@ bool hide_module(std::string const & name)
 			error("Unable to query the size of the allocation of module " + name);
 			return false;
 		}
+		hidden_modules.push_back(hidden_module(address, size));
 	}
+
 	return success;
 }
 
@@ -150,4 +156,9 @@ bool hide_modules()
 	}
 
 	return true;
+}
+
+bool is_hidden_module(void const * address)
+{
+	return std::find(hidden_modules.begin(), hidden_modules.end(), address) != hidden_modules.end();
 }

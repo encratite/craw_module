@@ -10,6 +10,7 @@
 #include "utility.hpp"
 #include "debug_registers.hpp"
 #include "d2_cdkey.hpp"
+#include "hide.hpp"
 
 typedef HWND (WINAPI * FindWindow_type)(LPCTSTR lpClassName, LPCTSTR lpWindowName);
 typedef HANDLE (WINAPI * CreateFile_type)(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile);
@@ -18,6 +19,7 @@ typedef HMODULE (WINAPI * LoadLibrary_type)(LPCTSTR lpFileName);
 typedef HWND (WINAPI * CreateWindowEx_type)(DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle, int x, int y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam);
 typedef int (WINAPI * recv_type)(SOCKET s, char *buf, int len, int flags);
 typedef int (WINAPI * send_type)(SOCKET s, const char * buf, int len, int flags);
+typedef SIZE_T (WINAPI * VirtualQuery_type)(LPCVOID lpAddress, PMEMORY_BASIC_INFORMATION lpBuffer, SIZE_T dwLength);
 
 namespace
 {
@@ -28,6 +30,7 @@ namespace
 	CreateWindowEx_type real_CreateWindowEx;
 	recv_type real_recv;
 	send_type real_send;
+	VirtualQuery_type real_VirtualQuery;
 
 	ulong server_token;
 }
@@ -201,6 +204,17 @@ int WINAPI patched_send(SOCKET s, const char * buf, int len, int flags)
 		return real_send(s, buf, len, flags);
 }
 
+SIZE_T WINAPI patched_VirtualQuery(LPCVOID lpAddress, PMEMORY_BASIC_INFORMATION lpBuffer, SIZE_T dwLength)
+{
+	if(is_hidden_module(lpAddress))
+	{
+
+		write_line("Warden tried to scan a hidden module at " + ail::hex_string_32(reinterpret_cast<unsigned>(lpAddress)));
+		return 0;
+	}
+	return real_VirtualQuery(lpAddress, lpBuffer, dwLength);
+}
+
 bool apply_hot_patches()
 {
 	std::string const
@@ -218,6 +232,7 @@ bool apply_hot_patches()
 		hot_patch_entry(kernel, "LoadLibraryA", &patched_LoadLibrary, reinterpret_cast<void * &>(real_LoadLibrary)),
 		hot_patch_entry(winsock, "recv", &patched_recv, reinterpret_cast<void * &>(real_recv)),
 		hot_patch_entry(winsock2, "send", &patched_send, reinterpret_cast<void * &>(real_send)),
+		hot_patch_entry(kernel, "VirtualQuery", &patched_VirtualQuery, reinterpret_cast<void * &>(real_VirtualQuery)),
 	};
 
 	BOOST_FOREACH(hot_patch_entry & entry, patches)
