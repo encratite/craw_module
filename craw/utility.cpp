@@ -1,6 +1,8 @@
 #include <iostream>
 #include <windows.h>
 #include <ail/string.hpp>
+#include <boost/foreach.hpp>
+#include <Tlhelp32.h>
 #include "utility.hpp"
 #include "arguments.hpp"
 #include "console.hpp"
@@ -15,6 +17,11 @@ namespace
 void error(std::string const & message)
 {
 	MessageBox(0, message.c_str(), "Error", MB_OK);
+}
+
+void last_error(std::string const & message)
+{
+	error(message + ": " + ail::hex_string_32(GetLastError()));
 }
 
 void initialise_console()
@@ -100,4 +107,94 @@ void attach_point()
 	{
 		int 3
 	}
+}
+
+bool thread_controller::suspend()
+{
+	current_thread_id = GetCurrentThreadId();
+
+	if(!get_thread_ids(thread_ids))
+		return false;
+
+	BOOST_FOREACH(DWORD thread_id, thread_ids)
+	{
+		if(thread_id == current_thread_id)
+			continue;
+
+		HANDLE thread_handle = OpenThread(THREAD_SUSPEND_RESUME, FALSE, thread_id);
+		if(thread_handle == 0)
+		{
+			last_error("Failed to open thread for suspension");
+			return false;
+		}
+
+		if(SuspendThread(thread_handle) == -1)
+		{
+			last_error("Failed to suspend thread");
+			CloseHandle(thread_handle);
+			return false;
+		}
+
+		CloseHandle(thread_handle);
+	}
+	return false;
+}
+
+bool thread_controller::resume()
+{
+	BOOST_FOREACH(DWORD thread_id, thread_ids)
+	{
+		if(thread_id == current_thread_id)
+			continue;
+
+		HANDLE thread_handle = OpenThread(THREAD_SUSPEND_RESUME, FALSE, thread_id);
+		if(thread_handle == 0)
+		{
+			last_error("Failed to open thread to resume its execution");
+			return false;
+		}
+
+		if(ResumeThread(thread_handle) == -1)
+		{
+			last_error("Failed to resume thread");
+			CloseHandle(thread_handle);
+			return false;
+		}
+
+		CloseHandle(thread_handle);
+	}
+	return false;
+}
+
+bool thread_controller::get_thread_ids(thread_id_vector & output)
+{
+	THREADENTRY32 thread_entry;
+	thread_entry.dwSize = static_cast<DWORD>(sizeof(THREADENTRY32));
+
+	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, GetCurrentProcessId());
+	if(snapshot == INVALID_HANDLE_VALUE)
+	{
+		last_error("Failed to create toolhelp snapshot");
+		return false;
+	}
+
+	if(Thread32First(snapshot, &thread_entry) != TRUE)
+	{
+		last_error("Failed to retrieve the first snapshot");
+		CloseHandle(snapshot);
+		return false;
+	}
+
+	output.push_back(thread_entry.th32ThreadID);
+
+	while(true)
+	{
+		if(Thread32Next(snapshot, &thread_entry) != TRUE)
+			break;
+
+		output.push_back(thread_entry.th32ThreadID);
+	}
+
+	CloseHandle(snapshot);
+	return true;
 }

@@ -6,6 +6,8 @@
 #include <windows.h>
 #include "console.hpp"
 #include "d2_functions.hpp"
+#include "reveal_map.hpp"
+#include "utility.hpp"
 
 namespace
 {
@@ -16,6 +18,7 @@ namespace
 		console_command("quit", "", "Terminates the program", 0, &quit_program),
 		console_command("exit", "", "See 'quit'", 0, &quit_program),
 		console_command("life", "", "Print your character's life", 0, &print_life),
+		console_command("reveal", "", "Reveal the map of the current act your character is in", 0, &reveal_act_command),
 	};
 }
 
@@ -42,6 +45,27 @@ void print_life(string_vector const & arguments)
 		std::cout << "Life: " << current_life << "/" << maximum_life << std::endl;
 	else
 		std::cout << "Your character is not in a game" << std::endl;
+}
+
+void reveal_act_command(string_vector const & arguments)
+{
+	std::cout << "Revealing the map" << std::endl;
+
+	thread_controller controller;
+	if(!controller.suspend())
+	{
+		controller.resume();
+		return;
+	}
+
+	bool success = reveal_act();
+	if(!controller.resume())
+		return;
+
+	if(success)
+		std::cout << "Done revealing the map" << std::endl;
+	else
+		std::cout << "Failed to reveal the act" << std::endl;
 }
 
 void print_help(string_vector const & arguments)
