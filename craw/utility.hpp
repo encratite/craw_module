@@ -3,8 +3,10 @@
 #include <string>
 #include <ail/types.hpp>
 #include <windows.h>
+#include <Tlhelp32.h>
 
 extern unsigned page_size;
+extern DWORD main_thread_id;
 
 void error(std::string const & message);
 void last_error(std::string const & message);
@@ -27,8 +29,10 @@ public:
 private:
 	thread_id_vector thread_ids;
 	DWORD current_thread_id;
+	DWORD process_id;
 
 	bool get_thread_ids();
+	void process_thread_entry(THREADENTRY32 & thread_entry);
 };
 
 std::string dword_to_string(ulong input);

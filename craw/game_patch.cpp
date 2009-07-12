@@ -14,7 +14,6 @@
 namespace
 {
 	unsigned original_game_packet_handler;
-	DWORD main_thread_id;
 
 	unsigned light_handler_address = 0x6FB0F8F0u;
 

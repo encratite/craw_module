@@ -2,12 +2,12 @@
 #include <windows.h>
 #include <ail/string.hpp>
 #include <boost/foreach.hpp>
-#include <Tlhelp32.h>
 #include "utility.hpp"
 #include "arguments.hpp"
 #include "console.hpp"
 
 unsigned page_size = 0x1000;
+DWORD main_thread_id;
 
 namespace
 {
@@ -118,9 +118,6 @@ bool thread_controller::suspend()
 
 	BOOST_FOREACH(DWORD thread_id, thread_ids)
 	{
-		if(thread_id == current_thread_id)
-			continue;
-
 		//write_line("Suspending thread with ID " + ail::hex_string_32(thread_id));
 
 		HANDLE thread_handle = OpenThread(THREAD_SUSPEND_RESUME, FALSE, thread_id);
@@ -147,9 +144,6 @@ bool thread_controller::resume()
 {
 	BOOST_FOREACH(DWORD thread_id, thread_ids)
 	{
-		if(thread_id == current_thread_id)
-			continue;
-
 		//write_line("Resuming thread with ID " + ail::hex_string_32(thread_id));
 
 		HANDLE thread_handle = OpenThread(THREAD_SUSPEND_RESUME, FALSE, thread_id);
@@ -177,7 +171,7 @@ bool thread_controller::get_thread_ids()
 	THREADENTRY32 thread_entry;
 	thread_entry.dwSize = static_cast<DWORD>(sizeof(THREADENTRY32));
 
-	DWORD process_id = GetCurrentProcessId();
+	process_id = GetCurrentProcessId();
 
 	HANDLE snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
 	if(snapshot == INVALID_HANDLE_VALUE)
@@ -193,18 +187,28 @@ bool thread_controller::get_thread_ids()
 		return false;
 	}
 
-	if(process_id == thread_entry.th32OwnerProcessID)
-		thread_ids.push_back(thread_entry.th32ThreadID);
+	process_thread_entry(thread_entry);
 
 	while(true)
 	{
 		if(Thread32Next(snapshot, &thread_entry) == FALSE)
 			break;
 
-		if(process_id == thread_entry.th32OwnerProcessID)
-			thread_ids.push_back(thread_entry.th32ThreadID);
+		process_thread_entry(thread_entry);
 	}
 
 	CloseHandle(snapshot);
 	return true;
+}
+
+void thread_controller::process_thread_entry(THREADENTRY32 & thread_entry)
+{
+	if(process_id != thread_entry.th32OwnerProcessID)
+		return;
+
+	DWORD thread_id = thread_entry.th32ThreadID;
+	if(thread_id == current_thread_id || thread_id == main_thread_id)
+		return;
+
+	thread_ids.push_back(thread_id);
 }

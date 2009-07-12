@@ -22,8 +22,6 @@ level_data * get_level_pointer(miscellaneous_act_data * act_pointer, unsigned le
 	return d2_get_level(act_pointer, level_number);
 }
 
-#define DEBUG_HACK(STRING) write_line(#STRING " == " + ail::hex_string_32((unsigned)STRING));
-
 bool reveal_level(level_data * level_pointer)
 {
 	if(!level_pointer)
@@ -38,20 +36,10 @@ bool reveal_level(level_data * level_pointer)
 
 	for(room_data_type_2 * room_type_2_pointer = level_pointer->first_room; room_type_2_pointer; room_type_2_pointer = room_type_2_pointer->other_room_2)
 	{
-		write_line("reveal_level room_type_2_pointer == " + ail::hex_string_32(reinterpret_cast<unsigned>(room_type_2_pointer)));
-
 		bool room_data_has_been_added = false;
 
 		if(!room_type_2_pointer->room_1)
 		{
-			write_line("d2_add_room_data");
-			DEBUG_HACK(level_pointer->act_pointer->act_data_pointer);
-			DEBUG_HACK(level_pointer->level_number);
-			DEBUG_HACK(room_type_2_pointer->position_x);
-			DEBUG_HACK(room_type_2_pointer->position_y);
-			DEBUG_HACK(level_pointer->act_pointer->act_data_pointer);
-			DEBUG_HACK(unit_pointer->path_data_pointer->room_1);
-
 			d2_add_room_data(level_pointer->act_pointer->act_data_pointer, level_pointer->level_number, room_type_2_pointer->position_x, room_type_2_pointer->position_y, unit_pointer->path_data_pointer->room_1);
 			room_data_has_been_added = true;
 		}
@@ -60,16 +48,12 @@ bool reveal_level(level_data * level_pointer)
 			continue;
 	
 		//watch out for the automap layer pointer
-		write_line("d2_reveal_automap_room");
 		d2_reveal_automap_room(room_type_2_pointer->room_1, 1, get_automap_layer());
 
 		draw_presets(room_type_2_pointer);
 
 		if(room_data_has_been_added)
-		{
-			write_line("d2_remove_room_data");
 			d2_remove_room_data(level_pointer->act_pointer->act_data_pointer, level_pointer->level_number, room_type_2_pointer->position_x, room_type_2_pointer->position_y, unit_pointer->path_data_pointer->room_1);
-		}
 	}
 
 	initialise_automap_layer(unit_pointer->path_data_pointer->room_1->room_2->level->level_number);
@@ -88,8 +72,6 @@ bool reveal_act()
 	
 	for(unsigned level_number = town_level_numbers[unit_pointer->act] + 1; level_number < town_level_numbers[unit_pointer->act + 1]; level_number++)
 	{
-		write_line("Processing level " + ail::hex_string_32(level_number));
-
 		level_data * level_pointer = get_level_pointer(unit_pointer->act_data_pointer->miscellaneous_act_data_pointer, level_number);
 
 		if(!level_pointer)
@@ -100,8 +82,6 @@ bool reveal_act()
 			d2_initialise_level(level_pointer);
 			continue;
 		}
-
-		write_line("Revealing the level");
 
 		reveal_level(level_pointer);
 	}

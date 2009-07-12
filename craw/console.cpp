@@ -3,6 +3,7 @@
 #include <boost/thread.hpp>
 #include <boost/foreach.hpp>
 #include <ail/string.hpp>
+#include <ail/time.hpp>
 #include <windows.h>
 #include "console.hpp"
 #include "d2_functions.hpp"
@@ -93,26 +94,28 @@ void reveal_act_command(string_vector const & arguments)
 {
 	std::cout << "Revealing the map" << std::endl;
 
+	bool const use_suspension = false;
+
 	thread_controller controller;
 
-	/*
-	if(!controller.suspend())
+	if(use_suspension && !controller.suspend())
 	{
 		std::cout << "Failed to suspend all threads, resuming them" << std::endl;
 		controller.resume();
 		return;
 	}
-	|*/
+
+	ullong start = ail::milliseconds();
 
 	bool success = reveal_act();
 
-	/*
-	if(!controller.resume())
+	ullong duration = ail::milliseconds() - start;
+
+	if(use_suspension && !controller.resume())
 		return;
-	*/
 
 	if(success)
-		std::cout << "Done revealing the map" << std::endl;
+		std::cout << "Done revealing the map after " << duration << " ms" << std::endl;
 	else
 		std::cout << "Failed to reveal the act" << std::endl;
 }
