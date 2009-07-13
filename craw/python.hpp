@@ -6,6 +6,13 @@
 
 namespace python
 {
+	extern PyObject
+		* automap_handler,
+		* packet_handler;
+
+	extern PyMemberDef monster_data_members[];
+	extern PyTypeObject monster_data_type;
+
 	struct python_monster_data
 	{
 		PyObject_HEAD
