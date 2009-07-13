@@ -1,18 +1,8 @@
+from configuration import *
 from utility import *
 from text import *
 
 class automap_handler_class:
-
-	def __init__(self):
-		self.original_npc_colour = 0x20
-		
-		self.npc_colour = self.original_npc_colour
-		 
-		self.monster_colour = 0x0a
-		self.minion_colour = 0xab
-		self.champion_colour = 0x9b
-		self.boss_colour = 0x87
-		
 	def is_minion(self):
 		return get_flag(self.monster_data.monster_flags, 4)
 		
@@ -24,6 +14,38 @@ class automap_handler_class:
 		
 	def is_npc(self):
 		return get_flag(self.monster_data.flags, 9)
+		
+	def get_special_abilities_string(self):
+		output = ''
+		
+		for special_ability in self.monster_data.special_abilities:
+			try:
+				colour, string = special_abilities[special_ability]
+				output += colour + string
+			except KeyError:
+				continue
+		
+		return output
+	
+	def get_immunity_string(self):
+		immunities = [
+			self.monster_data.fire_resistance,
+			self.monster_data.cold_resistance,
+			self.monster_data.lightning_resistance,
+			self.monster_data.poison_resistance,
+			self.monster_data.damage_resistance,
+			self.monster_data.magic_resistance
+		]
+		
+		output = ''
+		offset = 0
+		for immunity in immunities:
+			if immunity >= 100:
+				output += immunity_colours[offset] + immunity_symbol
+			
+			offset += 1
+			
+		return output
 	
 	def process_data(self, monster_data):
 		#craw.draw_text(get_rainbow(), 32, 32, False)
@@ -47,34 +69,20 @@ class automap_handler_class:
 				return
 				
 			if self.is_boss():
-				colour = self.boss_colour
+				colour = boss_colour
 			elif self.is_champion():
-				colour = self.champion_colour
+				colour = champion_colour
 			elif self.is_minion():
-				colour = self.minion_colour
+				colour = minion_colour
 			else:
-				colour = self.monster_colour
+				colour = monster_colour
 				
-			immunity_colours = [red, blue, yellow, green, gold, orange]
-			immunities = [
-				monster_data.fire_resistance,
-				monster_data.cold_resistance,
-				monster_data.lightning_resistance,
-				monster_data.poison_resistance,
-				monster_data.damage_resistance,
-				monster_data.magic_resistance
-			]
+			immunity_string = self.get_immunity_string()
+			special_abilities_string = self.get_special_abilities_string()
 			
-			
-			immunity_string = ''
-			offset = 0
-			for immunity in immunities:
-				if immunity >= 100:
-					immunity_string += '%so' % immunity_colours[offset]
+			monster_text = immunity_string + special_abilities_string
 				
-				offset += 1
-				
-			if len(immunity_string) > 0:
-				draw_automap_text(immunity_string, coordinate)
+			if len(monster_text) > 0:
+				draw_automap_text(monster_text, coordinate)
 				
 			draw_box(coordinate, colour)

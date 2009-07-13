@@ -1,6 +1,10 @@
 #include <Python.h>
 #include <structmember.h>
 #include <ail/array.hpp>
+#include <ail/string.hpp>
+#include <ail/types.hpp>
+#include <boost/foreach.hpp>
+#include <vector>
 #include "python.hpp"
 #include "d2_functions.hpp"
 #include "utility.hpp"
@@ -124,19 +128,31 @@ namespace python
 				}
 			}
 
-			std::size_t ability_end_index = 0;
-			for(std::size_t end = ail::countof(data.special_abilities); data.special_abilities[ability_end_index] != 0 && ability_end_index < end; ability_end_index++);
+			std::vector<uchar> abilities_vector;
 
-			special_abilities = PyList_New(ability_end_index);
+			BOOST_FOREACH(uchar ability, data.special_abilities)
+			{
+				if(ability != 0)
+					abilities_vector.push_back(ability);
+			}
+
+			std::size_t vector_size = abilities_vector.size();
+
+			/*
+			if(vector_size > 0)
+				write_line("FUCK YES");
+			*/
+
+			special_abilities = PyList_New(vector_size);
 			if(special_abilities == 0)
 			{
 				error("Failed to create the special abilities list");
 				return false;
 			}
 
-			for(std::size_t i = 0; i < ability_end_index; i++)
+			for(std::size_t i = 0; i < vector_size; i++)
 			{
-				PyObject * integer = PyInt_FromLong(data.special_abilities[i]);
+				PyObject * integer = PyInt_FromLong(abilities_vector[i]);
 				if(PyList_SetItem(special_abilities, i, integer) < 0)
 				{
 					error("Failed to initialise a special abilities item");

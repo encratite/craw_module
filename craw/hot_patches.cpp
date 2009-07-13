@@ -62,8 +62,11 @@ HANDLE WINAPI patched_CreateFile(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWOR
 
 	std::string fixed_path;
 
-	if(file_name == "bncache.dat")
-		fixed_path = path.substr(0, offset) + "bncache\\" + ail::number_to_string<DWORD>(GetCurrentProcessId()) + ".dat";
+	if(!bncache_directory.empty() && file_name == "bncache.dat")
+	{
+		std::string file_name = ail::number_to_string<DWORD>(GetCurrentProcessId()) + ".dat";
+		fixed_path = ail::join_paths(bncache_directory, file_name);
+	}
 	else
 		fixed_path = path;
 	return real_CreateFile(fixed_path.c_str(), dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
@@ -133,7 +136,7 @@ std::string get_d2_window_name()
 HWND WINAPI patched_CreateWindowEx(DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR lpWindowName, DWORD dwStyle, int x, int y, int nWidth, int nHeight, HWND hWndParent, HMENU hMenu, HINSTANCE hInstance, LPVOID lpParam)
 {
 	std::string name = lpWindowName;
-	if(name == "Diablo II")
+	if(!window_title.empty() && name == "Diablo II")
 	{
 		name = get_d2_window_name();
 		if(verbose)
@@ -216,6 +219,9 @@ SIZE_T WINAPI patched_VirtualQuery(LPCVOID lpAddress, PMEMORY_BASIC_INFORMATION 
 
 bool apply_hot_patches()
 {
+	if(!patch_system_modules)
+		return true;
+
 	std::string const
 		kernel = "kernel32.dll",
 		user = "user32.dll",
@@ -236,6 +242,9 @@ bool apply_hot_patches()
 
 	BOOST_FOREACH(hot_patch_entry & entry, patches)
 	{
+		if(!entry.enabled)
+			continue;
+
 		if(!hot_patch_function(entry.module, entry.procedure, entry.function, entry.real_function))
 			return false;
 	}

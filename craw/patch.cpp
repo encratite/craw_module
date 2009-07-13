@@ -6,11 +6,12 @@
 #include "arguments.hpp"
 #include "python.hpp"
 
-hot_patch_entry::hot_patch_entry(std::string const & module, std::string const & procedure, void * function, void * & real_function):
+hot_patch_entry::hot_patch_entry(std::string const & module, std::string const & procedure, void * function, void * & real_function, bool enabled):
 	module(module),
 	procedure(procedure),
 	function(function),
-	real_function(real_function)
+	real_function(real_function),
+	enabled(enabled)
 {
 }
 

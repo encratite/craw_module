@@ -13,7 +13,9 @@ struct hot_patch_entry
 	void * function;
 	void * & real_function;
 
-	hot_patch_entry(std::string const & module, std::string const & procedure, void * function, void * & real_function);
+	bool enabled;
+
+	hot_patch_entry(std::string const & module, std::string const & procedure, void * function, void * & real_function, bool enabled = true);
 };
 
 void initialise_dll_vector();

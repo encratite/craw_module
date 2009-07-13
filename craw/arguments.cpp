@@ -7,24 +7,19 @@
 bool
 	console_output,
 	incremental_window_title,
-
 	verbose,
-
 	use_custom_keys,
-
-	prompt_mode;
+	prompt_mode,
+	patch_system_modules;
 
 std::string
 	window_title,
-
 	classic_key,
 	expansion_key,
-
 	d2_arguments,
-
 	python_script,
-
-	hide_modules_file;
+	hide_modules_file,
+	bncache_directory;
 
 namespace
 {
@@ -81,17 +76,15 @@ void process_command_line()
 	argument_parser.flag("incremental_window_title", incremental_window_title).default_flag(false);
 	argument_parser.flag("verbose", verbose).default_flag(false);
 	argument_parser.flag("prompt", prompt_mode).default_flag(false);
+	argument_parser.flag("patch_system_modules", patch_system_modules).default_flag(true);
 
-	argument_parser.string("window_title", window_title).default_string("Diablo II");
-
+	argument_parser.string("window_title", window_title);
 	argument_parser.string("classic_key", classic_key);
 	argument_parser.string("expansion_key", expansion_key);
-
 	argument_parser.string("d2_arguments", d2_arguments).default_string("-w");
-
 	argument_parser.string("python_script", python_script);
-
 	argument_parser.string("hide_modules_file", hide_modules_file);
+	argument_parser.string("bncache_directory", bncache_directory);
 
 	try
 	{

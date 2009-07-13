@@ -1,6 +1,8 @@
 from automap import *
 from packets import *
 
+print 'Executing craw.py'
+
 automap_handler = automap_handler_class()
 craw.set_automap_handler(automap_handler.process_data)
 
