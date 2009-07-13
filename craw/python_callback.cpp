@@ -1,12 +1,36 @@
+#include <boost/thread/mutex.hpp>
 #include "python.hpp"
 #include "utility.hpp"
 
 namespace python
 {
+	namespace
+	{
+		boost::mutex python_mutex;
+	}
+
+	struct global_interpreter_lock
+	{
+		PyGILState_STATE gil_state;
+
+		global_interpreter_lock()
+		{
+			gil_state = PyGILState_Ensure();
+		}
+
+		~global_interpreter_lock()
+		{
+			PyGILState_Release(gil_state);
+		}
+	};
+
 	void perform_automap_callback(unit & current_unit, int x, int y, uchar colour)
 	{
 		if(!automap_handler)
 			return;
+
+		boost::mutex::scoped_lock lock(python_mutex);
+		//global_interpreter_lock lock;
 
 		python_monster_data * monster_data_pointer = PyObject_New(python_monster_data, &monster_data_type);
 		python_monster_data & current_monster_data = *monster_data_pointer;
@@ -37,6 +61,9 @@ namespace python
 		if(!packet_handler)
 			return true;
 
+		boost::mutex::scoped_lock lock(python_mutex);
+		//global_interpreter_lock lock;
+
 		PyObject * return_value = PyObject_CallFunction(packet_handler, "s", packet.c_str());
 		if(!return_value)
 		{
@@ -47,6 +74,7 @@ namespace python
 		bool output = (return_value == Py_True);
 
 		Py_DECREF(return_value);
+
 		return output;
 	}
 }
