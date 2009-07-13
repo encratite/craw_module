@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Python.h>
+#include <string>
 #include "d2_data.hpp"
 
 namespace python
@@ -41,11 +42,13 @@ namespace python
 	};
 
 	PyObject * set_automap_handler(PyObject * self, PyObject * arguments);
+	PyObject * set_packet_handler(PyObject * self, PyObject * arguments);
 
 	PyObject * draw_line(PyObject * self, PyObject * arguments);
 	PyObject * draw_text(PyObject * self, PyObject * arguments);
 
 	void perform_automap_callback(unit & current_unit, int x, int y, uchar colour);
+	bool perform_packet_callback(std::string const & packet);
 
 	PyMODINIT_FUNC initialise_module();
 

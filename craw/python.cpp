@@ -25,13 +25,16 @@ namespace python
 			error_name = "error",
 			monster_data_class = "monster_data";
 
-		PyObject * automap_handler = 0;
+		PyObject
+			* automap_handler = 0,
+			* packet_handler = 0;
 
 		PyObject * module_error;
 
 		PyMethodDef module_methods[] =
 		{
 			{"set_automap_handler", &set_automap_handler, METH_VARARGS, "This allows you to specify an automap unit handler which is called whenever a unit on the automap is being processed."},
+			{"set_packet_handler", &set_packet_handler, METH_VARARGS, "This allows you to specify a packet handler which can react to incoming packets from the game server."},
 
 			{"draw_line", &draw_line, METH_VARARGS, "Draws a single line."},
 			{"draw_text", &draw_text, METH_VARARGS, "Draws text on the screen."},
@@ -138,6 +141,11 @@ namespace python
 	PyObject * set_automap_handler(PyObject * self, PyObject * arguments)
 	{
 		return set_handler(self, arguments, "set_automap_handler", automap_handler);
+	}
+
+	PyObject * set_packet_handler(PyObject * self, PyObject * arguments)
+	{
+		return set_handler(self, arguments, "set_packet_handler", packet_handler);
 	}
 
 	void fix_coordinate(int & coordinate, int maximum)
@@ -269,6 +277,21 @@ namespace python
 		Py_DECREF(return_value);
 		Py_XDECREF(current_monster_data.treasure_class);
 		Py_DECREF(monster_data_pointer);
+	}
+
+	bool perform_packet_callback(std::string const & packet)
+	{
+		if(!packet_handler)
+			return true;
+
+		PyObject * return_value = PyObject_CallFunction(packet_handler, "s", packet.c_str());
+		if(!return_value)
+			return true;
+
+		bool output = (return_value == Py_True);
+
+		Py_DECREF(return_value);
+		return output;
 	}
 
 	PyMODINIT_FUNC initialise_module()

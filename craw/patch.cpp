@@ -4,6 +4,7 @@
 #include "patch.hpp"
 #include "utility.hpp"
 #include "arguments.hpp"
+#include "python.hpp"
 
 hot_patch_entry::hot_patch_entry(std::string const & module, std::string const & procedure, void * function, void * & real_function):
 	module(module),

@@ -3,8 +3,11 @@ Command line arguments: python E:\Code\Python\ida\ida.py D2Net.dll B:\D2\D2Net.l
 Time of generation: 2009-07-07 20:45:47
 */
 
+#include <iostream>
 #include <string>
 #include <windows.h>
+#include "python.hpp"
+#include "d2_functions.hpp"
 
 namespace
 {
@@ -22,6 +25,38 @@ namespace
 	unsigned Fog_10042 = 0x6FBF5EE8;
 	unsigned custom_exit = 0x6FBF1187;
 
+	unsigned
+		current_life,
+		maximum_life;
+}
+
+/*
+void __stdcall run_test1()
+{
+	get_life(current_life, maximum_life);
+}
+
+void __stdcall run_test2()
+{
+	unsigned
+		new_current_life,
+		new_maximum_life;
+
+	get_life(new_current_life, new_maximum_life);
+
+	if(new_current_life != current_life || maximum_life != new_maximum_life)
+		std::cout << "Hit: " << current_life << "/" << new_maximum_life << std::endl;
+	else
+		std::cout << "No hit: " << current_life << std::endl;
+}
+*/
+
+unsigned __stdcall process_incoming_packet(char const * packet, std::size_t size)
+{
+	if(size == 1 && packet[0] == '\xaf')
+		size++;
+	std::string data(packet, size);
+	return python::perform_packet_callback(data) ? 1 : 0;
 }
 
 void interrupt()
@@ -96,6 +131,7 @@ void __stdcall initialisation()
 		data_pointer += 5;
 	}
 }
+
 void __declspec(naked) main_packet_handler()
 {
 	__asm
@@ -108,8 +144,27 @@ void __declspec(naked) main_packet_handler()
 		call initialisation
 		
 	is_already_initialised:
-	
+
+		//Run the test
+		//call run_test1
+
+		pushad
+
+		push ebx
+		push ecx
+		call process_incoming_packet
+		test eax, eax
+
+		popad
+
+		jnz go_on_then
+
+		//return if the user decided to block the packet
+		ret
+
 		//Actual code starts here:
+
+	go_on_then:
 		
 		sub esp, 110h
 		mov eax, ds:[06FBFB244h]
@@ -240,6 +295,10 @@ void __declspec(naked) main_packet_handler()
 		pop ebp
 		pop ebx
 		add esp, 110h
+
+		//Run the test
+		//call run_test2
+
 		retn
 	loc_6FBF67BD:
 		push 127h
