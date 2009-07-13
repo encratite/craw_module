@@ -40,6 +40,7 @@ namespace python
 			{"draw_text", &draw_text, METH_VARARGS, "Draws text on the screen."},
 
 			{"send_packet", &send_packet, METH_VARARGS, "Sends a packet to the game server."},
+			{"leave_game", &leave_game, METH_VARARGS, "Leaves the current game."},
 			{0, 0, 0, 0}
 		};
 
@@ -222,6 +223,14 @@ namespace python
 		return Py_None;
 	}
 
+	PyObject * leave_game(PyObject * self, PyObject * arguments)
+	{
+		d2_leave_game();
+
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+
 	void python_monster_data::initialise(unit & current_unit)
 	{
 		uchar difficulty = d2_get_difficulty();
@@ -287,12 +296,17 @@ namespace python
 		current_monster_data.colour = colour;
 
 		PyObject * return_value = PyObject_CallFunction(automap_handler, "O", monster_data_pointer);
-		if(!return_value)
-			return;
 
-		Py_DECREF(return_value);
 		Py_XDECREF(current_monster_data.treasure_class);
 		Py_DECREF(monster_data_pointer);
+
+		if(!return_value)
+		{
+			PyErr_Print();
+			return;
+		}
+
+		Py_DECREF(return_value);
 	}
 
 	bool perform_packet_callback(std::string const & packet)
@@ -302,7 +316,10 @@ namespace python
 
 		PyObject * return_value = PyObject_CallFunction(packet_handler, "s", packet.c_str());
 		if(!return_value)
+		{
+			PyErr_Print();
 			return true;
+		}
 
 		bool output = (return_value == Py_True);
 

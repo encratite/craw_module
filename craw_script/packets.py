@@ -1,5 +1,3 @@
-import sys, traceback
-
 class packet_handler_class:
 
 	def __init__(self):
@@ -17,9 +15,5 @@ class packet_handler_class:
 		return output
 		
 	def process_data(self, packet):
-		try:
-			print 'Got something!'
-			print self.get_packet_string(packet)
-			return True
-		except:
-			traceback.print_exc(file = sys.stdout)
+		print self.get_packet_string(packet)
+		return True

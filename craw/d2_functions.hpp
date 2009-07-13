@@ -27,6 +27,7 @@ typedef object_table_entry * (__stdcall * get_object_table_entry_type)(unsigned 
 typedef automap_cell * (__fastcall * new_automap_cell_type)();
 typedef void (__fastcall * add_automap_cell_type)(automap_cell * cell, automap_cell ** node);
 typedef void (__stdcall * send_packet_type)(std::size_t size, unsigned flags, char const * packet);
+typedef void (__stdcall * leave_game_type)();
 
 extern set_font_size_type d2_set_font_size;
 extern draw_text_type d2_draw_text;
@@ -45,6 +46,7 @@ extern get_object_table_entry_type d2_get_object_table_entry;
 extern new_automap_cell_type d2_new_automap_cell;
 extern add_automap_cell_type d2_add_automap_cell;
 extern send_packet_type d2_send_packet;
+extern leave_game_type d2_leave_game;
 
 void draw_text(std::string const & text, int x, int y, unsigned colour, bool centered);
 void __stdcall draw_box(int x, int y, unsigned colour);

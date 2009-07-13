@@ -75,6 +75,7 @@ get_difficulty_type d2_get_difficulty;
 reveal_automap_room_type d2_reveal_automap_room;
 new_automap_cell_type d2_new_automap_cell;
 add_automap_cell_type d2_add_automap_cell;
+leave_game_type d2_leave_game;
 
 //D2Net.dll
 send_packet_type d2_send_packet;
@@ -119,6 +120,7 @@ void initialise_d2client_addresses(unsigned base)
 	offset_handler.fix(d2_reveal_automap_room, 0x6FAF04C0);
 	offset_handler.fix(d2_new_automap_cell, 0x6FAED5B0);
 	offset_handler.fix(d2_add_automap_cell, 0x6FAEF090);
+	offset_handler.fix(d2_leave_game, 0x6FB2AB00);
 
 	offset_handler.fix(roster_list, 0x6FBCC080);
 	offset_handler.fix(player_pointer, 0x6FBCC3D0);
