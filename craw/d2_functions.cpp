@@ -38,7 +38,8 @@ namespace
 		d2win_base = 0x6F8E0000,
 		d2gfx_base = 0x6FA80000,
 		d2common_base = 0x6FD50000,
-		d2client_base = 0x6FAB0000;
+		d2client_base = 0x6FAB0000,
+		d2net_base = 0x6FBF0000;
 
 	unsigned const life_mana_shift = 8;
 
@@ -74,6 +75,9 @@ get_difficulty_type d2_get_difficulty;
 reveal_automap_room_type d2_reveal_automap_room;
 new_automap_cell_type d2_new_automap_cell;
 add_automap_cell_type d2_add_automap_cell;
+
+//D2Net.dll
+send_packet_type d2_send_packet;
 
 void initialise_d2win_addresses(unsigned base)
 {
@@ -120,6 +124,13 @@ void initialise_d2client_addresses(unsigned base)
 	offset_handler.fix(player_pointer, 0x6FBCC3D0);
 	offset_handler.fix(automap_layer_address, 0x6FBCC2B4);
 	offset_handler.fix(initialise_automap_layer_address, 0x6FAF0650);
+}
+
+void initialise_d2net_addresses(unsigned base)
+{
+	module_offset_handler offset_handler(d2net_base, base);
+
+	offset_handler.fix(d2_send_packet, 0x6FBF6F90);
 }
 
 void draw_text(std::string const & text, int x, int y, unsigned colour, bool centered)

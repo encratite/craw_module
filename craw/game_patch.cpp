@@ -159,6 +159,10 @@ void d2net(unsigned base)
 	debug_register_entries.push_back(debug_register_entry(original_game_packet_handler, &debug_register_packet_handler));
 
 	debug_register_triggers.push_back(debug_register_trigger("Game packet handler thread", base + 0x6bd0, original_game_packet_handler));
+
+	//patch_address(original_game_packet_handler, &main_packet_handler);
+
+	initialise_d2net_addresses(base);
 }
 
 void d2client(unsigned base)

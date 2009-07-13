@@ -152,7 +152,9 @@ void __declspec(naked) automap_blobs()
 		cmp module_base, 0
 		jnz is_already_initialised
 		
+		pushad
 		call initialise_automap_blobs
+		popad
 		
 	is_already_initialised:
 

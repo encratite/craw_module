@@ -1,8 +1,8 @@
 from utility import *
 from text import *
-import sys, traceback, craw
+import sys, traceback
 
-class automap_handler:
+class automap_handler_class:
 
 	def __init__(self):
 		self.original_npc_colour = 0x20

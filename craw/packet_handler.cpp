@@ -6,8 +6,10 @@ Time of generation: 2009-07-07 20:45:47
 #include <iostream>
 #include <string>
 #include <windows.h>
+#include <ail/string.hpp>
 #include "python.hpp"
 #include "d2_functions.hpp"
+#include "utility.hpp"
 
 namespace
 {
@@ -53,9 +55,13 @@ void __stdcall run_test2()
 
 unsigned __stdcall process_incoming_packet(char const * packet, std::size_t size)
 {
+	//write_line("Processing packet: " + ail::hex_string_32((unsigned)packet) + ", " + ail::number_to_string(size));
+
 	if(size == 1 && packet[0] == '\xaf')
 		size++;
+
 	std::string data(packet, size);
+
 	return python::perform_packet_callback(data) ? 1 : 0;
 }
 
@@ -141,7 +147,9 @@ void __declspec(naked) main_packet_handler()
 		cmp module_base, 0
 		jnz is_already_initialised
 		
+		pushad
 		call initialisation
+		popad
 		
 	is_already_initialised:
 

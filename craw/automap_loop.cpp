@@ -110,7 +110,9 @@ void __declspec(naked) automap_loop()
 		cmp module_base, 0
 		jnz is_already_initialised
 		
+		pushad
 		call initialise_automap_loop
+		popad
 		
 	is_already_initialised:
 	

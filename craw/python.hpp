@@ -46,6 +46,7 @@ namespace python
 
 	PyObject * draw_line(PyObject * self, PyObject * arguments);
 	PyObject * draw_text(PyObject * self, PyObject * arguments);
+	PyObject * send_packet(PyObject * self, PyObject * arguments);
 
 	void perform_automap_callback(unit & current_unit, int x, int y, uchar colour);
 	bool perform_packet_callback(std::string const & packet);

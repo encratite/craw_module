@@ -8,6 +8,7 @@ void initialise_d2win_addresses(unsigned base);
 void initialise_d2gfx_addresses(unsigned base);
 void initialise_d2common_addresses(unsigned base);
 void initialise_d2client_addresses(unsigned base);
+void initialise_d2net_addresses(unsigned base);
 
 typedef unsigned (__fastcall * set_font_size_type)(unsigned new_size);
 typedef void (__fastcall * draw_text_type)(wchar_t const * text, int x, int y, unsigned colour, int unknown);
@@ -25,6 +26,7 @@ typedef void (__stdcall * initialise_level_type)(level_data * level);
 typedef object_table_entry * (__stdcall * get_object_table_entry_type)(unsigned object_number);
 typedef automap_cell * (__fastcall * new_automap_cell_type)();
 typedef void (__fastcall * add_automap_cell_type)(automap_cell * cell, automap_cell ** node);
+typedef void (__stdcall * send_packet_type)(std::size_t size, unsigned flags, char const * packet);
 
 extern set_font_size_type d2_set_font_size;
 extern draw_text_type d2_draw_text;
@@ -42,6 +44,7 @@ extern initialise_level_type d2_initialise_level;
 extern get_object_table_entry_type d2_get_object_table_entry;
 extern new_automap_cell_type d2_new_automap_cell;
 extern add_automap_cell_type d2_add_automap_cell;
+extern send_packet_type d2_send_packet;
 
 void draw_text(std::string const & text, int x, int y, unsigned colour, bool centered);
 void __stdcall draw_box(int x, int y, unsigned colour);

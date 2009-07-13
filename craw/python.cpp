@@ -38,6 +38,8 @@ namespace python
 
 			{"draw_line", &draw_line, METH_VARARGS, "Draws a single line."},
 			{"draw_text", &draw_text, METH_VARARGS, "Draws text on the screen."},
+
+			{"send_packet", &send_packet, METH_VARARGS, "Sends a packet to the game server."},
 			{0, 0, 0, 0}
 		};
 
@@ -201,6 +203,20 @@ namespace python
 		bool centered = (bool_object == Py_True);
 
 		::draw_text(text, x, y, 0, centered);
+
+		Py_INCREF(Py_None);
+		return Py_None;
+	}
+
+	PyObject * send_packet(PyObject * self, PyObject * arguments)
+	{
+		char const * data;
+		Py_ssize_t size;
+
+		if(!PyArg_ParseTuple(arguments, "s#", &data, &size))
+			return 0;
+
+		d2_send_packet(static_cast<std::size_t>(size), 1, data);
 
 		Py_INCREF(Py_None);
 		return Py_None;
