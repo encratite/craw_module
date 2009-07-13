@@ -33,12 +33,14 @@ namespace python
 		ushort cold_resistance;
 		ushort poison_resistance;
 
+		PyObject * special_abilities;
+
 		int x;
 		int y;
 
 		uchar colour;
 
-		void initialise(unit & current_unit);
+		bool initialise(unit & current_unit);
 	};
 
 	PyObject * set_automap_handler(PyObject * self, PyObject * arguments);

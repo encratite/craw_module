@@ -69,6 +69,8 @@ namespace python
 			{"cold_resistance", T_USHORT, offsetof(python_monster_data, cold_resistance), 0, "Cold resistance"},
 			{"poison_resistance", T_USHORT, offsetof(python_monster_data, poison_resistance), 0, "Poison resistance"},
 
+			{"special_abilities", T_OBJECT, offsetof(python_monster_data, special_abilities), 0, "Special abilities"},
+
 			{"x", T_INT, offsetof(python_monster_data, x), 0, "Automap x coordinate"},
 			{"y", T_INT, offsetof(python_monster_data, y), 0, "Automap y coordinate"},
 
@@ -231,7 +233,7 @@ namespace python
 		return Py_None;
 	}
 
-	void python_monster_data::initialise(unit & current_unit)
+	bool python_monster_data::initialise(unit & current_unit)
 	{
 		uchar difficulty = d2_get_difficulty();
 
@@ -243,6 +245,7 @@ namespace python
 		mode = current_unit.mode;
 
 		treasure_class = 0;
+		special_abilities = 0;
 
 		if(type == 1)
 		{
@@ -250,21 +253,43 @@ namespace python
 
 			flags = statistics.flags;
 
-			std::size_t treasure_size = ail::countof(statistics.treasure_classes[difficulty].treasure_class);
+			treasure_class_entry current_treasure_class = statistics.treasure_classes[difficulty];
+
+			std::size_t treasure_size = ail::countof(current_treasure_class.treasure_class);
 			treasure_class = PyList_New(treasure_size);
 			if(treasure_class == 0)
 			{
-				error("Failed to create Python list");
-				return;
+				error("Failed to create the treasure class list");
+				return false;
 			}
 
 			for(std::size_t i = 0; i < treasure_size; i++)
 			{
-				PyObject * integer = PyInt_FromLong(statistics.treasure_classes[difficulty].treasure_class[i]);
+				PyObject * integer = PyInt_FromLong(current_treasure_class.treasure_class[i]);
 				if(PyList_SetItem(treasure_class, i, integer) < 0)
 				{
 					error("Failed to initialise a treasure class item");
-					return;
+					return false;
+				}
+			}
+
+			std::size_t ability_end_index = 0;
+			for(std::size_t end = ail::countof(data.special_abilities); data.special_abilities[ability_end_index] != 0 && ability_end_index < end; ability_end_index++);
+
+			special_abilities = PyList_New(ability_end_index);
+			if(special_abilities == 0)
+			{
+				error("Failed to create the special abilities list");
+				return false;
+			}
+
+			for(std::size_t i = 0; i < ability_end_index; i++)
+			{
+				PyObject * integer = PyInt_FromLong(data.special_abilities[i]);
+				if(PyList_SetItem(special_abilities, i, integer) < 0)
+				{
+					error("Failed to initialise a special abilities item");
+					return false;
 				}
 			}
 
@@ -281,6 +306,8 @@ namespace python
 			cold_resistance = statistics.cold_resistance[difficulty];
 			poison_resistance = statistics.poison_resistance[difficulty];
 		}
+
+		return true;
 	}
 
 	void perform_automap_callback(unit & current_unit, int x, int y, uchar colour)
@@ -290,7 +317,9 @@ namespace python
 
 		python_monster_data * monster_data_pointer = PyObject_New(python_monster_data, &monster_data_type);
 		python_monster_data & current_monster_data = *monster_data_pointer;
-		current_monster_data.initialise(current_unit);
+		if(!current_monster_data.initialise(current_unit))
+			exit_process();
+
 		current_monster_data.x = x;
 		current_monster_data.y = y;
 		current_monster_data.colour = colour;
@@ -298,6 +327,7 @@ namespace python
 		PyObject * return_value = PyObject_CallFunction(automap_handler, "O", monster_data_pointer);
 
 		Py_XDECREF(current_monster_data.treasure_class);
+		Py_XDECREF(current_monster_data.special_abilities);
 		Py_DECREF(monster_data_pointer);
 
 		if(!return_value)
