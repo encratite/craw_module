@@ -5,15 +5,20 @@ boost = ARGUMENTS.get('boost')
 boost_lib = ARGUMENTS.get('boost_lib')
 ail = ARGUMENTS.get('ail')
 ail_lib = ARGUMENTS.get('ail_lib')
+python = ARGUMENTS.get('python')
 
-include_directories = [boost, ail]
-
-dependencies = include_directories + [boost_lib, ail_lib]
+dependencies = [boost, ail, boost_lib, ail_lib, python]
 
 if len(filter(lambda x: x == None, dependencies)) > 0:
-	print 'This module requires boost (www.boost.org) and ail (ail.googlecode.com) so you will have to specify the paths in the scons arguments:'
-	print 'scons boost=<boost header directory> boost_lib=<boost binary directory> ail=<ail header directory> ail_lib=<path to ail.lib>'
+	print 'This module requires boost (http://www.boost.org/), ail (http://repo.or.cz/w/ail.git) and Python 2.6 (32-bit version, http://www.python.org/) so you will have to specify the paths in the scons arguments:'
+	print 'scons boost=<boost header directory> boost_lib=<boost binary directory> ail=<ail header directory> ail_lib=<path to ail.lib> python=<path to your Python installation>'
 	sys.exit(1)
+	
+python_library = os.path.join(python, 'libs', 'python26.lib')
+python_include = os.path.join(python, 'include')
+	
+include_directories = [boost, ail, python_include]
+print str(include_directories)
 
 defines = {
 	'_CRT_SECURE_NO_WARNINGS': 1
@@ -52,6 +57,6 @@ if cpus > 1:
 	thread_string += 's'
 print 'Compiling project with %d %s' % (cpus, thread_string)
 
-environment = Environment(CPPPATH = include_directories, CCFLAGS = flags, LIBPATH = boost_lib, LIBS = [ail_lib, 'user32.lib', 'kernel32.lib'], CPPDEFINES = defines)
+environment = Environment(CPPPATH = include_directories, CCFLAGS = flags, LIBPATH = boost_lib, LIBS = [ail_lib, python_library, 'user32.lib', 'kernel32.lib'], CPPDEFINES = defines)
 environment.SetOption('num_jobs', cpus)
 environment.SharedLibrary(module, source_files)
