@@ -78,7 +78,7 @@ void process_command_line()
 	argument_parser.flag("prompt", prompt_mode).default_flag(false);
 	argument_parser.flag("patch_system_modules", patch_system_modules).default_flag(true);
 
-	argument_parser.string("window_title", window_title);
+	argument_parser.string("window_title", window_title).default_string("Diablo II");
 	argument_parser.string("classic_key", classic_key);
 	argument_parser.string("expansion_key", expansion_key);
 	argument_parser.string("d2_arguments", d2_arguments).default_string("-w");

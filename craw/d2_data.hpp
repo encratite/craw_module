@@ -36,6 +36,20 @@ struct unit
 
 struct monster_data
 {
+	void * unknown1;
+	uchar unknown_byte_flags[5];
+	uchar unknown2[3];
+	unsigned unknown3;
+	unsigned unknown4;
+
+	ushort unused_value;
+	uchar flags;
+	uchar unknown5;
+	unsigned unknown6;
+	
+	uchar special_abilities[10];
+
+	/*
 	char unknown1[22];
 	uchar flags;
 	ushort unknown2;
@@ -45,6 +59,7 @@ struct monster_data
 	ushort unique_number;
 	unsigned unknown5;
 	wchar_t name[28];
+	*/
 
 	bool is_minion();
 	bool is_champion();

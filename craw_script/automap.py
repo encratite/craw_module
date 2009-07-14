@@ -68,18 +68,24 @@ class automap_handler_class:
 			if monster_data.treasure_class[0] == 0:
 				return
 				
+			special_abilities = False
+				
 			if self.is_boss():
 				colour = boss_colour
+				special_abilities = True
 			elif self.is_champion():
 				colour = champion_colour
+				special_abilities = True
 			elif self.is_minion():
 				colour = minion_colour
 			else:
 				colour = monster_colour
 				
 			immunity_string = self.get_immunity_string()
-			special_abilities_string = self.get_special_abilities_string()
-			
+			if special_abilities:
+				special_abilities_string = self.get_special_abilities_string()
+			else:
+				special_abilities_string = ''
 			monster_text = immunity_string + special_abilities_string
 				
 			if len(monster_text) > 0:

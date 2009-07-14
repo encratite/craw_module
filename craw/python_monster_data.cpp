@@ -136,12 +136,8 @@ namespace python
 					abilities_vector.push_back(ability);
 			}
 
-			std::size_t vector_size = abilities_vector.size();
 
-			/*
-			if(vector_size > 0)
-				write_line("FUCK YES");
-			*/
+			std::size_t vector_size = abilities_vector.size();
 
 			special_abilities = PyList_New(vector_size);
 			if(special_abilities == 0)
@@ -165,6 +161,32 @@ namespace python
 			max_hp = statistics.max_hp[difficulty];
 			experience = statistics.experience[difficulty];
 
+			ushort * resistance_pointers[] =
+			{
+				&damage_resistance,
+				&magic_resistance,
+
+				&fire_resistance,
+				&lightning_resistance,
+				&cold_resistance,
+				&poison_resistance
+			};
+
+			unsigned resistance_stats[] =
+			{
+				36,
+				37,
+
+				39,
+				41,
+				43,
+				45
+			};
+
+			for(std::size_t i = 0; i < ail::countof(resistance_pointers); i++)
+				*resistance_pointers[i] = d2_get_unit_stat(&current_unit, resistance_stats[i], 0);
+
+			/*
 			damage_resistance = statistics.damage_resistance[difficulty];
 			magic_resistance = statistics.magic_resistance[difficulty];
 
@@ -172,6 +194,7 @@ namespace python
 			lightning_resistance = statistics.lightning_resistance[difficulty];
 			cold_resistance = statistics.cold_resistance[difficulty];
 			poison_resistance = statistics.poison_resistance[difficulty];
+			*/
 		}
 
 		return true;

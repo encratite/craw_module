@@ -53,14 +53,14 @@ special_abilities[26] = (yellow, 'T')
 #Spectral hit
 #special_abilities[27] = (blue, 'Sh')
 
-#Stoneskin
+#Stone Skin
 #special_abilities[28] = (blue, 'St')
 
 #Multiple shots
 special_abilities[29] = (red, 'Ms')
 
-#Blessed Aim
-#special_abilities[32] = (blue, 'Ma')
+#Aura enchanted
+special_abilities[32] = (orange, 'A')
 
 #Ghostly
 #special_abilities[36] = (blue, 'G')
