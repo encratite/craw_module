@@ -105,7 +105,7 @@ def get_python_path():
 	
 def execute(command):
 	print 'Executing [%s] in directory %s' % (command, os.getcwd())
-	os.system(command)
+	return os.system(command)
 	
 def clone(url, diretory):
 	command = '%s clone %s %s' % (git_path, url, diretory)
@@ -123,8 +123,8 @@ def git(url, directory):
 	
 def vcvars():
 	try:
-		key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, 'SOFTWARE\\%sMicrosoft\\VisualStudio\\9.0' % get_wow_node())
-		value, type = _winreg.QueryValueEx(key, 'InstallDir')
+		key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, 'SOFTWARE\\%sMicrosoft\\VisualStudio\\9.0\\Setup' % get_wow_node())
+		value, type = _winreg.QueryValueEx(key, 'Dbghelp_path')
 		path = value + '..\\..\\VC\\bin\\vcvars32.bat'
 		execute('"%s"' % path)
 	except:
@@ -156,13 +156,32 @@ def setup_git():
 		print 'Fatal error: I was unable to detect msysgit in the registry'
 		sys.exit(1)
 		
+def brutal_removal(target):
+	execute('rmdir /q /s %s' % target)
+		
 def setup_nil():
 	print 'Setting up the nil general purpose library for Python'
 	target = 'nil'
 	git(nil_git, target)
 	path = os.path.join(get_site_packages(), target)
 	print 'Creating a symbolic link to the library at %s' % path
-	execute('mklink /D %s\\%s %s' % (target, target, path))
+	source = '%s\\%s' % (target, target)
+	if execute('mklink /D  %s %s' % (path, source)) != 0:
+		print 'Failed to create symbolic link, this is probably not Vista/Windows 7'
+		print 'Deleting the old library and moving the new one there'
+		try:
+			print 'Removing old entry %s' % path
+			brutal_removal(target)
+			brutal_removal(path)
+			git(nil_git, target)
+		except:
+			pass
+		print 'Moving %s to %s' % (source, path)
+		try:
+			shutil.move(source, path)
+		except:
+			print 'Failed to install nil library!'
+			sys.exit(1)
 	
 def setup_scons():
 	global scons_path
@@ -192,15 +211,21 @@ def setup_boost():
 	
 	os.chdir(target_directory)
 	
-	if not os.path.exists('bjam.exe'):
-		vcvars()
+	bjam_binary = 'bjam.exe'
+	
+	vcvars()
+	
+	if not os.path.exists(bjam_binary):
 		print 'Compiling bjam'
 		execute('bootstrap.bat')
+		if not os.path.exists(bjam_binary):
+			sys.exit('Failed to build bjam.')
+			#download_file(prebuilt_bjam_url, bjam_binary)
 	
 	print 'Compiling boost'
 	cpus = int(os.environ.get('NUMBER_OF_PROCESSORS', 2))
 	print 'Number of CPUs detected: %d' % cpus
-	execute('bjam toolset=%s variant=release threading=multi runtime-link=static link=static stage -j %d --without-date_time --without-graph --without-graph_parallel --without-iostreams --without-math --without-mpi --without-python --without-program_options --without-python --without-regex --without-serialization --without-signals --without-test --without-wave' % (toolset, cpus))
+	execute('%s toolset=%s variant=release threading=multi runtime-link=static link=static stage -j %d --without-graph --without-graph_parallel --without-iostreams --without-math --without-mpi --without-python --without-program_options --without-python --without-regex --without-serialization --without-signals --without-test --without-wave' % (bjam_binary, toolset, cpus))
 	os.chdir('..')
 	
 def setup_ail():
