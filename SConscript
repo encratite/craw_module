@@ -18,7 +18,6 @@ python_library = os.path.join(python, 'libs', 'python26.lib')
 python_include = os.path.join(python, 'include')
 	
 include_directories = [boost, ail, python_include]
-print str(include_directories)
 
 defines = {
 	'_CRT_SECURE_NO_WARNINGS': 1
