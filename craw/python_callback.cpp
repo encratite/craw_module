@@ -64,7 +64,15 @@ namespace python
 		boost::mutex::scoped_lock lock(python_mutex);
 		//global_interpreter_lock lock;
 
-		PyObject * return_value = PyObject_CallFunction(packet_handler, "s", packet.c_str());
+		PyObject * packet_string = PyString_FromStringAndSize(packet.c_str(), packet.size());
+		if(packet_string == 0)
+		{
+			error("Failed to create Python string object for the packet callback");
+			exit_process();
+			return true;
+		}
+
+		PyObject * return_value = PyObject_CallFunction(packet_handler, "O", packet_string);
 		if(!return_value)
 		{
 			PyErr_Print();
@@ -73,6 +81,7 @@ namespace python
 
 		bool output = (return_value == Py_True);
 
+		Py_DECREF(packet_string);
 		Py_DECREF(return_value);
 
 		return output;
