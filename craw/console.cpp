@@ -50,6 +50,11 @@ void print_life(string_vector const & arguments)
 		current_life,
 		maximum_life;
 
+	__asm
+	{
+		int 3
+	}
+
 	if(get_life(current_life, maximum_life))
 		std::cout << "Life: " << current_life << "/" << maximum_life << std::endl;
 	else

@@ -62,17 +62,17 @@ struct debug_register_trigger
 {
 	std::string description;
 	unsigned thread_target;
-	std::vector<unsigned> target_addresses;
+	debug_register_vector target_data;
 
 	debug_register_trigger()
 	{
 	}
 
-	debug_register_trigger(std::string const & description, unsigned thread_target, unsigned target_address1):
+	debug_register_trigger(std::string const & description, unsigned thread_target, unsigned target_address):
 		description(description),
 		thread_target(thread_target)
 	{
-		target_addresses.push_back(target_address1);
+		target_data.push_back(debug_register_data(target_address));
 	}
 };
 
@@ -206,9 +206,8 @@ void perform_dll_check()
 
 bool perform_debug_register_check(CONTEXT & thread_context)
 {
-	//write_line("Trying to match the address to a debug register handler");
-
 	unsigned address = static_cast<unsigned>(thread_context.Eip);
+	//write_line("Trying to match the address to a debug register handler: " + ail::hex_string_32(address));
 	BOOST_FOREACH(debug_register_entry & entry, debug_register_entries)
 	{
 		if(entry.address != address)
@@ -230,7 +229,7 @@ bool perform_debug_register_trigger_check(HANDLE thread_handle, CONTEXT & thread
 		if(trigger.thread_target != thread_target)
 			continue;
 
-		set_debug_registers(thread_context, trigger.target_addresses);
+		set_debug_registers(thread_context, trigger.target_data);
 		if(!SetThreadContext(thread_handle, &thread_context))
 		{
 			error("Failed to set thread context for target " + ail::hex_string_32(thread_target) + "!");
@@ -257,12 +256,13 @@ void hook_main_thread()
 		return;
 	}
 
-	std::vector<unsigned> addresses;
-	addresses.push_back(light_handler_address);
-	//addresses.push_back(automap_handler_address);
-	addresses.push_back(automap_loop_address);
+	debug_register_vector entries;
+	entries.push_back(debug_register_data(light_handler_address));
+	entries.push_back(debug_register_data(automap_loop_address));
 
-	set_debug_registers(thread_context, addresses);
+	set_debug_registers(thread_context, entries);
+
+	print_debug_registers(thread_context);
 
 	if(!SetThreadContext(thread_handle, &thread_context))
 	{

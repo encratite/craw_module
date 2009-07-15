@@ -2,14 +2,48 @@
 #include "debug_registers.hpp"
 #include "utility.hpp"
 
-void set_debug_registers(CONTEXT & thread_context, unsigned address)
+namespace debug_register_data_type
 {
-	std::vector<unsigned> addresses;
-	addresses.push_back(address);
-	set_debug_registers(thread_context, addresses);
+	uchar const
+		execute = 0,
+		write = 1,
+		read_write = 3;
 }
 
-void set_debug_registers(CONTEXT & thread_context, std::vector<unsigned> & addresses)
+namespace debug_register_data_size
+{
+	uchar const
+		one = 0,
+		two = 1,
+		four = 3;
+}
+
+debug_register_data::debug_register_data()
+{
+}
+
+debug_register_data::debug_register_data(unsigned address):
+	address(address),
+	type(debug_register_data_type::execute),
+	size(debug_register_data_size::one)
+{
+}
+
+debug_register_data::debug_register_data(unsigned address, uchar type, uchar size):
+	address(address),
+	type(type),
+	size(size)
+{
+}
+
+void set_debug_registers(CONTEXT & thread_context, unsigned address)
+{
+	debug_register_vector entries;
+	entries.push_back(debug_register_data(address, debug_register_data_type::execute, debug_register_data_size::one));
+	set_debug_registers(thread_context, entries);
+}
+
+void set_debug_registers(CONTEXT & thread_context, debug_register_vector & entries)
 {
 	DWORD * dr_addresses[] =
 	{
@@ -24,13 +58,15 @@ void set_debug_registers(CONTEXT & thread_context, std::vector<unsigned> & addre
 
 	thread_context.ContextFlags = CONTEXT_FULL | CONTEXT_DEBUG_REGISTERS;
 
-	for(std::size_t i = 0; i < 4 && i < addresses.size(); i++)
+	for(std::size_t i = 0; i < 4 && i < entries.size(); i++)
 	{
-		*(dr_addresses[i]) = addresses[i];
-		thread_context.Dr7 |= (0 << (4 * i + 16)) | (1 << (2 * i));
+		debug_register_data & data = entries[i];
+		*(dr_addresses[i]) = data.address;
+		uchar high_group = (data.size << 2) | data.type;
+		thread_context.Dr7 |= (high_group << (4 * i + 16)) | (1 << (2 * i));
 	}
 
-	for(std::size_t i = addresses.size(); i < 4; i++)
+	for(std::size_t i = entries.size(); i < 4; i++)
 		*(dr_addresses[i]) = 0;
 }
 
