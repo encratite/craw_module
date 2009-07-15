@@ -4,21 +4,18 @@
 #include <windows.h>
 #include <tlhelp32.h>
 #include "patch.hpp"
+#include "interceptor.hpp"
 #include "utility.hpp"
 #include "debug_registers.hpp"
 #include "automap.hpp"
 #include "arguments.hpp"
 #include "packet_handler.hpp"
 #include "d2_functions.hpp"
+#include "exception_handler.hpp"
 
 namespace
 {
 	unsigned original_game_packet_handler;
-
-	unsigned light_handler_address = 0x6FB0F8F0u;
-
-	unsigned automap_handler_address = 0x6FAEF920u;
-	unsigned automap_loop_address = 0x6FAF0350u;
 }
 
 typedef void (* initialisation_function_type)(unsigned base);
@@ -167,13 +164,20 @@ void d2net(unsigned base)
 
 void d2client(unsigned base)
 {
+
+	initialise_d2client_addresses(base);
+
+	//patch_address(automap_handler_address, &automap_blobs);
+
 	debug_register_entries.push_back(debug_register_entry(light_handler_address, &debug_register_light));
 	//debug_register_entries.push_back(debug_register_entry(automap_handler_address, &debug_register_automap));
 	debug_register_entries.push_back(debug_register_entry(automap_loop_address, &debug_register_automap_loop));
 
-	//patch_address(automap_handler_address, &automap_blobs);
+	debug_register_vector entries;
+	entries.push_back(debug_register_data(light_handler_address));
+	entries.push_back(debug_register_data(automap_loop_address));
 
-	initialise_d2client_addresses(base);
+	set_own_context(entries);
 }
 
 void initialise_dll_vector()
@@ -244,39 +248,6 @@ bool perform_debug_register_trigger_check(HANDLE thread_handle, CONTEXT & thread
 	return false;
 }
 
-void hook_main_thread()
-{
-	HANDLE thread_handle = OpenThread(THREAD_GET_CONTEXT | THREAD_SET_CONTEXT | THREAD_QUERY_INFORMATION, 0, main_thread_id);
-	CONTEXT thread_context;
-	thread_context.ContextFlags = CONTEXT_FULL | CONTEXT_DEBUG_REGISTERS;
-	if(!GetThreadContext(thread_handle, &thread_context))
-	{
-		error("Unable to retrieve main thread context: " + ail::hex_string_32(GetLastError()));
-		CloseHandle(thread_handle);
-		return;
-	}
-
-	debug_register_vector entries;
-	entries.push_back(debug_register_data(light_handler_address));
-	entries.push_back(debug_register_data(automap_loop_address));
-
-	set_debug_registers(thread_context, entries);
-
-	print_debug_registers(thread_context);
-
-	if(!SetThreadContext(thread_handle, &thread_context))
-	{
-		error("Failed to set main thread context: " + ail::hex_string_32(GetLastError()));
-		CloseHandle(thread_handle);
-		return;
-	}
-
-	CloseHandle(thread_handle);
-
-	if(verbose)
-		write_line("Changed the debug registers of the main thread " + ail::hex_string_32(main_thread_id));
-}
-
 bool process_thread_entry(DWORD process_id, DWORD current_thread_id, THREADENTRY32 & thread_entry)
 {
 	if(process_id != thread_entry.th32OwnerProcessID)
@@ -288,7 +259,6 @@ bool process_thread_entry(DWORD process_id, DWORD current_thread_id, THREADENTRY
 	if(verbose)
 		write_line("Main thread: " + ail::hex_string_32(thread_id));
 	main_thread_id = thread_id;
-	hook_main_thread();
 	return true;
 }
 

@@ -11,6 +11,7 @@
 #include "debug_registers.hpp"
 #include "d2_cdkey.hpp"
 #include "hide.hpp"
+#include "interceptor.hpp"
 
 typedef HWND (WINAPI * FindWindow_type)(LPCTSTR lpClassName, LPCTSTR lpWindowName);
 typedef HANDLE (WINAPI * CreateFile_type)(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile);

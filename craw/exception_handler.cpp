@@ -1,110 +1,60 @@
+#include <iostream>
 #include <windows.h>
+#include <boost/thread/mutex.hpp>
 #include <ail/string.hpp>
 #include <ail/types.hpp>
+#include "exception_handler.hpp"
 #include "utility.hpp"
 #include "patch.hpp"
+#include "interceptor.hpp"
 #include "arguments.hpp"
+#include "debug_registers.hpp"
+
+typedef std::map<DWORD, debug_register_vector> thread_id_map_type;
 
 namespace
 {
-	void * ZwContinue_address;
-	void * KiUserExceptionDispatcher_address;
-
-	unsigned find_window_page;
+	thread_id_map_type thread_id_map;
+	boost::mutex thread_id_map_mutex;
 }
 
-unsigned custom_KiUserExceptionDispatcher_body(EXCEPTION_RECORD * exception_record_pointer, CONTEXT * thread_context_pointer)
+void add_debug_register_manipulation_entry(DWORD thread_id, debug_register_vector const & data)
 {
-	CONTEXT & thread_context = *thread_context_pointer;
-	EXCEPTION_RECORD & exception_record = *exception_record_pointer;
-
-	write_line("Exception type " + ail::hex_string_32(exception_record.ExceptionCode) + " at " + ail::hex_string_32(thread_context.Eip));
-
-	if(exception_record.ExceptionCode == EXCEPTION_SINGLE_STEP)
-	{
-		thread_context.ContextFlags = CONTEXT_FULL | CONTEXT_DEBUG_REGISTERS;
-		thread_context.Dr0 = 0;
-		thread_context.Dr1 = 0;
-		thread_context.Dr2 = 0;
-		thread_context.Dr3 = 0;
-		thread_context.Dr6 = 0;
-		thread_context.Dr7 = 0;
-	}
-
-	error("Exception");
-
-	return 0;
+	boost::mutex::scoped_lock lock(thread_id_map_mutex);
+	thread_id_map[thread_id] = data;
 }
 
-void it_returned(unsigned return_value)
+bool process_breakpoint(CONTEXT & thread_context)
 {
-	error("ZwContinue returned " + ail::hex_string_32(return_value));
+	boost::mutex::scoped_lock lock(thread_id_map_mutex);
+	DWORD thread_id = GetCurrentThreadId();
+	thread_id_map_type::iterator iterator = thread_id_map.find(thread_id);
+	if(iterator == thread_id_map.end())
+		return false;
+
+	debug_register_vector & data = iterator->second;
+
+	thread_context.ContextFlags = CONTEXT_FULL | CONTEXT_DEBUG_REGISTERS;
+	set_debug_registers(thread_context, data);
+
+	thread_context.Eip++;
+
+	return true;
 }
 
-
-//this version works only for Vista SP2 I suspect
-
-void __declspec(naked) custom_KiUserExceptionDispatcher()
+void set_own_context(debug_register_vector const & data)
 {
+	add_debug_register_manipulation_entry(GetCurrentThreadId(), data);
+	//write_line("set_own_context: " + ail::hex_string_32(reinterpret_cast<unsigned>(&set_own_context)));
 	__asm
 	{
-		add esp, 4
-
-		mov eax, [esp]
-		mov ebx, [esp + 4]
-		push ebx
-		push eax
-		call custom_KiUserExceptionDispatcher_body
-
-		test eax, eax
-		jz continue_execution
-
-		mov eax, [esp + 4]
-		push 0
-		push eax
-		mov eax, ZwContinue_address
-		call eax
-
-		push eax
-		call it_returned
 		int 3
-
-continue_execution:
-
-		cld
-		mov ecx, [esp + 4]
-		mov ebx, [esp]
-		push ecx
-		push ebx
-
-		mov eax, KiUserExceptionDispatcher_address
-		add eax, 10
-		jmp eax
 	}
-}
-
-bool patch_exception_handler()
-{
-	/*
-	unsigned address = reinterpret_cast<unsigned>(&custom_KiUserExceptionDispatcher);
-	uchar * hack = reinterpret_cast<uchar *>(address);
-	for(std::size_t i = 0; i < 4; i++)
-	{
-		uchar value = hack[i];
-		if(value == '0x90' || value == '0xe9')
-		{
-			write_line("Invalid customised KiUserExceptionDispatcher address: " + ail::hex_string_32(address));
-			return false;
-		}
-	}
-	*/
-
-	return patch_function("ntdll.dll", "KiUserExceptionDispatcher", KiUserExceptionDispatcher_address, &custom_KiUserExceptionDispatcher);
 }
 
 LONG WINAPI vectored_exception_handler(PEXCEPTION_POINTERS ExceptionInfo)
 {
-	//blah.
+	//nasty
 	DWORD const DBG_PRINTEXCEPTION_C = 0x40010006;
 
 	EXCEPTION_RECORD & exception_record = *(ExceptionInfo->ExceptionRecord);
@@ -114,8 +64,12 @@ LONG WINAPI vectored_exception_handler(PEXCEPTION_POINTERS ExceptionInfo)
 
 	switch(exception_record.ExceptionCode)
 	{
+	case EXCEPTION_BREAKPOINT:
+		if(process_breakpoint(thread_context))
+			return EXCEPTION_CONTINUE_EXECUTION;
+		break;
+
 	case EXCEPTION_SINGLE_STEP:
-		//error("DR!");
 		perform_debug_register_check(thread_context);
 		return EXCEPTION_CONTINUE_EXECUTION;
 

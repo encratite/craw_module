@@ -11,6 +11,7 @@
 #include "exception_handler.hpp"
 #include "arguments.hpp"
 #include "python.hpp"
+#include "interceptor.hpp"
 
 namespace
 {

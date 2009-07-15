@@ -52,6 +52,11 @@ namespace
 	unsigned initialise_automap_layer_address;
 }
 
+unsigned light_handler_address;
+
+unsigned automap_handler_address;
+unsigned automap_loop_address;
+
 //D2Win.dll
 set_font_size_type d2_set_font_size;
 draw_text_type d2_draw_text;
@@ -126,6 +131,11 @@ void initialise_d2client_addresses(unsigned base)
 	offset_handler.fix(player_pointer, 0x6FBCC3D0);
 	offset_handler.fix(automap_layer_address, 0x6FBCC2B4);
 	offset_handler.fix(initialise_automap_layer_address, 0x6FAF0650);
+
+	offset_handler.fix(light_handler_address, 0x6FB0F8F0);
+	offset_handler.fix(automap_handler_address, 0x6FAEF920);
+	offset_handler.fix(automap_loop_address, 0x6FAF0350);
+
 }
 
 void initialise_d2net_addresses(unsigned base)

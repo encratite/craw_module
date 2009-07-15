@@ -48,6 +48,11 @@ extern add_automap_cell_type d2_add_automap_cell;
 extern send_packet_type d2_send_packet;
 extern leave_game_type d2_leave_game;
 
+extern unsigned light_handler_address;
+
+extern unsigned automap_handler_address;
+extern unsigned automap_loop_address;
+
 void draw_text(std::string const & text, int x, int y, unsigned colour, bool centered);
 void __stdcall draw_box(int x, int y, unsigned colour);
 bool get_life(unsigned & current_life, unsigned & maximum_life);
