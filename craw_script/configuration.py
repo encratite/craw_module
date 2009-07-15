@@ -1,5 +1,7 @@
 from text import *
 
+packet_logging = 1
+
 #Automap colours configuration
 
 npc_colour = 0x20

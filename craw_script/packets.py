@@ -15,5 +15,5 @@ class packet_handler_class:
 		return output
 		
 	def process_data(self, packet):
-		print self.get_packet_string(packet)
+		#print self.get_packet_string(packet)
 		return True
