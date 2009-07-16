@@ -19,15 +19,7 @@ namespace
 	unsigned original_game_packet_handler;
 	unsigned original_receive_packet;
 
-	unsigned
-		packet_reception_interceptor_address,
-		packet_reception_post_interceptor_address;
-
 	debug_register_vector main_debug_register_entries;
-
-	unsigned
-		current_life,
-		maximum_life;
 }
 
 typedef void (* initialisation_function_type)(unsigned base);
@@ -155,33 +147,6 @@ void debug_register_automap_loop(CONTEXT & thread_context)
 	thread_context.Eip = reinterpret_cast<DWORD>(&automap_loop);
 }
 
-void debug_register_receive_packet(CONTEXT & thread_context)
-{
-	debug_register_vector debug_registers = main_debug_register_entries;
-	debug_registers.push_back(debug_register_data(packet_reception_post_interceptor_address));
-	set_debug_registers(thread_context, debug_registers);
-
-	get_life(current_life, maximum_life);
-}
-
-void debug_register_post_receive_packet(CONTEXT & thread_context)
-{
-	debug_register_vector debug_registers = main_debug_register_entries;
-	debug_registers.push_back(debug_register_data(packet_reception_interceptor_address));
-	set_debug_registers(thread_context, debug_registers);
-
-	unsigned
-		new_current_life,
-		new_maximum_life;
-
-	get_life(new_current_life, new_maximum_life);
-
-	if(current_life != new_current_life || maximum_life != new_maximum_life)
-		write_line("\tCHANGE DETECTED: " + ail::number_to_string(current_life) + "/" + ail::number_to_string(new_maximum_life));
-	else
-		write_line("No change: " + ail::number_to_string(current_life) + "/" + ail::number_to_string(new_maximum_life));
-}
-
 void d2net(unsigned base)
 {
 	original_game_packet_handler = base + 0x6650;
@@ -198,17 +163,12 @@ void d2net(unsigned base)
 
 void d2client(unsigned base)
 {
-	packet_reception_interceptor_address = base + 0x65111;
-	packet_reception_post_interceptor_address = packet_reception_interceptor_address + 5;
-
 	initialise_d2client_addresses(base);
 
 	//patch_address(automap_handler_address, &automap_blobs);
 
 	debug_register_entries.push_back(debug_register_entry(light_handler_address, &debug_register_light));
 	debug_register_entries.push_back(debug_register_entry(automap_loop_address, &debug_register_automap_loop));
-	debug_register_entries.push_back(debug_register_entry(packet_reception_interceptor_address, &debug_register_receive_packet));
-	debug_register_entries.push_back(debug_register_entry(packet_reception_post_interceptor_address, &debug_register_post_receive_packet));
 
 	main_debug_register_entries.push_back(debug_register_data(light_handler_address));
 	main_debug_register_entries.push_back(debug_register_data(automap_loop_address));
