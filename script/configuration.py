@@ -1,6 +1,8 @@
 from text import *
 
-packet_logging = 1
+chicken = True
+chicken_ratio = 0.8
+chicken_on_hostile = True
 
 #Automap colours configuration
 

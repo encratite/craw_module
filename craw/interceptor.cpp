@@ -10,16 +10,17 @@
 #include "debug_registers.hpp"
 #include "automap.hpp"
 #include "arguments.hpp"
-#include "packet_handler.hpp"
 #include "d2_functions.hpp"
 #include "exception_handler.hpp"
+#include "python.hpp"
 
 namespace
 {
-	unsigned original_game_packet_handler;
-	unsigned original_receive_packet;
-
 	debug_register_vector main_debug_register_entries;
+
+	unsigned
+		packet_reception_interceptor_address,
+		packet_reception_post_interceptor_address;
 }
 
 typedef void (* initialisation_function_type)(unsigned base);
@@ -84,29 +85,6 @@ namespace
 	std::vector<debug_register_trigger> debug_register_triggers;
 }
 
-void actual_packet_handler(uchar * data, unsigned size)
-{
-	//write_line("Got a " + ail::hex_string_8(data[0]) + " packet (" + ail::number_to_string<unsigned>(size) + " byte(s))");
-	//write_line(ail::hex_string(std::string(reinterpret_cast<char *>(data), static_cast<std::size_t>(size))));
-}
-
-void __declspec(naked) custom_packet_handler()
-{
-	__asm
-	{
-		pushad
-		push ebx
-		push ecx
-		call actual_packet_handler
-		add esp, 8
-		popad
-		sub esp, 0110h
-		mov eax, original_game_packet_handler
-		add eax, 6
-		jmp eax
-	}
-}
-
 void __declspec(naked) custom_light_handler()
 {
 	__asm
@@ -132,11 +110,6 @@ void __declspec(naked) custom_light_handler()
 	}
 }
 
-void debug_register_packet_handler(CONTEXT & thread_context)
-{
-	thread_context.Eip = reinterpret_cast<DWORD>(&main_packet_handler);
-}
-
 void debug_register_light(CONTEXT & thread_context)
 {
 	thread_context.Eip = reinterpret_cast<DWORD>(&custom_light_handler);
@@ -147,17 +120,25 @@ void debug_register_automap_loop(CONTEXT & thread_context)
 	thread_context.Eip = reinterpret_cast<DWORD>(&automap_loop);
 }
 
+void debug_register_receive_packet(CONTEXT & thread_context)
+{
+	debug_register_vector debug_registers = main_debug_register_entries;
+	debug_registers.push_back(debug_register_data(packet_reception_post_interceptor_address));
+	set_debug_registers(thread_context, debug_registers);
+
+	std::string packet(reinterpret_cast<char *>(thread_context.Ecx), static_cast<std::size_t>(thread_context.Edx));
+	python::perform_packet_callback(packet);
+}
+
+void debug_register_post_receive_packet(CONTEXT & thread_context)
+{
+	debug_register_vector debug_registers = main_debug_register_entries;
+	debug_registers.push_back(debug_register_data(packet_reception_interceptor_address));
+	set_debug_registers(thread_context, debug_registers);
+}
+
 void d2net(unsigned base)
 {
-	original_game_packet_handler = base + 0x6650;
-	original_receive_packet = base + 0x6090;
-
-	debug_register_entries.push_back(debug_register_entry(original_game_packet_handler, &debug_register_packet_handler));
-
-	debug_register_triggers.push_back(debug_register_trigger("Game packet handler thread", base + 0x6bd0, original_game_packet_handler));
-
-	//patch_address(original_game_packet_handler, &main_packet_handler);
-
 	initialise_d2net_addresses(base);
 }
 
@@ -165,16 +146,21 @@ void d2client(unsigned base)
 {
 	initialise_d2client_addresses(base);
 
+	packet_reception_interceptor_address = base + 0x65111;
+	packet_reception_post_interceptor_address = packet_reception_interceptor_address + 5;
+
 	//patch_address(automap_handler_address, &automap_blobs);
 
 	debug_register_entries.push_back(debug_register_entry(light_handler_address, &debug_register_light));
 	debug_register_entries.push_back(debug_register_entry(automap_loop_address, &debug_register_automap_loop));
+	debug_register_entries.push_back(debug_register_entry(packet_reception_interceptor_address, &debug_register_receive_packet));
+	debug_register_entries.push_back(debug_register_entry(packet_reception_post_interceptor_address, &debug_register_post_receive_packet));
 
 	main_debug_register_entries.push_back(debug_register_data(light_handler_address));
 	main_debug_register_entries.push_back(debug_register_data(automap_loop_address));
 
 	debug_register_vector debug_registers = main_debug_register_entries;
-	//debug_registers.push_back(debug_register_data(packet_reception_interceptor_address));
+	debug_registers.push_back(debug_register_data(packet_reception_interceptor_address));
 
 	set_own_context(debug_registers);
 }
