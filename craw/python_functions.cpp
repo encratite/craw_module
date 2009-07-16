@@ -1,5 +1,6 @@
 #include "python.hpp"
 #include "d2_functions.hpp"
+#include "utility.hpp"
 
 namespace python
 {
@@ -119,5 +120,22 @@ namespace python
 
 		Py_INCREF(Py_None);
 		return Py_None;
+	}
+
+	PyObject * get_life(PyObject * self, PyObject * arguments)
+	{
+		unsigned
+			current_life,
+			maximum_life;
+
+		if(!::get_life(current_life, maximum_life))
+		{
+			Py_INCREF(Py_None);
+			return Py_None;
+		}
+
+		PyObject * tuple = Py_BuildValue("(ii)", current_life, maximum_life);
+
+		return tuple;
 	}
 }
