@@ -377,35 +377,60 @@ bool get_non_empty_tp_tome_id(unsigned & output)
 {
 	unit * unit_pointer = d2_get_player_unit();
 	if(!unit_pointer)
+	{
+		write_line("Unit pointer");
 		return false;
+	}
 
 	inventory * inventory_pointer = unit_pointer->inventory_pointer;
 	if(!inventory_pointer)
+	{
+		write_line("Inventory pointer");
 		return false;
+	}
 
 	for(unit * current_item = d2_get_inventory_item(inventory_pointer); current_item != 0; current_item = d2_get_next_inventory_item(current_item))
 	{
+		write_line("Checking " + ail::hex_string_32(reinterpret_cast<unsigned>(current_item)));
 		item_data * item_data_pointer = current_item->item_data_pointer;
 		if(!item_data_pointer)
+		{
+			write_line("No item data pointer");
 			continue;
+		}
+
+		write_line("Location: " + ail::hex_string_32(item_data_pointer->item_location));
 
 		//inventory check
 		if(item_data_pointer->item_location != 0)
+		{
+			write_line("Skipping item because it's not in the inventory");
 			continue;
+		}
 
 		item_text * item_text_pointer = d2_get_item_text(current_item->table_index);
 		if(item_text_pointer == 0)
+		{
+			write_line("Failed to retrieve the item text");
 			continue;
+		}
 
 		if(item_text_pointer->get_code() != "tbk")
+		{
+			write_line("Code: " + item_text_pointer->get_code());
 			continue;
+		}
 
 		//retrieve quantity
 		unsigned count = d2_get_unit_stat(current_item, 70, 0);
 		if(count == 0)
+		{
+			write_line("The number of scrolls is zero");
 			continue;
+		}
 
 		output = current_item->id;
+		return true;
 	}
 
 	return false;

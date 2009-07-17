@@ -45,6 +45,7 @@ bool console_command::match(std::string const & match_command, string_vector con
 {
 	return command == match_command && argument_count == arguments.size();
 }
+
 void print_life(string_vector const & arguments)
 {
 	unsigned
@@ -143,6 +144,12 @@ void get_character_name_command(string_vector const & arguments)
 		std::cout << "Your name is " << name << "." << std::endl;
 	else
 		std::cout << "Failed to retrieve your name." << std::endl;
+
+	unsigned id;
+	if(get_non_empty_tp_tome_id(id))
+		std::cout << "Successfully retrieved the tome ID: " << ail::hex_string_32(id) << std::endl;
+	else
+		std::cout << "Failed to retrieve the tome ID" << std::endl;
 }
 
 void print_help(string_vector const & arguments)

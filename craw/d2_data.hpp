@@ -52,7 +52,7 @@ struct unit
 	unsigned * graphical_information;
 	unsigned unknown5;
 	void * unit_statistics;
-	inventory * inventory_pointer;;
+	inventory * inventory_pointer;
 	void * light_pointer;
 	unsigned unknown6[9];
 	ushort x;
