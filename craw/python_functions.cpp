@@ -113,9 +113,7 @@ namespace python
 	PyObject * leave_game(PyObject * self, PyObject * arguments)
 	{
 		d2_leave_game();
-
-		Py_INCREF(Py_None);
-		return Py_None;
+		Py_RETURN_NONE;
 	}
 
 	PyObject * get_life(PyObject * self, PyObject * arguments)
@@ -139,5 +137,14 @@ namespace python
 			Py_RETURN_NONE;
 
 		return PyInt_FromLong(level);
+	}
+
+	PyObject * get_player_id(PyObject * self, PyObject * arguments)
+	{
+		unsigned id;
+		if(!::get_player_id(id))
+			Py_RETURN_NONE;
+
+		return PyInt_FromLong(id);
 	}
 }

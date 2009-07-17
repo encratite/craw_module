@@ -28,6 +28,7 @@ typedef automap_cell * (__fastcall * new_automap_cell_type)();
 typedef void (__fastcall * add_automap_cell_type)(automap_cell * cell, automap_cell ** node);
 typedef void (__stdcall * send_packet_type)(std::size_t size, unsigned flags, char const * packet);
 typedef void (__stdcall * leave_game_type)();
+typedef unit * (__fastcall * get_unit_pointer_type)(unsigned id, unsigned type);
 
 extern set_font_size_type d2_set_font_size;
 extern draw_text_type d2_draw_text;
@@ -47,6 +48,7 @@ extern new_automap_cell_type d2_new_automap_cell;
 extern add_automap_cell_type d2_add_automap_cell;
 extern send_packet_type d2_send_packet;
 extern leave_game_type d2_leave_game;
+extern get_unit_pointer_type d2_get_unit_pointer;
 
 extern unsigned light_handler_address;
 
@@ -63,3 +65,6 @@ automap_layer * get_automap_layer();
 automap_layer_type_2 * initialise_automap_layer(unsigned level_number);
 automap_cell ** get_layer_objects_pointer();
 bool get_player_level_number(unsigned & output);
+bool get_player_id(unsigned & output);
+wchar_t * get_unit_name(unit * unit_pointer);
+bool get_name_by_id(unsigned id, std::string & output);

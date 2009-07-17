@@ -36,6 +36,7 @@ namespace python
 			{"leave_game", &leave_game, METH_VARARGS, "Leaves the current game."},
 			{"get_life", &get_life, METH_VARARGS, "Returns a (current life, maximum life) tuple or None if the character is not in game yet."},
 			{"get_player_level", &get_player_level, METH_VARARGS, "Returns the numeric identifier of the area the player currently resides in or None if it failed to retrieve the identifier."},
+			{"get_player_id", &get_player_id, METH_VARARGS, "Returns the numeric identifier of the player unit or None if it fails to retrieve it."},
 			{0, 0, 0, 0}
 		};
 	}

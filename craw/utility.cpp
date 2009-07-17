@@ -212,3 +212,14 @@ void thread_controller::process_thread_entry(THREADENTRY32 & thread_entry)
 
 	thread_ids.push_back(thread_id);
 }
+
+std::string wchar_to_string(wchar_t * input)
+{
+	char const * default_char = "_";
+	int size = WideCharToMultiByte(CP_ACP, 0, input, -1, 0, 0, default_char, 0);
+	char * buffer = new char[size];
+	WideCharToMultiByte(CP_ACP, 0, input, -1, buffer, size, default_char, 0);
+	std::string output(buffer, static_cast<std::size_t>(size));
+	delete buffer;
+	return output;
+}

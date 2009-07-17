@@ -25,5 +25,6 @@ void quit_program(string_vector const & arguments);
 void print_life(string_vector const & arguments);
 void maphack_test(string_vector const & arguments);
 void reveal_act_command(string_vector const & arguments);
+void get_character_name_command(string_vector const & arguments);
 
 void launch_prompt();

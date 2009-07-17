@@ -36,3 +36,4 @@ private:
 };
 
 std::string dword_to_string(ulong input);
+std::string wchar_to_string(wchar_t * input);

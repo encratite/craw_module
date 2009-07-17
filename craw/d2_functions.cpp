@@ -52,11 +52,6 @@ namespace
 	unsigned initialise_automap_layer_address;
 }
 
-unsigned light_handler_address;
-
-unsigned automap_handler_address;
-unsigned automap_loop_address;
-
 //D2Win.dll
 set_font_size_type d2_set_font_size;
 draw_text_type d2_draw_text;
@@ -81,6 +76,14 @@ reveal_automap_room_type d2_reveal_automap_room;
 new_automap_cell_type d2_new_automap_cell;
 add_automap_cell_type d2_add_automap_cell;
 leave_game_type d2_leave_game;
+get_unit_pointer_type d2_get_unit_pointer;
+
+unsigned light_handler_address;
+
+unsigned automap_handler_address;
+unsigned automap_loop_address;
+
+unsigned get_unit_name_address;
 
 //D2Net.dll
 send_packet_type d2_send_packet;
@@ -126,6 +129,7 @@ void initialise_d2client_addresses(unsigned base)
 	offset_handler.fix(d2_new_automap_cell, 0x6FAED5B0);
 	offset_handler.fix(d2_add_automap_cell, 0x6FAEF090);
 	offset_handler.fix(d2_leave_game, 0x6FB2AB00);
+	offset_handler.fix(d2_get_unit_pointer, 0x6FACF1C0);
 
 	offset_handler.fix(roster_list, 0x6FBCC080);
 	offset_handler.fix(player_pointer, 0x6FBCC3D0);
@@ -135,6 +139,7 @@ void initialise_d2client_addresses(unsigned base)
 	offset_handler.fix(light_handler_address, 0x6FB0F8F0);
 	offset_handler.fix(automap_handler_address, 0x6FAEF920);
 	offset_handler.fix(automap_loop_address, 0x6FAF0350);
+	offset_handler.fix(get_unit_name_address, 0x6FACF3D0);
 
 }
 
@@ -303,5 +308,60 @@ bool get_player_level_number(unsigned & output)
 		return true;
 	}
 
+	return false;
+}
+
+bool get_player_id(unsigned & output)
+{
+	unit * unit_pointer = d2_get_player_unit();
+	if(unit_pointer == 0)
+		return false;
+
+	output = unit_pointer->id;
+
+	return true;
+}
+
+wchar_t * get_unit_name(unit * unit_pointer)
+{
+	wchar_t * output;
+	__asm
+	{
+		mov eax, unit_pointer
+		call get_unit_name_address
+		mov output, eax
+	}
+	return output;
+}
+
+bool get_name_by_id(unsigned id, std::string & output)
+{
+	roster_unit * roster_pointer = reinterpret_cast<roster_unit *>(roster_list);
+	while(roster_pointer)
+	{
+		std::string test;
+		for(std::size_t i = 0; i < sizeof(roster_pointer->name); i++)
+		{
+			char letter = roster_pointer->name[i];
+			if(letter == 0)
+				break;
+			test.push_back(letter);
+		}
+
+		write_line("Name: " + test);
+
+		if(roster_pointer->unit_id == id)
+		{
+			for(std::size_t i = 0; i < sizeof(roster_pointer->name); i++)
+			{
+				char letter = roster_pointer->name[i];
+				if(letter == 0)
+					break;
+				output.push_back(letter);
+			}
+			return true;
+		}
+		roster_pointer = roster_pointer->next_roster;
+	}
 	return false;
 }

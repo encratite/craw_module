@@ -28,6 +28,7 @@ namespace
 		console_command("life", "", "Print your character's life", 0, &print_life),
 		console_command("reveal", "", "Reveal the map of the current act your character is in", 0, &reveal_act_command),
 		//console_command("test", "", "Perform maphack test", 0, &maphack_test),
+		console_command("name", "", "Retrieve your character's name", 0, &get_character_name_command),
 	};
 }
 
@@ -50,10 +51,12 @@ void print_life(string_vector const & arguments)
 		current_life,
 		maximum_life;
 
+	/*
 	__asm
 	{
 		int 3
 	}
+	*/
 
 	if(get_life(current_life, maximum_life))
 		std::cout << "Life: " << current_life << "/" << maximum_life << std::endl;
@@ -123,6 +126,45 @@ void reveal_act_command(string_vector const & arguments)
 		std::cout << "Done revealing the map after " << duration << " ms" << std::endl;
 	else
 		std::cout << "Failed to reveal the act" << std::endl;
+}
+
+void get_character_name_command(string_vector const & arguments)
+{
+	std::cout << "Attempting to retrieve your character's name" << std::endl;
+	unit * unit_pointer = d2_get_player_unit();
+	if(unit_pointer == 0)
+	{
+		std::cout << "You do not appear to be in a game" << std::endl;
+		return;
+	}
+
+	/*
+	unit * result = d2_get_unit_pointer(unit_pointer->id, unit_pointer->type);
+	if(result)
+	{
+		std::cout << "Original unit pointer: " << unit_pointer << std::endl;
+		std::cout << "New unit pointer: " << result << std::endl;
+	}
+	else
+		std::cout << "Failure!" << std::endl;
+	*/
+
+	/*
+	wchar_t * name = get_unit_name(unit_pointer);
+	if(name == 0)
+	{
+		std::cout << "Failed to retrieve the name of your character" << std::endl;
+		return;
+	}
+
+	std::string name_string = wchar_to_string(name);
+	*/
+
+	std::string name;
+	if(get_name_by_id(unit_pointer->id, name))
+		std::cout << "Your name is " << name << "." << std::endl;
+	else
+		std::cout << "Failed to retrieve your name." << std::endl;
 }
 
 void print_help(string_vector const & arguments)
