@@ -38,6 +38,13 @@ def read_bytes(bytes, offset, size):
 		output |= bytes[offset + size - i]
 	return output
 	
+def pack_number(number, size):
+	output = ''
+	for i in range(0, size):
+		output += chr(number & 0xff)
+		number >>= 8
+	return output
+	
 def get_packet_string(packet):
 	output = ''
 	first = True

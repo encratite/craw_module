@@ -27,7 +27,7 @@ namespace
 		console_command("quit", "", "Terminates the program", 0, &quit_program),
 		console_command("exit", "", "See 'quit'", 0, &quit_program),
 		console_command("life", "", "Print your character's life", 0, &print_life),
-		console_command("reveal", "", "Reveal the map of the current act your character is in", 0, &reveal_act_command),
+		console_command("reveal", "", "Reveal the map of the act your character is currently in", 0, &reveal_act_command),
 		//console_command("test", "", "Perform maphack test", 0, &maphack_test),
 		console_command("name", "", "Retrieve your character's name", 0, &get_character_name_command),
 	};
