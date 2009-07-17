@@ -336,9 +336,10 @@ wchar_t * get_unit_name(unit * unit_pointer)
 
 bool get_name_by_id(unsigned id, std::string & output)
 {
-	roster_unit * roster_pointer = reinterpret_cast<roster_unit *>(roster_list);
+	roster_unit * roster_pointer = *reinterpret_cast<roster_unit **>(roster_list);
 	while(roster_pointer)
 	{
+		/*
 		std::string test;
 		for(std::size_t i = 0; i < sizeof(roster_pointer->name); i++)
 		{
@@ -349,6 +350,7 @@ bool get_name_by_id(unsigned id, std::string & output)
 		}
 
 		write_line("Name: " + test);
+		*/
 
 		if(roster_pointer->unit_id == id)
 		{
