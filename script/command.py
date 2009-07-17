@@ -1,3 +1,5 @@
+from craw import get_player_location, get_tp_tome_id
+
 class command_handler_class:
 	def __init__(self):
 		self.command_map = [

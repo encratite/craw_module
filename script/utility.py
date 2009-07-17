@@ -37,3 +37,14 @@ def read_bytes(bytes, offset, size):
 		output <<= 8
 		output |= bytes[offset + size - i]
 	return output
+	
+def get_packet_string(packet):
+		output = ''
+		first = True
+		for byte in packet:
+			if first:
+				first = False
+			else:
+				output += ' '
+			output += '%02x' % ord(byte)
+		return output
