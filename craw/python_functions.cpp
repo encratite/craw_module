@@ -168,4 +168,30 @@ namespace python
 
 		return output;
 	}
+
+	PyObject * get_player_ids(PyObject * self, PyObject * arguments)
+	{
+		std::vector<unsigned> player_ids = ::get_player_ids();
+		std::size_t player_count = player_ids.size();
+		PyObject * output = PyList_New(player_count);
+		if(output == 0)
+		{
+			error("Failed to create a Python list to store the player IDs in");
+			exit_process();
+			return 0;
+		}
+
+		for(std::size_t i = 0; i < player_count; i++)
+		{
+			PyObject * id_object = PyInt_FromLong(player_ids[i]);
+			if(PyList_SetItem(output, i, id_object) < 0)
+			{
+				error("Failed to set an element of the player ID list");
+				exit_process();
+				return 0;
+			}
+		}
+
+		return output;
+	}
 }

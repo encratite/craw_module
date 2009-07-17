@@ -68,3 +68,4 @@ bool get_player_level_number(unsigned & output);
 bool get_player_id(unsigned & output);
 wchar_t * get_unit_name(unit * unit_pointer);
 bool get_name_by_id(unsigned id, std::string & output);
+std::vector<unsigned> get_player_ids();

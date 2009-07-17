@@ -354,3 +354,15 @@ bool get_name_by_id(unsigned id, std::string & output)
 	}
 	return false;
 }
+
+std::vector<unsigned> get_player_ids()
+{
+	std::vector<unsigned> output;
+	roster_unit * roster_pointer = *reinterpret_cast<roster_unit **>(roster_list);
+	while(roster_pointer)
+	{
+		output.push_back(roster_pointer->unit_id);
+		roster_pointer = roster_pointer->next_roster;
+	}
+	return output;
+}

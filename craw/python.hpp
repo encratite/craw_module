@@ -61,6 +61,7 @@ namespace python
 	PyObject * get_player_level(PyObject * self, PyObject * arguments);
 	PyObject * get_player_id(PyObject * self, PyObject * arguments);
 	PyObject * get_name_by_id(PyObject * self, PyObject * arguments);
+	PyObject * get_player_ids(PyObject * self, PyObject * arguments);
 
 	void perform_automap_callback(unit & current_unit, int x, int y, uchar colour);
 	bool perform_packet_callback(std::string const & packet);

@@ -38,6 +38,7 @@ namespace python
 			{"get_player_level", &get_player_level, METH_VARARGS, "Returns the numeric identifier of the area the player currently resides in or None if it failed to retrieve the identifier."},
 			{"get_player_id", &get_player_id, METH_VARARGS, "Returns the numeric identifier of the player unit or None if it fails to retrieve it."},
 			{"get_name_by_id", &get_name_by_id, METH_VARARGS, "Returns the name of a player given their numeric identifier or None if it fails to do so."},
+			{"get_player_ids", &get_player_ids, METH_VARARGS, "Returns a list containing the IDs of all players that are currently in the game."},
 			{0, 0, 0, 0}
 		};
 	}

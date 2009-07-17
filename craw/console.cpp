@@ -138,28 +138,6 @@ void get_character_name_command(string_vector const & arguments)
 		return;
 	}
 
-	/*
-	unit * result = d2_get_unit_pointer(unit_pointer->id, unit_pointer->type);
-	if(result)
-	{
-		std::cout << "Original unit pointer: " << unit_pointer << std::endl;
-		std::cout << "New unit pointer: " << result << std::endl;
-	}
-	else
-		std::cout << "Failure!" << std::endl;
-	*/
-
-	/*
-	wchar_t * name = get_unit_name(unit_pointer);
-	if(name == 0)
-	{
-		std::cout << "Failed to retrieve the name of your character" << std::endl;
-		return;
-	}
-
-	std::string name_string = wchar_to_string(name);
-	*/
-
 	std::string name;
 	if(get_name_by_id(unit_pointer->id, name))
 		std::cout << "Your name is " << name << "." << std::endl;
