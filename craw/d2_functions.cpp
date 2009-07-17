@@ -68,6 +68,9 @@ add_room_data_tye d2_add_room_data;
 remove_room_data_type d2_remove_room_data;
 initialise_level_type d2_initialise_level;
 get_object_table_entry_type d2_get_object_table_entry;
+get_inventory_item_type d2_get_inventory_item;
+get_next_inventory_item_type d2_get_next_inventory_item;
+get_item_text_type d2_get_item_text;
 
 //D2Client.dll
 get_player_unit_type d2_get_player_unit;
@@ -115,6 +118,9 @@ void initialise_d2common_addresses(unsigned base)
 	offset_handler.fix(d2_remove_room_data, 0x6FDA6830);
 	offset_handler.fix(d2_initialise_level, 0x6FDC2C40);
 	offset_handler.fix(d2_get_object_table_entry, 0x6FD87300);
+	offset_handler.fix(d2_get_inventory_item, 0x6FDB7500);
+	offset_handler.fix(d2_get_next_inventory_item, 0x6FDB8400);
+	offset_handler.fix(d2_get_item_text, 0x6FDAC980);
 
 	offset_handler.fix(data_tables, 0x6FDEB500);
 }
@@ -365,4 +371,42 @@ std::vector<unsigned> get_player_ids()
 		roster_pointer = roster_pointer->next_roster;
 	}
 	return output;
+}
+
+bool get_non_empty_tp_tome_id(unsigned & output)
+{
+	unit * unit_pointer = d2_get_player_unit();
+	if(!unit_pointer)
+		return false;
+
+	inventory * inventory_pointer = unit_pointer->inventory_pointer;
+	if(!inventory_pointer)
+		return false;
+
+	for(unit * current_item = d2_get_inventory_item(inventory_pointer); current_item != 0; current_item = d2_get_next_inventory_item(current_item))
+	{
+		item_data * item_data_pointer = current_item->item_data_pointer;
+		if(!item_data_pointer)
+			continue;
+
+		//inventory check
+		if(item_data_pointer->item_location != 0)
+			continue;
+
+		item_text * item_text_pointer = d2_get_item_text(current_item->table_index);
+		if(item_text_pointer == 0)
+			continue;
+
+		if(item_text_pointer->get_code() != "tbk")
+			continue;
+
+		//retrieve quantity
+		unsigned count = d2_get_unit_stat(current_item, 70, 0);
+		if(count == 0)
+			continue;
+
+		output = current_item->id;
+	}
+
+	return false;
 }

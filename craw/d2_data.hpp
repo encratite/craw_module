@@ -18,6 +18,9 @@ enum
 
 struct act_data;
 struct path_data;
+struct inventory;
+struct monster_data;
+struct item_data;
 
 struct unit
 {
@@ -26,12 +29,47 @@ struct unit
 	unsigned unknown0;
 	unsigned id;
 	unsigned mode;
-	void * unit_data;
+
+	union
+	{
+		void * unit_data;
+		monster_data * monster_data_pointer;
+		item_data * item_data_pointer;
+	};
+
 	unsigned act;
 	act_data * act_data_pointer;
 	unsigned seed[2];
 	unsigned unknown1;
 	path_data * path_data_pointer;
+
+	unsigned unknown3[5];
+	unsigned frame;
+	unsigned remaining_frame_count;
+	ushort frame_rate;
+	ushort unknown4;
+	uchar * unknown_graphical_data;
+	unsigned * graphical_information;
+	unsigned unknown5;
+	void * unit_statistics;
+	inventory * inventory_pointer;;
+	void * light_pointer;
+	unsigned unknown6[9];
+	ushort x;
+	ushort y;
+	unsigned unknown7;
+	unsigned owner_type;
+	unsigned owner_id;
+	unsigned unknown8[2];
+	void * overhead_message;
+	void * unit_information;
+	unsigned unknown9[6];
+	unsigned flags1;
+	unsigned flags2;
+	unsigned unknown10[5];
+	unit * next_changed_unit;
+	unit * next_room;
+	unit * next_list_entry;
 };
 
 struct monster_data
@@ -302,4 +340,69 @@ struct object_table_entry
 	uchar operate;
 	uchar unknown5[8];
 	unsigned automap;
+};
+
+struct inventory
+{
+	unsigned signature;
+	uchar * game_pointer;
+	unit * owner;
+	unit * first_item;
+	unit * last_item;
+	unsigned unknown1[2];
+	unsigned left_item_id;
+	unit * cursor_item;
+	unsigned owner_id;
+	unsigned item_count;
+};
+
+struct item_data
+{
+	unsigned quality;
+	unsigned unknown1[2];
+	unsigned item_flags;
+	unsigned unknown2[2];
+	unsigned flags;
+	unsigned unknown3[3];
+	unsigned quality_2;
+	unsigned item_level;
+	unsigned unknown4[2];
+	ushort prefix;
+	ushort unknown5[2];
+	ushort suffix;
+	unsigned unknown6;
+	uchar body_location;
+	uchar item_location;
+	uchar unknown7;
+	ushort unknown8;
+	unsigned unknown9[4];
+	inventory * owner_inventory;
+	unsigned unknown10;
+	unit * next_inventory_item;
+	uchar unknown11;
+	uchar node_page;;
+	ushort unknown12;
+	unsigned unknown13[6];
+	unit * owner;
+};
+
+struct item_text
+{
+	wchar_t name[0x40];
+	union
+	{
+		unsigned numeric_code;
+		char code[4];
+	};
+	uchar unknown2[0x70];
+	ushort locale_text_number;
+	uchar unknown3[0x19];
+	uchar size_x;
+	uchar size_y;
+	uchar unknown4[13];
+	uchar type;
+	uchar unknown5[0x0d];
+	uchar quest;
+
+	std::string get_code() const;
 };

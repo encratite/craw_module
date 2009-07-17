@@ -30,3 +30,8 @@ bool monster_statistics::is_npc()
 	//use interact flag, haha.
 	return read_flag(flags, 9);
 }
+
+std::string item_text::get_code() const
+{
+	return std::string(code, 3);
+}

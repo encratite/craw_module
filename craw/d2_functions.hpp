@@ -29,6 +29,9 @@ typedef void (__fastcall * add_automap_cell_type)(automap_cell * cell, automap_c
 typedef void (__stdcall * send_packet_type)(std::size_t size, unsigned flags, char const * packet);
 typedef void (__stdcall * leave_game_type)();
 typedef unit * (__fastcall * get_unit_pointer_type)(unsigned id, unsigned type);
+typedef unit * (__stdcall * get_inventory_item_type)(void * inventory);
+typedef unit * (__stdcall * get_next_inventory_item_type)(unit * item);
+typedef item_text * (__stdcall * get_item_text_type)(unsigned item_number);
 
 extern set_font_size_type d2_set_font_size;
 extern draw_text_type d2_draw_text;
@@ -49,6 +52,9 @@ extern add_automap_cell_type d2_add_automap_cell;
 extern send_packet_type d2_send_packet;
 extern leave_game_type d2_leave_game;
 extern get_unit_pointer_type d2_get_unit_pointer;
+extern get_inventory_item_type d2_get_inventory_item;
+extern get_next_inventory_item_type d2_get_next_inventory_item;
+extern get_item_text_type d2_get_item_text;
 
 extern unsigned light_handler_address;
 
@@ -69,3 +75,4 @@ bool get_player_id(unsigned & output);
 wchar_t * get_unit_name(unit * unit_pointer);
 bool get_name_by_id(unsigned id, std::string & output);
 std::vector<unsigned> get_player_ids();
+bool get_non_empty_tp_tome_id(unsigned & output);
