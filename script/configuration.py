@@ -1,5 +1,8 @@
 from text import *
 
+packet_logging = False
+packet_log = 'packets.log'
+
 chicken = True
 chicken_ratio = 0.8
 chicken_on_hostile = True

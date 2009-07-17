@@ -62,3 +62,4 @@ unit * get_player();
 automap_layer * get_automap_layer();
 automap_layer_type_2 * initialise_automap_layer(unsigned level_number);
 automap_cell ** get_layer_objects_pointer();
+bool get_player_level_number(unsigned & output);

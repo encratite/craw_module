@@ -28,8 +28,7 @@ namespace python
 		Py_XDECREF(output);
 		output = output = new_handler;
 
-		Py_INCREF(Py_None);
-		return Py_None;
+		Py_RETURN_NONE;
 	}
 	
 	PyObject * set_automap_handler(PyObject * self, PyObject * arguments)
@@ -72,8 +71,7 @@ namespace python
 
 		d2_draw_line(start_x, start_y, end_x, end_y, colour, 0xff);
 
-		Py_INCREF(Py_None);
-		return Py_None;
+		Py_RETURN_NONE;
 	}
 
 	PyObject * draw_text(PyObject * self, PyObject * arguments)
@@ -96,8 +94,7 @@ namespace python
 
 		::draw_text(text, x, y, 0, centered);
 
-		Py_INCREF(Py_None);
-		return Py_None;
+		Py_RETURN_NONE;
 	}
 
 	PyObject * send_packet(PyObject * self, PyObject * arguments)
@@ -110,8 +107,7 @@ namespace python
 
 		d2_send_packet(static_cast<std::size_t>(size), 1, data);
 
-		Py_INCREF(Py_None);
-		return Py_None;
+		Py_RETURN_NONE;
 	}
 
 	PyObject * leave_game(PyObject * self, PyObject * arguments)
@@ -129,13 +125,19 @@ namespace python
 			maximum_life;
 
 		if(!::get_life(current_life, maximum_life))
-		{
-			Py_INCREF(Py_None);
-			return Py_None;
-		}
+			Py_RETURN_NONE;
 
 		PyObject * tuple = Py_BuildValue("(ii)", current_life, maximum_life);
 
 		return tuple;
+	}
+
+	PyObject * get_player_level(PyObject * self, PyObject * arguments)
+	{
+		unsigned level;
+		if(!get_player_level_number(level))
+			Py_RETURN_NONE;
+
+		return PyInt_FromLong(level);
 	}
 }

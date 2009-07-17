@@ -285,3 +285,23 @@ automap_cell ** get_layer_objects_pointer()
 {
 	return &(get_automap_layer()->objects);
 }
+
+bool get_player_level_number(unsigned & output)
+{
+	unit * unit_pointer = d2_get_player_unit();
+
+	//is this really necessary? Damn you, D2BS.
+	if(
+		unit_pointer &&
+		unit_pointer->path_data_pointer &&
+		unit_pointer->path_data_pointer->room_1 &&
+		unit_pointer->path_data_pointer->room_1->room_2 &&
+		unit_pointer->path_data_pointer->room_1->room_2->level
+	)
+	{
+		output = unit_pointer->path_data_pointer->room_1->room_2->level->level_number;
+		return true;
+	}
+
+	return false;
+}

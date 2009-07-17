@@ -35,6 +35,7 @@ namespace python
 			{"send_packet", &send_packet, METH_VARARGS, "Sends a packet to the game server."},
 			{"leave_game", &leave_game, METH_VARARGS, "Leaves the current game."},
 			{"get_life", &get_life, METH_VARARGS, "Returns a (current life, maximum life) tuple or None if the character is not in game yet."},
+			{"get_player_level", &get_player_level, METH_VARARGS, "Returns the numeric identifier of the area the player currently resides in or None if it failed to retrieve the identifier."},
 			{0, 0, 0, 0}
 		};
 	}
