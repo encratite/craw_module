@@ -147,4 +147,25 @@ namespace python
 
 		return PyInt_FromLong(id);
 	}
+
+	PyObject * get_name_by_id(PyObject * self, PyObject * arguments)
+	{
+		unsigned id;
+		if(!PyArg_ParseTuple(arguments, "i", &id))
+			return 0;
+
+		std::string name;
+		if(!::get_name_by_id(id, name))
+			Py_RETURN_NONE;
+
+		PyObject * output = PyString_FromStringAndSize(name.c_str(), name.size());
+		if(output == 0)
+		{
+			error("Failed to create a Python string object to store the name of a player retrieved by their ID");
+			exit_process();
+			return 0;
+		}
+
+		return output;
+	}
 }

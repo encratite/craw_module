@@ -1,4 +1,4 @@
-from craw import get_life, leave_game, get_player_level, get_player_id
+from craw import get_life, leave_game, get_player_level, get_player_id, get_name_by_id
 from utility import read_bytes
 from configuration import chicken, chicken_ratio, chicken_on_hostile
 
@@ -64,7 +64,11 @@ class chicken_handler_class:
 			return
 			
 		if not in_town and chicken_on_hostile:
-			print 'Leaving the game because a player has declared hostility against us'
+			player_name = get_name_by_id(player_id_2)
+			if player_name == None:
+				print 'Leaving the game because an unknown player has declared hostility against us'
+			else:
+				print 'Leaving the game because player %s has declared hostility against us' % player_name
 			leave_game()
 		
 	def process_bytes(self, bytes):
