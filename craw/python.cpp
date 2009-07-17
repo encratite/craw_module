@@ -39,6 +39,9 @@ namespace python
 			{"get_player_id", &get_player_id, METH_VARARGS, "Returns the numeric identifier of the player unit or None if it fails to retrieve it."},
 			{"get_name_by_id", &get_name_by_id, METH_VARARGS, "Returns the name of a player given their numeric identifier or None if it fails to do so."},
 			{"get_player_ids", &get_player_ids, METH_VARARGS, "Returns a list containing the IDs of all players that are currently in the game."},
+			{"get_player_location", &get_player_location, METH_VARARGS, "Returns the player's location as a tuple (x, y) or None if the player is currently not in a game."},
+			{"get_tp_tome_id", &get_tp_tome_id, METH_VARARGS, "Returns the ID of the first non-empty Tome of Town Portal in the player's inventory or None if it failed to find one."},
+
 			{0, 0, 0, 0}
 		};
 	}

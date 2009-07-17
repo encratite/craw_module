@@ -194,4 +194,22 @@ namespace python
 
 		return output;
 	}
+
+	PyObject * get_player_location(PyObject * self, PyObject * arguments)
+	{
+		unit * unit_pointer = d2_get_player_unit();
+		if(unit_pointer == 0)
+			Py_RETURN_NONE;
+
+		return Py_BuildValue("(ii)", unit_pointer->x, unit_pointer->y);
+	}
+
+	PyObject * get_tp_tome_id(PyObject * self, PyObject * arguments)
+	{
+		unsigned id;
+		if(!get_non_empty_tp_tome_id(id))
+			Py_RETURN_NONE;
+
+		return PyInt_FromLong(id);
+	}
 }
