@@ -9,6 +9,7 @@
 #include "d2_functions.hpp"
 #include "reveal_map.hpp"
 #include "utility.hpp"
+#include "python.hpp"
 
 //#define MAPHACK_TEST
 
@@ -192,7 +193,7 @@ void console_prompt()
 			}
 		}
 
-		if(!success)
+		if(!success && !python::perform_command_callback(line))
 			std::cout << "Unknown command: \"" << command << "\"" << std::endl;
 	}
 }

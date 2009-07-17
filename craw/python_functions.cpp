@@ -41,6 +41,11 @@ namespace python
 		return set_handler(self, arguments, "set_packet_handler", packet_handler);
 	}
 
+	PyObject * set_command_handler(PyObject * self, PyObject * arguments)
+	{
+		return set_handler(self, arguments, "set_command_handler", command_handler);
+	}
+
 	void fix_coordinate(int & coordinate, int maximum)
 	{
 		if(coordinate < 0)

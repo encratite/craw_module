@@ -86,4 +86,32 @@ namespace python
 
 		return output;
 	}
+
+	bool perform_command_callback(std::string const & line)
+	{
+		if(!command_handler)
+			return false;
+
+		PyObject * argument = PyString_FromStringAndSize(line.c_str(), line.size());
+		if(argument == 0)
+		{
+			error("Failed to create a Python string object for the console command");
+			exit_process();
+			return false;
+		}
+
+		PyObject * return_value = PyObject_CallFunction(command_handler, "O", argument);
+		if(!return_value)
+		{
+			PyErr_Print();
+			return false;
+		}
+
+		bool output = (return_value == Py_True);
+
+		Py_DECREF(argument);
+		Py_DECREF(return_value);
+
+		return output;
+	}
 }

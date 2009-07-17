@@ -13,7 +13,8 @@ namespace python
 {
 	PyObject
 		* automap_handler = 0,
-		* packet_handler = 0;
+		* packet_handler = 0,
+		* command_handler = 0;
 
 	namespace
 	{
@@ -28,6 +29,7 @@ namespace python
 		{
 			{"set_automap_handler", &set_automap_handler, METH_VARARGS, "This allows you to specify an automap unit handler which is called whenever a unit on the automap is being processed."},
 			{"set_packet_handler", &set_packet_handler, METH_VARARGS, "This allows you to specify a packet handler which can react to incoming packets from the game server."},
+			{"set_command_handler", &set_command_handler, METH_VARARGS, "This allows you to specify a console command handler which is called when the user has entered a command in the module's console."},
 
 			{"draw_line", &draw_line, METH_VARARGS, "Draws a single line."},
 			{"draw_text", &draw_text, METH_VARARGS, "Draws text on the screen."},
