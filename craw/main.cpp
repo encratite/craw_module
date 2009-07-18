@@ -12,11 +12,9 @@
 #include "arguments.hpp"
 #include "python.hpp"
 #include "interceptor.hpp"
+#include "keyboard.hpp"
 
-namespace
-{
-	unsigned module_base;
-}
+unsigned module_base;
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 {
@@ -37,7 +35,8 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 				apply_hot_patches() &&
 				install_exception_handler() &&
 				process_main_thread() &&
-				python::initialise_python()
+				python::initialise_python() &&
+				install_keyboard_hook()
 			)
 		)
 		{

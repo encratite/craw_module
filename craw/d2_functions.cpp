@@ -146,7 +146,6 @@ void initialise_d2client_addresses(unsigned base)
 	offset_handler.fix(automap_handler_address, 0x6FAEF920);
 	offset_handler.fix(automap_loop_address, 0x6FAF0350);
 	offset_handler.fix(get_unit_name_address, 0x6FACF3D0);
-
 }
 
 void initialise_d2net_addresses(unsigned base)

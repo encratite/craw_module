@@ -4,6 +4,8 @@
 
 #include <windows.h>
 
+extern HWND d2_window;
+
 struct hot_patch_entry
 {
 	std::string

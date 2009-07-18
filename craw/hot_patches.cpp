@@ -13,6 +13,8 @@
 #include "hide.hpp"
 #include "interceptor.hpp"
 
+HWND d2_window;
+
 typedef HWND (WINAPI * FindWindow_type)(LPCTSTR lpClassName, LPCTSTR lpWindowName);
 typedef HANDLE (WINAPI * CreateFile_type)(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWORD dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, DWORD dwCreationDisposition, DWORD dwFlagsAndAttributes, HANDLE hTemplateFile);
 typedef HANDLE (WINAPI * CreateThread_type)(LPSECURITY_ATTRIBUTES lpThreadAttributes, SIZE_T dwStackSize, LPTHREAD_START_ROUTINE lpStartAddress, LPVOID lpParameter, DWORD dwCreationFlags, LPDWORD lpThreadId);
@@ -148,6 +150,7 @@ HWND WINAPI patched_CreateWindowEx(DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR
 		write_line("CreateWindowEx retruned " + ail::hex_string_32(reinterpret_cast<unsigned>(output)));
 	if(output == 0)
 		write_line("CreateWindowEx failed with error number " + ail::hex_string_32(GetLastError()));
+	d2_window = output;
 	return output;
 }
 
