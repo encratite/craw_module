@@ -22,6 +22,7 @@ class town_portal_class:
 		
 		self.enter_portal = False
 		
+		print 'Entering the portal'
 		packet = chr(0x13) + pack_number(2, 4) + pack_number(portal_id, 4)
 		send_packet(packet)
 			

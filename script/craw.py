@@ -1,3 +1,4 @@
+import configuration
 from craw import set_automap_handler, set_packet_handler, set_command_handler, set_keyboard_handler
 from automap import automap_handler_class
 from packets import packet_handler_class
@@ -24,3 +25,5 @@ command_handler.town_portal_handler = town_portal_handler
 
 keyboard_handler = keyboard_handler_class()
 set_keyboard_handler(keyboard_handler.process_key)
+
+configuration.town_portal_handler = town_portal_handler
