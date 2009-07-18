@@ -1,3 +1,3 @@
 #pragma once
 
-bool install_keyboard_hook();
+void process_key(unsigned virtual_key);

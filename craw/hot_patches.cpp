@@ -12,6 +12,7 @@
 #include "d2_cdkey.hpp"
 #include "hide.hpp"
 #include "interceptor.hpp"
+#include "keyboard.hpp"
 
 HWND d2_window;
 
@@ -23,6 +24,7 @@ typedef HWND (WINAPI * CreateWindowEx_type)(DWORD dwExStyle, LPCTSTR lpClassName
 typedef int (WINAPI * recv_type)(SOCKET s, char *buf, int len, int flags);
 typedef int (WINAPI * send_type)(SOCKET s, const char * buf, int len, int flags);
 typedef SIZE_T (WINAPI * VirtualQuery_type)(LPCVOID lpAddress, PMEMORY_BASIC_INFORMATION lpBuffer, SIZE_T dwLength);
+typedef ATOM (WINAPI * RegisterClass_type)(CONST WNDCLASS *lpWndClass);
 
 namespace
 {
@@ -34,8 +36,11 @@ namespace
 	recv_type real_recv;
 	send_type real_send;
 	VirtualQuery_type real_VirtualQuery;
+	RegisterClass_type real_RegisterClass;
 
 	ulong server_token;
+
+	WNDPROC d2_window_procedure;
 }
 
 HWND WINAPI patched_FindWindow(LPCTSTR lpClassName, LPCTSTR lpWindowName)
@@ -147,7 +152,7 @@ HWND WINAPI patched_CreateWindowEx(DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR
 	}
 	HWND output = real_CreateWindowEx(dwExStyle, lpClassName, name.c_str(), dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
 	if(verbose)
-		write_line("CreateWindowEx retruned " + ail::hex_string_32(reinterpret_cast<unsigned>(output)));
+		write_line("CreateWindowEx returned " + ail::hex_string_32(reinterpret_cast<unsigned>(output)));
 	if(output == 0)
 		write_line("CreateWindowEx failed with error number " + ail::hex_string_32(GetLastError()));
 	d2_window = output;
@@ -221,6 +226,27 @@ SIZE_T WINAPI patched_VirtualQuery(LPCVOID lpAddress, PMEMORY_BASIC_INFORMATION 
 	return real_VirtualQuery(lpAddress, lpBuffer, dwLength);
 }
 
+LRESULT CALLBACK patched_window_procedure(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
+{
+	//write_line("Message: " + ail::hex_string_32(Msg));
+	if(Msg == WM_CHAR)
+	{
+		unsigned virtual_key = static_cast<unsigned>(wParam);
+		process_key(virtual_key);
+	}
+	return d2_window_procedure(hWnd, Msg, wParam, lParam);
+}
+
+ATOM WINAPI patched_RegisterClass(CONST WNDCLASS * lpWndClass)
+{
+	WNDCLASS & window_class = *const_cast<WNDCLASS *>(lpWndClass);
+	d2_window_procedure = window_class.lpfnWndProc;
+	window_class.lpfnWndProc = patched_window_procedure;
+	if(verbose)
+		write_line("Replaced the Diablo II window procedure with our own");
+	return real_RegisterClass(lpWndClass);
+}
+
 bool apply_hot_patches()
 {
 	if(!patch_system_modules)
@@ -242,6 +268,7 @@ bool apply_hot_patches()
 		hot_patch_entry(winsock, "recv", &patched_recv, reinterpret_cast<void * &>(real_recv)),
 		hot_patch_entry(winsock2, "send", &patched_send, reinterpret_cast<void * &>(real_send)),
 		hot_patch_entry(kernel, "VirtualQuery", &patched_VirtualQuery, reinterpret_cast<void * &>(real_VirtualQuery)),
+		hot_patch_entry(user, "RegisterClassA", &patched_RegisterClass, reinterpret_cast<void * &>(real_RegisterClass)),
 	};
 
 	BOOST_FOREACH(hot_patch_entry & entry, patches)

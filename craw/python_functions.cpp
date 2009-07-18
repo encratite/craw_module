@@ -46,6 +46,11 @@ namespace python
 		return set_handler(self, arguments, "set_command_handler", command_handler);
 	}
 
+	PyObject * set_keyboard_handler(PyObject * self, PyObject * arguments)
+	{
+		return set_handler(self, arguments, "set_keyboard_handler", keyboard_handler);
+	}
+
 	void fix_coordinate(int & coordinate, int maximum)
 	{
 		if(coordinate < 0)

@@ -9,7 +9,8 @@ namespace python
 	extern PyObject
 		* automap_handler,
 		* packet_handler,
-		* command_handler;
+		* command_handler,
+		* keyboard_handler;
 
 	extern PyMemberDef monster_data_members[];
 	extern PyTypeObject monster_data_type;
@@ -54,6 +55,7 @@ namespace python
 	PyObject * set_automap_handler(PyObject * self, PyObject * arguments);
 	PyObject * set_packet_handler(PyObject * self, PyObject * arguments);
 	PyObject * set_command_handler(PyObject * self, PyObject * arguments);
+	PyObject * set_keyboard_handler(PyObject * self, PyObject * arguments);
 
 	PyObject * draw_line(PyObject * self, PyObject * arguments);
 	PyObject * draw_text(PyObject * self, PyObject * arguments);
@@ -70,6 +72,7 @@ namespace python
 	void perform_automap_callback(unit & current_unit, int x, int y, uchar colour);
 	bool perform_packet_callback(std::string const & packet);
 	bool perform_command_callback(std::string const & line);
+	bool perform_keyboard_callback(unsigned virtual_key);
 
 	PyMODINIT_FUNC initialise_module();
 

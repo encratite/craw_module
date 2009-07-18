@@ -76,3 +76,4 @@ wchar_t * get_unit_name(unit * unit_pointer);
 bool get_name_by_id(unsigned id, std::string & output);
 std::vector<unsigned> get_player_ids();
 bool get_non_empty_tp_tome_id(unsigned & output);
+bool player_is_in_game();

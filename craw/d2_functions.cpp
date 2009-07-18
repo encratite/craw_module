@@ -41,6 +41,8 @@ namespace
 		d2client_base = 0x6FAB0000,
 		d2net_base = 0x6FBF0000;
 
+	bool d2client_has_been_loaded = false;
+
 	unsigned const life_mana_shift = 8;
 
 	unsigned data_tables;
@@ -146,6 +148,8 @@ void initialise_d2client_addresses(unsigned base)
 	offset_handler.fix(automap_handler_address, 0x6FAEF920);
 	offset_handler.fix(automap_loop_address, 0x6FAF0350);
 	offset_handler.fix(get_unit_name_address, 0x6FACF3D0);
+
+	d2client_has_been_loaded = true;
 }
 
 void initialise_d2net_addresses(unsigned base)
@@ -409,4 +413,12 @@ bool get_non_empty_tp_tome_id(unsigned & output)
 	}
 
 	return false;
+}
+
+bool player_is_in_game()
+{
+	if(!d2client_has_been_loaded)
+		return false;
+
+	return d2_get_player_unit() != 0;
 }

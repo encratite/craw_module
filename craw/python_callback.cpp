@@ -114,4 +114,23 @@ namespace python
 
 		return output;
 	}
+
+	bool perform_keyboard_callback(unsigned virtual_key)
+	{
+		if(!keyboard_handler)
+			return false;
+
+		PyObject * argument = PyInt_FromLong(virtual_key);
+		PyObject * return_value = PyObject_CallFunction(keyboard_handler, "O", argument);
+		if(!return_value)
+		{
+			PyErr_Print();
+			return false;
+		}
+
+		Py_XDECREF(argument);
+		Py_DECREF(return_value);
+
+		return true;
+	}
 }
