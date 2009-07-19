@@ -1,7 +1,7 @@
 #Nasty hack to import stuff from ../configuration
-import os, sys
+import sys, utility
 
-sys.path.append(os.path.join(sys.path[-1], '..', 'configuration'))
+sys.path.append(utility.get_configuration_directory())
 
 import configuration, craw, automap, packets, chicken, command, town_portal, keyboard
 
@@ -22,6 +22,3 @@ packet_handler.add_byte_handler(chicken_handler.process_bytes)
 town_portal_handler = town_portal.town_portal_class()
 packet_handler.add_byte_handler(town_portal_handler.process_bytes)
 command_handler.town_portal_handler = town_portal_handler
-
-keyboard_handler = keyboard.keyboard_handler_class()
-craw.set_keyboard_handler(keyboard_handler.process_key)

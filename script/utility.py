@@ -1,4 +1,4 @@
-import craw
+import craw, os, sys
 
 def get_flag(flags, offset):
 	return ((flags >> offset) & 1) != 0
@@ -63,4 +63,8 @@ def town_check():
 	return level in [0x01, 0x28, 0x4b, 0x67, 0x6d]
 	
 def send_chat(message):
-	packets = '\x15\x01\x00' + message + '\x00\x00\x00'
+	packet = '\x15\x01\x00' + message + '\x00\x00\x00'
+	craw.send_packet(packet)
+	
+def get_configuration_directory():
+	return os.path.join(sys.path[-1], '..', 'configuration')
