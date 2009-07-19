@@ -3,7 +3,7 @@ import sys, utility
 
 sys.path.append(utility.get_configuration_directory())
 
-import configuration, craw, automap, packets, chicken, command, town_portal, keyboard
+import configuration, craw, automap, packets, chicken, command, town_portal
 
 #Set up handlers
 

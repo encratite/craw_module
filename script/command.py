@@ -1,10 +1,9 @@
-import craw, string, utility, types, bind, keyboard
+import craw, string, utility, types, bind
 
 class command_handler_class:
 	def __init__(self):
 		self.town_portal_handler = None
 		self.bind_handler = bind.bind_handler()
-		self.keyboard_handler = keyboard.keyboard_handler_class()
 		
 		one_or_more = lambda x: x >= 1
 		two_or_more = lambda x: x >= 2
@@ -14,7 +13,9 @@ class command_handler_class:
 			('tppk', '', 'Casts a town portal from a tome, enters it and declares hostility to all players.', 0, self.tppk),
 			('leave', '', 'Leave the current game', 0, craw.leave_game),
 			('say', '<text>', 'Send a chat message to the game server', one_or_more, self.say),
-			('bind', '<key> <Python expression>', 'Allows you to bind a key to an arbitrary action', two_or_more, self.bind)
+			('bind', '<key> <Python expression>', 'Allows you to bind a key to an arbitrary action', two_or_more, self.bind),
+			('unbind', '<key>', 'Unbinds a previously bound key', 1, self.unbind),
+			('help', '', 'Prints the help for the Python commands', 0, self.print_help)
 		]
 		
 	def process_command(self, line):
@@ -31,9 +32,9 @@ class command_handler_class:
 			if type(argument_count) == types.FunctionType:
 				argument_count_match = argument_count(len(arguments))
 			else:
-				argument_count_match = argument_count != len(arguments)
+				argument_count_match = argument_count == len(arguments)
 				
-			if argument_count_match:
+			if not argument_count_match:
 				print 'Invalid argument count specified.'
 				print 'Usage: %s %s' % (command, arguments)
 				print 'Description: %s' % description
@@ -67,3 +68,15 @@ class command_handler_class:
 		key = arguments[0]
 		function = string.join(arguments[1 : ], ' ')
 		self.bind_handler.bind(key, function)
+		print 'Bound key "%s" to action "%s"' % (key, function)
+		
+	def unbind(self, arguments):
+		key = arguments[0]
+		self.bind_handler.unbind(key)
+		print 'Unbound key "%s"' % key
+		
+	def print_help(self, arguments):
+		print '\nPython commands:\n'
+		for command_string, arguments, description, argument_count, command_handler in self.command_map:
+			print 'Command: %s %s' % (command_string, arguments)
+			print 'Description: %s\n' % description

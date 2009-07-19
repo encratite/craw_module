@@ -188,7 +188,8 @@ void console_prompt()
 			if(current_command.match(command, arguments))
 			{
 				current_command.handler(arguments);
-				success = true;
+				if(command != "help")
+					success = true;
 				break;
 			}
 		}
