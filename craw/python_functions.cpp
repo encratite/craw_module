@@ -146,7 +146,7 @@ namespace python
 		if(!get_player_level_number(level))
 			Py_RETURN_NONE;
 
-		return PyInt_FromLong(level);
+		return PyLong_FromLong(level);
 	}
 
 	PyObject * get_player_id(PyObject * self, PyObject * arguments)
@@ -155,7 +155,7 @@ namespace python
 		if(!::get_player_id(id))
 			Py_RETURN_NONE;
 
-		return PyInt_FromLong(id);
+		return PyLong_FromLong(id);
 	}
 
 	PyObject * get_name_by_id(PyObject * self, PyObject * arguments)
@@ -193,7 +193,7 @@ namespace python
 
 		for(std::size_t i = 0; i < player_count; i++)
 		{
-			PyObject * id_object = PyInt_FromLong(player_ids[i]);
+			PyObject * id_object = PyLong_FromLong(player_ids[i]);
 			if(PyList_SetItem(output, i, id_object) < 0)
 			{
 				error("Failed to set an element of the player ID list");
@@ -220,6 +220,6 @@ namespace python
 		if(!get_non_empty_tp_tome_id(id))
 			Py_RETURN_NONE;
 
-		return PyInt_FromLong(id);
+		return PyLong_FromLong(id);
 	}
 }

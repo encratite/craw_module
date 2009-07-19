@@ -39,9 +39,10 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
 		)
 		{
 			console_output = true;
-			write_line("A fatal error occured, the program is not going to continue, please close this window.");
-			while(true)
-				Sleep(0);
+			write_line("A fatal error occured, the program is not going to continue, please hit enter to terminate the process.");
+			std::string unused;
+			std::getline(std::cin, unused);
+			exit_process();
 		}
 
 		if(prompt_mode)
