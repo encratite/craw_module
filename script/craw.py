@@ -1,4 +1,11 @@
+#Nasty hack to import stuff from ../configuration
+import os, sys
+
+sys.path.append(os.path.join(sys.path[-1], '..', 'configuration'))
+
 import configuration
+
+#Set up handlers
 from craw import set_automap_handler, set_packet_handler, set_command_handler, set_keyboard_handler
 from automap import automap_handler_class
 from packets import packet_handler_class
