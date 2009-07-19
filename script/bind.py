@@ -1,5 +1,19 @@
 import os, utility, nil.file, keyboard_configuration, craw
 
+def get_tp_handler():
+	return current_handler.command_handler.town_portal_handler
+
+def say(message):
+	utility.send_chat(message)
+	
+def tp():
+	get_tp_handler().cast_town_portal()
+	
+def tppk():
+	get_tp_handler().tppk()
+
+current_handler = None
+
 class bind_handler:
 	def __init__(self):
 		self.bindings = keyboard_configuration.bindings
@@ -10,7 +24,8 @@ class bind_handler:
 		self.serialise_bindings()
 		
 	def unbind(self, key):
-		self.pop(key)
+		self.bindings.pop(key)
+		self.serialise_bindings()
 		
 	def serialise_bindings(self):
 		data = '#This file was generated automatically, do not edit it at runtime\n\n'
@@ -29,6 +44,10 @@ class bind_handler:
 		#print 'Pressed key: %s' % key_char
 		
 		try:
-			exec(self.bindings[key_char])
+			global current_handler
+			current_handler = self
+			code = self.bindings[key_char]
+			print 'Executing %s' % code
+			exec(code)
 		except KeyError:
 			pass

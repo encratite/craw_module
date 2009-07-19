@@ -1,4 +1,4 @@
-import craw, utility
+import craw, utility, hostile
 
 class town_portal_class:
 
@@ -32,7 +32,7 @@ class town_portal_class:
 		
 		player_id = utility.read_bytes(bytes, 1, 4)
 		if player_id != my_id:
-			self.debug_print('IDs do not match: %08x vs. %08x' % (my_id, player_id))
+			self.debug_print('IDs do not match: %08x vs. %08x (%s, %s)' % (my_id, player_id, str(type(my_id)), str(type(player_id))))
 			return
 			
 		portal_id = utility.read_bytes(bytes, 21, 4)
@@ -71,3 +71,7 @@ class town_portal_class:
 		craw.send_packet(packet)
 		
 		return True
+		
+	def tppk(self):
+		self.town_handler = hostile.hostile_players
+		self.cast_town_portal()

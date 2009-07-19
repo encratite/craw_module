@@ -4,13 +4,12 @@ class command_handler_class:
 	def __init__(self):
 		self.town_portal_handler = None
 		self.bind_handler = bind.bind_handler()
+		self.bind_handler.command_handler = self
 		
 		one_or_more = lambda x: x >= 1
 		two_or_more = lambda x: x >= 2
 		
 		self.command_map = [
-			('tp', '', 'Casts a town portal from a tome and enters it', 0, self.town_portal),
-			('tppk', '', 'Casts a town portal from a tome, enters it and declares hostility to all players.', 0, self.tppk),
 			('leave', '', 'Leave the current game', 0, craw.leave_game),
 			('say', '<text>', 'Send a chat message to the game server', one_or_more, self.say),
 			('bind', '<key> <Python expression>', 'Allows you to bind a key to an arbitrary action', two_or_more, self.bind),
@@ -28,11 +27,13 @@ class command_handler_class:
 		for command_string, arguments, description, argument_count, command_handler in self.command_map:
 			if command_string != command:
 				continue
+
+			argument_token_count = len(argument_tokens)
 				
 			if type(argument_count) == types.FunctionType:
-				argument_count_match = argument_count(len(arguments))
+				argument_count_match = argument_count(argument_token_count)
 			else:
-				argument_count_match = argument_count == len(arguments)
+				argument_count_match = argument_count == argument_token_count
 				
 			if not argument_count_match:
 				print 'Invalid argument count specified.'
@@ -44,20 +45,6 @@ class command_handler_class:
 			return True
 				
 		return False
-			
-		
-	def town_portal(self, arguments):
-		if self.town_portal_handler == None:
-			return
-			
-		self.town_portal_handler.cast_town_portal()
-		
-	def tppk(self, arguments):
-		if self.cast_town_portal == None:
-			return
-			
-		self.town_portal_handler.town_handler = hostile.hostile_players
-		self.town_portal_handler.cast_town_portal()
 		
 	def say(self, arguments):
 		message = string.join(arguments, ' ')

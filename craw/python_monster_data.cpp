@@ -120,7 +120,7 @@ namespace python
 
 			for(std::size_t i = 0; i < treasure_size; i++)
 			{
-				PyObject * integer = PyLong_FromLong(current_treasure_class.treasure_class[i]);
+				PyObject * integer = PyLong_FromUnsignedLong(current_treasure_class.treasure_class[i]);
 				if(PyList_SetItem(treasure_class, i, integer) < 0)
 				{
 					error("Failed to initialise a treasure class item");
@@ -148,7 +148,7 @@ namespace python
 
 			for(std::size_t i = 0; i < vector_size; i++)
 			{
-				PyObject * integer = PyLong_FromLong(abilities_vector[i]);
+				PyObject * integer = PyLong_FromUnsignedLong(abilities_vector[i]);
 				if(PyList_SetItem(special_abilities, i, integer) < 0)
 				{
 					error("Failed to initialise a special abilities item");

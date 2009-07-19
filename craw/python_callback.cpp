@@ -120,7 +120,7 @@ namespace python
 		if(!keyboard_handler)
 			return false;
 
-		PyObject * argument = PyLong_FromLong(virtual_key);
+		PyObject * argument = PyLong_FromUnsignedLong(virtual_key);
 		PyObject * return_value = PyObject_CallFunction(keyboard_handler, "O", argument);
 		if(!return_value)
 		{
