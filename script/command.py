@@ -1,9 +1,14 @@
+import craw, string, utility
+
 class command_handler_class:
 	def __init__(self):
 		self.town_portal_handler = None
 		
 		self.command_map = [
-			('tp', '', 'Casts a town portal', 0, self.town_portal)
+			('tp', '', 'Casts a town portal from a tome and enters it', self.town_portal),
+			('tppk', '', 'Casts a town portal from a tome, enters it and declares hostility to all players.', self.tppk),
+			('leave', '', 'Leave the current game', craw.leave_game),
+			('say', '', 'Send a chat message to the game server', self.say)
 		]
 		
 	def process_command(self, line):
@@ -13,7 +18,7 @@ class command_handler_class:
 		command = tokens[0]
 		arguments = tokens[1 : ]
 		
-		for command_string, arguments, description, argument_count, command_handler in self.command_map:
+		for command_string, arguments, description, command_handler in self.command_map:
 			if command_string != command:
 				continue
 				
@@ -34,3 +39,15 @@ class command_handler_class:
 			return
 			
 		self.town_portal_handler.cast_town_portal()
+		
+	def tppk(self, arguments):
+		if self.cast_town_portal == None:
+			return
+			
+		self.town_portal_handler.town_handler = hostile.hostile_players
+		self.town_portal_handler.cast_town_portal()
+		
+	def say(self, arguments):
+		message = string.join(arguments, ' ')
+		print 'Sending chat message "%s" to the server' % message
+		utility.send_chat(message)

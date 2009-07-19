@@ -1,4 +1,4 @@
-from craw import draw_line, draw_text, get_player_level
+import craw
 
 def get_flag(flags, offset):
 	return ((flags >> offset) & 1) != 0
@@ -26,10 +26,10 @@ def draw_box(coordinate, colour):
 		end_x *= square_size
 		end_y *= square_size
 		
-		draw_line(x + start_x, y + start_y, x + end_x, y + end_y, colour)
+		craw.draw_line(x + start_x, y + start_y, x + end_x, y + end_y, colour)
 		
 def draw_automap_text(string, coordinate):
-	draw_text(string, coordinate[0] - 5, coordinate[1] - 2, True)
+	craw.draw_text(string, coordinate[0] - 5, coordinate[1] - 2, True)
 	
 def read_bytes(bytes, offset, size):
 	output = 0
@@ -57,7 +57,10 @@ def get_packet_string(packet):
 	return output
 	
 def town_check():
-	level = get_player_level()
+	level = craw.get_player_level()
 	if level == None:
 		return None
 	return level in [0x01, 0x28, 0x4b, 0x67, 0x6d]
+	
+def send_chat(message):
+	packets = '\x15\x01\x00' + message + '\x00\x00\x00'

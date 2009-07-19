@@ -1,4 +1,4 @@
-from configuration import *
+from automap_configuration import *
 from utility import *
 from text import *
 
