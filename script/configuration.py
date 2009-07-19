@@ -2,7 +2,6 @@ from text import *
 
 def cast_town_portal():
 	#This global value is set in craw.py
-	print 'Opening a town portal'
 	town_portal_handler.cast_town_portal()
 
 packet_logging = False

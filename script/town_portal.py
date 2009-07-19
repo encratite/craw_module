@@ -1,5 +1,5 @@
 from craw import get_player_id, get_player_location, get_tp_tome_id, send_packet
-from utility import read_bytes, pack_number, get_packet_string
+from utility import read_bytes, pack_number, get_packet_string, town_check
 
 class town_portal_class:
 
@@ -22,11 +22,14 @@ class town_portal_class:
 		
 		self.enter_portal = False
 		
-		print 'Entering the portal'
 		packet = chr(0x13) + pack_number(2, 4) + pack_number(portal_id, 4)
 		send_packet(packet)
 			
 	def cast_town_portal(self):
+		if town_check() != False:
+			print 'You cannot open a town portal inside a town.'
+			return False
+			
 		tome_id = get_tp_tome_id()
 		if tome_id == None:
 			print 'Unable to cast a town portal because you have no non-empty Tome of Town Portal in your inventory'

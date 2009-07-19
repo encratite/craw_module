@@ -1,4 +1,4 @@
-from craw import draw_line, draw_text
+from craw import draw_line, draw_text, get_player_level
 
 def get_flag(flags, offset):
 	return ((flags >> offset) & 1) != 0
@@ -55,3 +55,9 @@ def get_packet_string(packet):
 			output += ' '
 		output += '%02x' % ord(byte)
 	return output
+	
+def town_check():
+	level = get_player_level()
+	if level == None:
+		return None
+	return level in [0x01, 0x28, 0x4b, 0x67, 0x6d]

@@ -1,14 +1,8 @@
 from craw import get_life, leave_game, get_player_level, get_player_id, get_name_by_id
-from utility import read_bytes
+from utility import read_bytes, town_check
 from configuration import chicken, chicken_ratio, chicken_on_hostile
 
 class chicken_handler_class:
-	def town_check(self):
-		level = get_player_level()
-		if level == None:
-			return None
-		return level in [0x01, 0x28, 0x4b, 0x67, 0x6d]
-		
 	def life_check(self, bytes):
 		if len(bytes) < 3:
 			return
@@ -58,7 +52,7 @@ class chicken_handler_class:
 		if bytes[9] < 0x08:
 			return
 			
-		in_town = self.town_check()
+		in_town = town_check()
 		
 		if in_town == None:
 			return
