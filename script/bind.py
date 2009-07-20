@@ -47,7 +47,7 @@ class bind_handler:
 			global current_handler
 			current_handler = self
 			code = self.bindings[key_char]
-			print 'Executing %s' % code
+			#print 'Executing %s' % code
 			exec(code)
 		except KeyError:
 			pass

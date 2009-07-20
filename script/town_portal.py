@@ -4,7 +4,7 @@ class town_portal_class:
 
 	def __init__(self):
 		self.enter_portal = False
-		self.debug = True
+		self.debug = False
 		self.town_handler = None
 		
 	def debug_print(self, message):
