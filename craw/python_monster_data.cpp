@@ -46,48 +46,6 @@ namespace python
 		{0}
 	};
 
-	PyTypeObject monster_data_type =
-	{
-		PyObject_HEAD_INIT(NULL)
-
-		0,
-		0,
-		sizeof(python_monster_data),
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		Py_TPFLAGS_DEFAULT,
-		"Contains information about a Diablo II monster/NPC.",
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		monster_data_members,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0,
-		0
-	};
-
 	bool python_monster_data::initialise(unit & current_unit)
 	{
 		uchar difficulty = d2_get_difficulty();

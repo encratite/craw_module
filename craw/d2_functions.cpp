@@ -1,6 +1,7 @@
 #include <windows.h>
 #include <ail/array.hpp>
 #include <ail/string.hpp>
+#include <boost/foreach.hpp>
 #include "d2_functions.hpp"
 #include "utility.hpp"
 
@@ -343,24 +344,34 @@ wchar_t * get_unit_name(unit * unit_pointer)
 	return output;
 }
 
-bool get_name_by_id(unsigned id, std::string & output)
+typedef std::vector<roster_unit> roster_vector;
+
+roster_vector get_roster_units()
 {
+	roster_vector output;
+	
 	roster_unit * roster_pointer = *reinterpret_cast<roster_unit **>(roster_list);
 	while(roster_pointer)
 	{
-		if(roster_pointer->unit_id == id)
-		{
-			for(std::size_t i = 0; i < sizeof(roster_pointer->name); i++)
-			{
-				char letter = roster_pointer->name[i];
-				if(letter == 0)
-					break;
-				output.push_back(letter);
-			}
-			return true;
-		}
+		output.push_back(roster_unit(*roster_pointer));
 		roster_pointer = roster_pointer->next_roster;
 	}
+
+	return output;
+}
+
+bool get_name_by_id(unsigned id, std::string & output)
+{
+	roster_vector roster_units = get_roster_units();
+	BOOST_FOREACH(roster_unit & current_unit, roster_units)
+	{
+		if(current_unit.unit_id == id)
+		{
+			output = current_unit.get_name();
+			return true;
+		}
+	}
+
 	return false;
 }
 

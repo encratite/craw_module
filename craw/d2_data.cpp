@@ -35,3 +35,18 @@ std::string item_text::get_code() const
 {
 	return std::string(code, 3);
 }
+
+std::string roster_unit::get_name()
+{
+	std::string output;
+
+	for(std::size_t i = 0; i < sizeof(name); i++)
+	{
+		char letter = name[i];
+		if(letter == 0)
+			break;
+		output.push_back(letter);
+	}
+
+	return output;
+}

@@ -12,8 +12,13 @@ namespace python
 		* command_handler,
 		* keyboard_handler;
 
-	extern PyMemberDef monster_data_members[];
-	extern PyTypeObject monster_data_type;
+	extern PyMemberDef
+		monster_data_members[],
+		player_data_members[];
+
+	extern PyTypeObject
+		monster_data_type,
+		player_data_type;
 
 	struct python_monster_data
 	{
@@ -50,6 +55,14 @@ namespace python
 		uchar colour;
 
 		bool initialise(unit & current_unit);
+	};
+
+	struct python_player_data
+	{
+		unsigned id;
+		uchar character_class;
+		uchar level; 
+		PyObject * name;
 	};
 
 	PyObject * set_automap_handler(PyObject * self, PyObject * arguments);

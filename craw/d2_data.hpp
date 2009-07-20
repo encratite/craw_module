@@ -194,6 +194,8 @@ struct roster_unit
 	ushort unknown8;
 	unsigned unknown9[2];
 	roster_unit * next_roster;
+
+	std::string get_name();
 };
 
 struct level_data;

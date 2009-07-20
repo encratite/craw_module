@@ -2,6 +2,7 @@
 
 #include <string>
 #include <ail/types.hpp>
+#include <ail/string.hpp>
 #include <windows.h>
 #include <Tlhelp32.h>
 
@@ -37,3 +38,11 @@ private:
 
 std::string dword_to_string(ulong input);
 std::string wchar_to_string(wchar_t * input);
+
+template <class type>
+	void print_object(type & object)
+{
+	write_line("Printing object of size " + ail::number_to_string(sizeof(type)) + " at address " + ail::hex_string_32(reinterpret_cast<ulong>(&object)));
+	std::string data(reinterpret_cast<char *>(&object), sizeof(type));
+	write_line(ail::hex_string(data));
+}
