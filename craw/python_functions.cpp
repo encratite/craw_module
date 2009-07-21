@@ -197,22 +197,15 @@ namespace python
 
 			python_player_data * player_pointer = PyObject_New(python_player_data, &player_data_type);
 
-			//write_line("player_pointer: " + ail::hex_string_32((ulong)player_pointer));
-
 			python_player_data & player_object = *player_pointer;
 			player_object.id = current_unit.unit_id;
 			player_object.character_class = current_unit.class_id;
 			player_object.level = current_unit.level;
 
-			/*
-			error("WFEFWE");
-
-			write_line("PyObject_GetAttrString");
-			PyObject * attribute = PyObject_GetAttrString((PyObject *)player_pointer, "id");
-			error("WFEFWE");
-			write_line("Attribute: " + ail::hex_string_32((ulong)attribute));
-			write_line("Long: " + ail::hex_string_32(PyLong_AsLong(attribute)));
-			*/
+			player_object.life = current_unit.life;
+			player_object.level_id = current_unit.level_id;
+			player_object.x = current_unit.position_x;
+			player_object.y = current_unit.position_y;
 
 			std::string name = current_unit.get_name();
 			PyObject * string = PyString_FromStringAndSize(name.c_str(), name.size());
@@ -224,8 +217,6 @@ namespace python
 			}
 
 			player_object.name = string;
-
-			//write_line("Pointer: " + ail::hex_string_32((unsigned)player_pointer));
 
 			if(PyList_SetItem(output, i, reinterpret_cast<PyObject *>(player_pointer)) < 0)
 			{

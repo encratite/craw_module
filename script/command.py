@@ -75,4 +75,7 @@ class command_handler_class:
 			print 'Name: %s' % player.name
 			print 'ID: %08x' % player.id
 			print 'Level: %d' % player.level
-			print 'Character class: %d\n' % player.character_class
+			print 'Character class: %d' % player.character_class
+			print 'Life: %d' % player.life
+			print 'Area: %d' % player.level_id
+			print 'Location: (%d, %d)\n' % (player.x, player.y)

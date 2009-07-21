@@ -65,6 +65,11 @@ namespace python
 		uchar character_class;
 		ushort level; 
 		PyObject * name;
+
+		unsigned life;
+		unsigned level_id;
+		unsigned x;
+		unsigned y;
 	};
 
 	PyObject * set_automap_handler(PyObject * self, PyObject * arguments);
