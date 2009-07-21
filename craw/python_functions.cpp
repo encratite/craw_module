@@ -179,24 +179,57 @@ namespace python
 		return output;
 	}
 
-	PyObject * get_player_ids(PyObject * self, PyObject * arguments)
+	PyObject * get_players(PyObject * self, PyObject * arguments)
 	{
-		std::vector<unsigned> player_ids = ::get_player_ids();
-		std::size_t player_count = player_ids.size();
+		roster_vector roster_units = get_roster_units();
+		std::size_t player_count = roster_units.size();
 		PyObject * output = PyList_New(player_count);
 		if(output == 0)
 		{
-			error("Failed to create a Python list to store the player IDs in");
+			error("Failed to create a Python list to store the player data");
 			exit_process();
 			return 0;
 		}
 
 		for(std::size_t i = 0; i < player_count; i++)
 		{
-			PyObject * id_object = PyLong_FromUnsignedLong(player_ids[i]);
-			if(PyList_SetItem(output, i, id_object) < 0)
+			roster_unit & current_unit = roster_units[i];
+
+			python_player_data * player_pointer = PyObject_New(python_player_data, &player_data_type);
+
+			//write_line("player_pointer: " + ail::hex_string_32((ulong)player_pointer));
+
+			python_player_data & player_object = *player_pointer;
+			player_object.id = current_unit.unit_id;
+			player_object.character_class = current_unit.class_id;
+			player_object.level = current_unit.level;
+
+			/*
+			error("WFEFWE");
+
+			write_line("PyObject_GetAttrString");
+			PyObject * attribute = PyObject_GetAttrString((PyObject *)player_pointer, "id");
+			error("WFEFWE");
+			write_line("Attribute: " + ail::hex_string_32((ulong)attribute));
+			write_line("Long: " + ail::hex_string_32(PyLong_AsLong(attribute)));
+			*/
+
+			std::string name = current_unit.get_name();
+			PyObject * string = PyString_FromStringAndSize(name.c_str(), name.size());
+			if(string == 0)
 			{
-				error("Failed to set an element of the player ID list");
+				error("Failed to create a Python string object for a player's name");
+				exit_process();
+				return 0;
+			}
+
+			player_object.name = string;
+
+			//write_line("Pointer: " + ail::hex_string_32((unsigned)player_pointer));
+
+			if(PyList_SetItem(output, i, reinterpret_cast<PyObject *>(player_pointer)) < 0)
+			{
+				error("Failed to set an element of the player data list");
 				exit_process();
 				return 0;
 			}

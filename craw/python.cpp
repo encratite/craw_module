@@ -45,9 +45,9 @@ namespace python
 			{"get_player_level", &get_player_level, METH_VARARGS, "Returns the numeric identifier of the area the player currently resides in or None if it failed to retrieve the identifier."},
 			{"get_player_id", &get_player_id, METH_VARARGS, "Returns the numeric identifier of the player unit or None if it fails to retrieve it."},
 			{"get_name_by_id", &get_name_by_id, METH_VARARGS, "Returns the name of a player given their numeric identifier or None if it fails to do so."},
-			{"get_player_ids", &get_player_ids, METH_VARARGS, "Returns a list containing the IDs of all players that are currently in the game."},
 			{"get_player_location", &get_player_location, METH_VARARGS, "Returns the player's location as a tuple (x, y) or None if the player is currently not in a game."},
 			{"get_tp_tome_id", &get_tp_tome_id, METH_VARARGS, "Returns the ID of the first non-empty Tome of Town Portal in the player's inventory or None if it failed to find one."},
+			{"get_players", &get_players, METH_VARARGS, "Returns a list of players currently in the game."},
 
 			{0, 0, 0, 0}
 		};
@@ -180,15 +180,11 @@ namespace python
 		output.tp_members = members;
 		output.tp_doc = "No documentation available.";
 
-		print_python_type(monster_data_type);
-
 		if(PyType_Ready(&output) < 0)
 		{
 			error("Failed to initialise Python data type \"" + class_name + "\"");
 			exit_process();
 		}
-
-		print_python_type(monster_data_type);
 
 		Py_INCREF(&output);
 		if(PyModule_AddObject(module, class_name.c_str(), reinterpret_cast<PyObject *>(&output)) != 0)

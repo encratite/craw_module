@@ -14,7 +14,8 @@ class command_handler_class:
 			('say', '<text>', 'Send a chat message to the game server', one_or_more, self.say),
 			('bind', '<key> <Python expression>', 'Allows you to bind a key to an arbitrary action', two_or_more, self.bind),
 			('unbind', '<key>', 'Unbinds a previously bound key', 1, self.unbind),
-			('help', '', 'Prints the help for the Python commands', 0, self.print_help)
+			('help', '', 'Prints the help for the Python commands', 0, self.print_help),
+			('players', '', 'Print a list of players', 0, self.print_players)
 		]
 		
 	def process_command(self, line):
@@ -67,3 +68,11 @@ class command_handler_class:
 		for command_string, arguments, description, argument_count, command_handler in self.command_map:
 			print 'Command: %s %s' % (command_string, arguments)
 			print 'Description: %s\n' % description
+			
+	def print_players(self, arguments):
+		players = craw.get_players()
+		for player in players:
+			print 'Name: %s' % player.name
+			print 'ID: %08x' % player.id
+			print 'Level: %d' % player.level
+			print 'Character class: %d\n' % player.character_class

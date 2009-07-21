@@ -344,8 +344,6 @@ wchar_t * get_unit_name(unit * unit_pointer)
 	return output;
 }
 
-typedef std::vector<roster_unit> roster_vector;
-
 roster_vector get_roster_units()
 {
 	roster_vector output;
@@ -373,18 +371,6 @@ bool get_name_by_id(unsigned id, std::string & output)
 	}
 
 	return false;
-}
-
-std::vector<unsigned> get_player_ids()
-{
-	std::vector<unsigned> output;
-	roster_unit * roster_pointer = *reinterpret_cast<roster_unit **>(roster_list);
-	while(roster_pointer)
-	{
-		output.push_back(roster_pointer->unit_id);
-		roster_pointer = roster_pointer->next_roster;
-	}
-	return output;
 }
 
 bool get_non_empty_tp_tome_id(unsigned & output)

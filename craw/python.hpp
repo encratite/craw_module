@@ -59,9 +59,11 @@ namespace python
 
 	struct python_player_data
 	{
+		PyObject_HEAD
+
 		unsigned id;
 		uchar character_class;
-		uchar level; 
+		ushort level; 
 		PyObject * name;
 	};
 
@@ -78,9 +80,9 @@ namespace python
 	PyObject * get_player_level(PyObject * self, PyObject * arguments);
 	PyObject * get_player_id(PyObject * self, PyObject * arguments);
 	PyObject * get_name_by_id(PyObject * self, PyObject * arguments);
-	PyObject * get_player_ids(PyObject * self, PyObject * arguments);
 	PyObject * get_player_location(PyObject * self, PyObject * arguments);
 	PyObject * get_tp_tome_id(PyObject * self, PyObject * arguments);
+	PyObject * get_players(PyObject * self, PyObject * arguments);
 
 	void perform_automap_callback(unit & current_unit, int x, int y, uchar colour);
 	bool perform_packet_callback(std::string const & packet);

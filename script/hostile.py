@@ -7,10 +7,10 @@ def hostile_player(id):
 	
 def hostile_players():
 	print 'Declaring hostility to all players'
-	player_ids = craw.get_player_ids()
+	players = craw.get_players()
 	my_id = craw.get_player_id()
-	player_ids = filter(lambda id: id != my_id, player_ids)
+	players = filter(lambda player: player.id != my_id and player.level >= 9, players)
 	packet = ''
-	for id in player_ids:
-		packet += hostile_player(id)
+	for player in players:
+		packet += hostile_player(player.id)
 	craw.send_packet(packet)

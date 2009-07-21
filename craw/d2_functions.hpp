@@ -1,8 +1,11 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <ail/types.hpp>
 #include "d2_data.hpp"
+
+typedef std::vector<roster_unit> roster_vector;
 
 void initialise_d2win_addresses(unsigned base);
 void initialise_d2gfx_addresses(unsigned base);
@@ -74,6 +77,6 @@ bool get_player_level_number(unsigned & output);
 bool get_player_id(unsigned & output);
 wchar_t * get_unit_name(unit * unit_pointer);
 bool get_name_by_id(unsigned id, std::string & output);
-std::vector<unsigned> get_player_ids();
 bool get_non_empty_tp_tome_id(unsigned & output);
 bool player_is_in_game();
+roster_vector get_roster_units();
