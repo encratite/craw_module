@@ -1,6 +1,7 @@
 #include "python.hpp"
 #include "d2_functions.hpp"
 #include "utility.hpp"
+#include "reveal_map.hpp"
 
 namespace python
 {
@@ -245,5 +246,13 @@ namespace python
 			Py_RETURN_NONE;
 
 		return PyLong_FromUnsignedLong(id);
+	}
+
+	PyObject * reveal_act(PyObject * self, PyObject * arguments)
+	{
+		if(::reveal_act())
+			Py_RETURN_TRUE;
+		else
+			Py_RETURN_FALSE;
 	}
 }
