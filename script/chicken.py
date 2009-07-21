@@ -24,12 +24,12 @@ class chicken_handler_class:
 		
 		print '%d damage, %d/%d left (%s)' % (damage, new_life, maximum_life, percent)
 		
-		in_town = self.utility.town_check()
+		in_town = utility.town_check()
 		
 		if in_town == None:
 			return
 		
-		if not in_town and configuration.chicken and ratio <= configuration.configuration.chicken_ratio:
+		if not in_town and configuration.chicken and ratio <= configuration.chicken_ratio:
 			print 'Leaving the game because the configuration.chicken life ratio has been reached'
 			craw.leave_game()
 			
@@ -55,7 +55,7 @@ class chicken_handler_class:
 		if in_town == None:
 			return
 			
-		if not in_town and configuration.configuration.chicken_on_hostile:
+		if not in_town and configuration.chicken_on_hostile:
 			player_name = craw.get_name_by_id(player_id_2)
 			if player_name == None:
 				print 'Leaving the game because an unknown player has declared hostility against us'

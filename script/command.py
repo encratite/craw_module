@@ -14,6 +14,7 @@ class command_handler_class:
 			('say', '<text>', 'Send a chat message to the game server', one_or_more, self.say),
 			('bind', '<key> <Python expression>', 'Allows you to bind a key to an arbitrary action', two_or_more, self.bind),
 			('unbind', '<key>', 'Unbinds a previously bound key', 1, self.unbind),
+			('bindings', '', 'Lists all the keys currently bound', 0, self.bindings),
 			('help', '', 'Prints the help for the Python commands', 0, self.print_help),
 			('players', '', 'Print a list of players', 0, self.print_players)
 		]
@@ -62,6 +63,10 @@ class command_handler_class:
 		key = arguments[0]
 		self.bind_handler.unbind(key)
 		print 'Unbound key "%s"' % key
+		
+	def bindings(self, arguments):
+		print 'List of keys currently bound:'
+		self.bind_handler.print_bindings()
 		
 	def print_help(self, arguments):
 		print '\nPython commands:\n'

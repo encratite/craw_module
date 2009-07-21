@@ -27,6 +27,10 @@ class bind_handler:
 		self.bindings.pop(key)
 		self.serialise_bindings()
 		
+	def print_bindings(self):
+		for key in self.bindings:
+			print '"%s": %s' % (key, self.bindings[key])
+		
 	def serialise_bindings(self):
 		data = '#This file was generated automatically, do not edit it at runtime\n\n'
 		data += 'bindings = {\n'
