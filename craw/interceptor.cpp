@@ -165,6 +165,11 @@ void d2client(unsigned base)
 	set_own_context(debug_registers);
 }
 
+void bnclient(unsigned base)
+{
+	initialise_bnclient_addresses(base);
+}
+
 void initialise_dll_vector()
 {
 	dll_vector.push_back(dll_load_event("D2Win.dll", &initialise_d2win_addresses));
@@ -173,6 +178,7 @@ void initialise_dll_vector()
 	dll_vector.push_back(dll_load_event("D2Client.dll", &d2client));
 
 	dll_vector.push_back(dll_load_event("D2Net.dll", &d2net));
+	dll_vector.push_back(dll_load_event("Bnclient.dll", &bnclient));
 }
 
 void perform_dll_check()

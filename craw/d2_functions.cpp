@@ -40,7 +40,8 @@ namespace
 		d2gfx_base = 0x6FA80000,
 		d2common_base = 0x6FD50000,
 		d2client_base = 0x6FAB0000,
-		d2net_base = 0x6FBF0000;
+		d2net_base = 0x6FBF0000,
+		bnclient_base = 0x6FF20000;
 
 	bool d2client_has_been_loaded = false;
 
@@ -93,6 +94,9 @@ unsigned get_unit_name_address;
 
 //D2Net.dll
 send_packet_type d2_send_packet;
+
+//Bnclient.dll
+unsigned server_token_address = 0;
 
 void initialise_d2win_addresses(unsigned base)
 {
@@ -158,6 +162,13 @@ void initialise_d2net_addresses(unsigned base)
 	module_offset_handler offset_handler(d2net_base, base);
 
 	offset_handler.fix(d2_send_packet, 0x6FBF6F90);
+}
+
+void initialise_bnclient_addresses(unsigned base)
+{
+	module_offset_handler offset_handler(bnclient_base, base);
+
+	offset_handler.fix(server_token_address, 0x6FF3F5D8);
 }
 
 void draw_text(std::string const & text, int x, int y, unsigned colour, bool centered)

@@ -12,6 +12,7 @@ void initialise_d2gfx_addresses(unsigned base);
 void initialise_d2common_addresses(unsigned base);
 void initialise_d2client_addresses(unsigned base);
 void initialise_d2net_addresses(unsigned base);
+void initialise_bnclient_addresses(unsigned base);
 
 typedef unsigned (__fastcall * set_font_size_type)(unsigned new_size);
 typedef void (__fastcall * draw_text_type)(wchar_t const * text, int x, int y, unsigned colour, int unknown);
@@ -63,6 +64,8 @@ extern unsigned light_handler_address;
 
 extern unsigned automap_handler_address;
 extern unsigned automap_loop_address;
+
+extern unsigned server_token_address;
 
 void draw_text(std::string const & text, int x, int y, unsigned colour, bool centered);
 void __stdcall draw_box(int x, int y, unsigned colour);

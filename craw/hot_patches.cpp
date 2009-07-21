@@ -15,6 +15,7 @@
 #include "hide.hpp"
 #include "interceptor.hpp"
 #include "keyboard.hpp"
+#include "d2_functions.hpp"
 
 HWND d2_window;
 
@@ -39,11 +40,6 @@ namespace
 	send_type real_send;
 	VirtualQuery_type real_VirtualQuery;
 	RegisterClass_type real_RegisterClass;
-
-	bool got_server_token = false;
-	std::string token_buffer;
-	ulong server_token;
-	int logon_socket = INVALID_SOCKET;
 
 	WNDPROC d2_window_procedure;
 }
@@ -164,35 +160,11 @@ HWND WINAPI patched_CreateWindowEx(DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR
 	return output;
 }
 
-void perform_token_buffer_check()
-{
-	if(token_buffer.substr(8, 2) == "\xff\x50")
-	{
-		server_token = ail::read_little_endian(token_buffer.c_str(), 4, 16);
-		got_server_token = true;
-	}
-}
-
 int WINAPI patched_recv(SOCKET s, char * buf, int len, int flags)
 {
 	int output = real_recv(s, buf, len, flags);
 	if(output != SOCKET_ERROR)
 	{
-		std::string data(buf, output);
-
-		if(data.substr(0, 2) == "\xff\x25")
-			logon_socket = s;
-		
-		if(s == logon_socket && !got_server_token)
-		{
-			token_buffer += data;
-			perform_token_buffer_check();
-
-			/*
-			if(verbose)
-				write_line("Retrieved server token: " + ail::hex_string_32(server_token));
-			*/
-		}
 	}
 	return output;
 }
@@ -202,13 +174,16 @@ int WINAPI patched_send(SOCKET s, const char * buf, int len, int flags)
 	std::string data(buf, len);
 	if(use_custom_keys && data.size() > 64 && data.substr(0, 2) == "\xff\x51")
 	{
-		if(!got_server_token)
+		ulong client_token = ail::read_little_endian(data.c_str(), 4, 4);
+
+		if(server_token_address == 0)
 		{
-			error("Didn't receive a server token!");
+			error("Unable to retrieve the server token");
 			exit_process();
 		}
 
-		ulong client_token = ail::read_little_endian(data.c_str(), 4, 4);
+		ulong server_token = ail::read_little_endian(reinterpret_cast<char *>(server_token_address), 4);
+
 		std::string
 			classic_hash,
 			classic_public,
@@ -237,26 +212,6 @@ int WINAPI patched_send(SOCKET s, const char * buf, int len, int flags)
 
 		data.replace(68, 4, expansion_public);
 		data.replace(76, 20, expansion_hash);
-
-		/*
-		std::string new_packet = ail::hex_string(data);
-		std::string log = ail::timestamp() + "\n" + original_packet + "\n" + new_packet + "\n\n";
-
-		write_line(log);
-
-		ail::append_to_file("cdkey.log", log);
-
-		if(original_packet != new_packet)
-		{
-			write_line("Packets do not match!");
-			std::cin.get();
-			exit_process();
-		}
-		*/
-
-		got_server_token = false;
-		token_buffer.clear();
-		logon_socket = INVALID_SOCKET;
 		
 		return real_send(s, data.c_str(), static_cast<int>(data.size()), flags);
 	}
