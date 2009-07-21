@@ -3,6 +3,7 @@ import craw, string, utility, types, bind
 class command_handler_class:
 	def __init__(self):
 		self.town_portal_handler = None
+		self.skill_handler = None
 		self.bind_handler = bind.bind_handler()
 		self.bind_handler.command_handler = self
 		
@@ -16,7 +17,8 @@ class command_handler_class:
 			('unbind', '<key>', 'Unbinds a previously bound key', 1, self.unbind),
 			('bindings', '', 'Lists all the keys currently bound', 0, self.bindings),
 			('help', '', 'Prints the help for the Python commands', 0, self.print_help),
-			('players', '', 'Print a list of players', 0, self.print_players)
+			('players', '', 'Print a list of players', 0, self.print_players),
+			('skills', '', 'Sets your skills to the values currently specified', 0, self.set_skills)
 		]
 		
 	def process_command(self, line):
@@ -47,6 +49,10 @@ class command_handler_class:
 			return True
 				
 		return False
+		
+	def set_skills(self, arguments):
+		if self.skill_handler != None:
+			self.skill_handler.set_skills()
 		
 	def say(self, arguments):
 		message = string.join(arguments, ' ')

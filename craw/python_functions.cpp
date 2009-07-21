@@ -255,4 +255,17 @@ namespace python
 		else
 			Py_RETURN_FALSE;
 	}
+
+	PyObject * receive_packet(PyObject * self, PyObject * arguments)
+	{
+		char const * data;
+		Py_ssize_t size;
+
+		if(!PyArg_ParseTuple(arguments, "s#", &data, &size))
+			return 0;
+
+		d2_receive_packet(data, size);
+
+		Py_RETURN_NONE;
+	}
 }

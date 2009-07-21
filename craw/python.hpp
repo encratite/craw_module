@@ -89,6 +89,7 @@ namespace python
 	PyObject * get_tp_tome_id(PyObject * self, PyObject * arguments);
 	PyObject * get_players(PyObject * self, PyObject * arguments);
 	PyObject * reveal_act(PyObject * self, PyObject * arguments);
+	PyObject * receive_packet(PyObject * self, PyObject * arguments);
 
 	void perform_automap_callback(unit & current_unit, int x, int y, uchar colour);
 	bool perform_packet_callback(std::string const & packet);

@@ -30,7 +30,7 @@ class chicken_handler_class:
 			return
 		
 		if not in_town and configuration.chicken and ratio <= configuration.chicken_ratio:
-			print 'Leaving the game because the configuration.chicken life ratio has been reached'
+			print 'Leaving the game because the chicken life ratio has been reached'
 			craw.leave_game()
 			
 	def hostile_check(self, bytes):

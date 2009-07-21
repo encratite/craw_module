@@ -68,3 +68,36 @@ def send_chat(message):
 	
 def get_configuration_directory():
 	return os.path.join(sys.path[-1], '..', 'configuration')
+	
+def read_name(bytes, offset):
+	output = ''
+	i = 0
+	while i < 16:
+		byte = bytes[i]
+		if byte == 0:
+			return output
+		output += chr(byte)	
+	return output
+	
+def get_character_class_string(character_class):
+	strings = [
+		'Amazon',
+		'Sorceress',
+		'Necromancer',
+		'Paladin',
+		'Barbarian',
+		'Druid',
+		'Assassin'
+	]
+	
+	return strings[character_class]
+	
+def get_character_string(character):
+	return 'Level %d %s' % (character.level, get_character_class_string(character.character_class))
+	
+def get_player_data_by_name(name):
+	players = craw.get_players()
+	for player in players:
+		if player.name == name:
+			return player
+	return None

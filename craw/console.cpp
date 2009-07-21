@@ -30,6 +30,7 @@ namespace
 		console_command("reveal", "", "Reveal the map of the act your character is currently in", 0, &reveal_act_command),
 		//console_command("test", "", "Perform maphack test", 0, &maphack_test),
 		console_command("name", "", "Retrieve your character's name", 0, &get_character_name_command),
+		console_command("player", "", "Get player pointer", 0, &get_player_pointer),
 	};
 }
 
@@ -53,17 +54,15 @@ void print_life(string_vector const & arguments)
 		current_life,
 		maximum_life;
 
-	/*
-	__asm
-	{
-		int 3
-	}
-	*/
-
 	if(get_life(current_life, maximum_life))
 		std::cout << "Life: " << current_life << "/" << maximum_life << std::endl;
 	else
 		std::cout << "Your character is not in a game" << std::endl;
+}
+
+void get_player_pointer(string_vector const & arguments)
+{
+	std::cout << ail::hex_string_32(reinterpret_cast<ulong>(d2_get_player_unit())) << std::endl;
 }
 
 void maphack_test(string_vector const & arguments)

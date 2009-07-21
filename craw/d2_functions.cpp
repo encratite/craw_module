@@ -94,6 +94,7 @@ unsigned get_unit_name_address;
 
 //D2Net.dll
 send_packet_type d2_send_packet;
+receive_packet_type d2_receive_packet;
 
 //Bnclient.dll
 unsigned server_token_address = 0;
@@ -162,6 +163,7 @@ void initialise_d2net_addresses(unsigned base)
 	module_offset_handler offset_handler(d2net_base, base);
 
 	offset_handler.fix(d2_send_packet, 0x6FBF6F90);
+	offset_handler.fix(d2_receive_packet, 0x6FBF6510);
 }
 
 void initialise_bnclient_addresses(unsigned base)

@@ -49,6 +49,7 @@ namespace python
 			{"get_tp_tome_id", &get_tp_tome_id, METH_VARARGS, "Returns the ID of the first non-empty Tome of Town Portal in the player's inventory or None if it failed to find one."},
 			{"get_players", &get_players, METH_VARARGS, "Returns a list of players currently in the game."},
 			{"reveal_act", &reveal_act, METH_VARARGS, "Reveal the current act on the automap."},
+			{"receive_packet", &receive_packet, METH_VARARGS, "Artificially receives a packet on the client side."},
 
 			{0, 0, 0, 0}
 		};

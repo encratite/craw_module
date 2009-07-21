@@ -3,7 +3,7 @@ import sys, utility
 
 sys.path.append(utility.get_configuration_directory())
 
-import configuration, craw, automap, packets, chicken, command, town_portal
+import configuration, craw, automap, packets, chicken, command, town_portal, player_kill, skills
 
 #Set up handlers
 
@@ -22,3 +22,10 @@ packet_handler.add_byte_handler(chicken_handler.process_bytes)
 town_portal_handler = town_portal.town_portal_class()
 packet_handler.add_byte_handler(town_portal_handler.process_bytes)
 command_handler.town_portal_handler = town_portal_handler
+
+player_kill_handler = player_kill.player_kill_handler_class()
+packet_handler.add_byte_handler(player_kill_handler.process_bytes)
+
+skill_handler = skills.skill_handler_class()
+packet_handler.add_byte_handler(skill_handler.process_bytes)
+command_handler.skill_handler = skill_handler

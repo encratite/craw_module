@@ -36,6 +36,7 @@ typedef unit * (__fastcall * get_unit_pointer_type)(unsigned id, unsigned type);
 typedef unit * (__stdcall * get_inventory_item_type)(void * inventory);
 typedef unit * (__stdcall * get_next_inventory_item_type)(unit * item);
 typedef item_text * (__stdcall * get_item_text_type)(unsigned item_number);
+typedef void (__stdcall * receive_packet_type)(char const * packet, std::size_t size);
 
 extern set_font_size_type d2_set_font_size;
 extern draw_text_type d2_draw_text;
@@ -59,6 +60,7 @@ extern get_unit_pointer_type d2_get_unit_pointer;
 extern get_inventory_item_type d2_get_inventory_item;
 extern get_next_inventory_item_type d2_get_next_inventory_item;
 extern get_item_text_type d2_get_item_text;
+extern receive_packet_type d2_receive_packet;
 
 extern unsigned light_handler_address;
 
