@@ -1,4 +1,4 @@
-import craw, string, utility, types, bind
+import craw, string, utility, types, bind, flash
 
 class command_handler_class:
 	def __init__(self):
@@ -6,6 +6,7 @@ class command_handler_class:
 		self.skill_handler = None
 		self.bind_handler = bind.bind_handler()
 		self.bind_handler.command_handler = self
+		self.flash_objects = []
 		
 		one_or_more = lambda x: x >= 1
 		two_or_more = lambda x: x >= 2
@@ -18,7 +19,9 @@ class command_handler_class:
 			('bindings', '', 'Lists all the keys currently bound', 0, self.bindings),
 			('help', '', 'Prints the help for the Python commands', 0, self.print_help),
 			('players', '', 'Print a list of players', 0, self.print_players),
-			('skills', '', 'Sets your skills to the values currently specified', 0, self.set_skills)
+			('skills', '', 'Sets your skills to the values currently specified', 0, self.set_skills),
+			('flash', '<index> <delay in ms>', 'Flashes a player at the specified rate', 2, self.flash),
+			('stop', '', 'Stop all flashing threads', 0, self.stop)
 		]
 		
 	def process_command(self, line):
@@ -82,7 +85,9 @@ class command_handler_class:
 			
 	def print_players(self, arguments):
 		players = craw.get_players()
+		index = 0
 		for player in players:
+			print 'Player index: %d' % index
 			print 'Name: %s' % player.name
 			print 'ID: %08x' % player.id
 			print 'Level: %d' % player.level
@@ -90,3 +95,28 @@ class command_handler_class:
 			print 'Life: %d' % player.life
 			print 'Area: %d' % player.level_id
 			print 'Location: (%d, %d)\n' % (player.x, player.y)
+			index += 1
+			
+	def flash(self, arguments):
+		try:
+			index = int(arguments[0])
+			delay = int(arguments[1])
+		except:
+			print 'Invalid input'
+			return
+			
+		players = craw.get_players()
+		if index < 0 or index >= len(players):
+			print 'Invalid player index specified'
+			return
+			
+		id = players[index].id
+		print 'Launching a flash thread for id %08x at %d ms' % (id, delay)
+		delay = float(delay) / 1000.0
+		self.flash_objects.append(flash.flash_thread(id, delay))
+		
+	def stop(self, arguments):
+		print 'Stopping all threads'
+		for flash_object in self.flash_objects:
+			flash_object.run_thread = False
+		self.flash_objects = []
