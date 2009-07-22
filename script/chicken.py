@@ -22,6 +22,10 @@ class chicken_handler_class:
 		ratio = float(new_life) / maximum_life
 		percent = '%.2f%%' % (ratio * 100)
 		
+		if new_life == maximum_life:
+			#hack for a strange bug
+			return
+		
 		print '%d damage, %d/%d left (%s)' % (damage, new_life, maximum_life, percent)
 		
 		in_town = utility.town_check()

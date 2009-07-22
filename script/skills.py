@@ -1,4 +1,4 @@
-import configuration, craw, utility
+import configuration, craw
 
 class skill_handler_class:
 	def __init__(self):

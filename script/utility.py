@@ -1,4 +1,4 @@
-import craw, os, sys
+import craw, os, sys, utility
 
 def get_flag(flags, offset):
 	return ((flags >> offset) & 1) != 0
@@ -47,6 +47,13 @@ def pack_number(number, size):
 	
 def get_packet_string(packet):
 	output = ''
+	
+	if len(packet) == 0:
+		return output
+		
+	if type(packet[0]) != str:
+		packet = map(chr, packet)
+	
 	first = True
 	for byte in packet:
 		if first:
@@ -73,10 +80,12 @@ def read_name(bytes, offset):
 	output = ''
 	i = 0
 	while i < 16:
-		byte = bytes[i]
+		byte = bytes[offset]
 		if byte == 0:
 			return output
 		output += chr(byte)	
+		i += 1
+		offset += 1
 	return output
 	
 def get_character_class_string(character_class):
@@ -98,6 +107,7 @@ def get_character_string(character):
 def get_player_data_by_name(name):
 	players = craw.get_players()
 	for player in players:
+		print '%s == %s' % (player.name, name)
 		if player.name == name:
 			return player
 	return None
