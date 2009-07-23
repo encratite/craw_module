@@ -92,6 +92,8 @@ namespace python
 		if(!command_handler)
 			return false;
 
+		boost::mutex::scoped_lock lock(python_mutex);
+
 		PyObject * argument = PyString_FromStringAndSize(line.c_str(), line.size());
 		if(argument == 0)
 		{
@@ -120,6 +122,8 @@ namespace python
 		if(!keyboard_handler)
 			return false;
 
+		boost::mutex::scoped_lock lock(python_mutex);
+
 		PyObject * argument = PyLong_FromUnsignedLong(virtual_key);
 		PyObject * return_value = PyObject_CallFunction(keyboard_handler, "O", argument);
 		if(!return_value)
@@ -138,6 +142,8 @@ namespace python
 	{
 		if(!bncs_packet_handler)
 			return false;
+
+		boost::mutex::scoped_lock lock(python_mutex);
 
 		PyObject * argument = PyString_FromStringAndSize(packet.c_str(), packet.size());
 		PyObject * return_value = PyObject_CallFunction(bncs_packet_handler, "O", argument);

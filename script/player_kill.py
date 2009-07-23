@@ -32,7 +32,9 @@ class player_kill_handler_class:
 		print 'victim_whois_handler received %s' % account
 		self.pending_requests[0].victim.account = account
 		killer_name = self.pending_requests[0].killer.name
+		print 'Continuing with %s' % killer_name
 		self.request_lock.release()
+		print 'Performing next whois'
 		self.bncs_handler.whois(killer_name, self.killer_whois_handler)
 		
 	def killer_whois_handler(self, account):
