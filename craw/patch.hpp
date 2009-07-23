@@ -20,6 +20,8 @@ struct hot_patch_entry
 	hot_patch_entry(std::string const & module, std::string const & procedure, void * function, void * & real_function, bool enabled = true);
 };
 
+void send_bncs_data(std::string const & data);
+
 bool hot_patch_function(std::string const & module, std::string const & function, void * function_pointer, void * & old_address);
 bool patch_function(std::string const & module, std::string const & procedure, void * & address, void * custom_function);
 bool patch_address(unsigned address, void * target);

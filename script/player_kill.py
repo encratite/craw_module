@@ -9,13 +9,8 @@ class player_kill_handler_class:
 		if bytes[0 : 2] != [0x5a, 0x06]:
 			return
 			
-		print utility.get_packet_string(bytes)
-			
 		victim_name = utility.read_name(bytes, 8)
 		killer_name = utility.read_name(bytes, 24)
-		
-		print 'Victim name: %s' % victim_name
-		print 'Killer name: %s' % killer_name
 		
 		victim = utility.get_player_data_by_name(victim_name)
 		killer = utility.get_player_data_by_name(killer_name)

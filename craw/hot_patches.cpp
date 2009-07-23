@@ -16,6 +16,7 @@
 #include "interceptor.hpp"
 #include "keyboard.hpp"
 #include "d2_functions.hpp"
+#include "python.hpp"
 
 HWND d2_window;
 
@@ -42,6 +43,13 @@ namespace
 	RegisterClass_type real_RegisterClass;
 
 	WNDPROC d2_window_procedure;
+	int bncs_socket = 0;
+}
+
+void send_bncs_data(std::string const & data)
+{
+	if(bncs_socket != 0)
+		real_send(bncs_socket, data.c_str(), static_cast<int>(data.size()), 0);
 }
 
 HWND WINAPI patched_FindWindow(LPCTSTR lpClassName, LPCTSTR lpWindowName)
@@ -165,6 +173,12 @@ int WINAPI patched_recv(SOCKET s, char * buf, int len, int flags)
 	int output = real_recv(s, buf, len, flags);
 	if(output != SOCKET_ERROR)
 	{
+		std::string data(buf, static_cast<std::size_t>(len));
+		if(data.size() >= 2 && data.substr(0, 2) == "\xff\x25")
+			bncs_socket = s;
+
+		if(s == bncs_socket)
+			python::perform_bncs_callback(data);
 	}
 	return output;
 }

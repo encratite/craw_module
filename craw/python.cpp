@@ -15,7 +15,8 @@ namespace python
 		* automap_handler = 0,
 		* packet_handler = 0,
 		* command_handler = 0,
-		* keyboard_handler = 0;
+		* keyboard_handler = 0,
+		* bncs_packet_handler = 0;
 
 	PyTypeObject
 		monster_data_type,
@@ -35,6 +36,7 @@ namespace python
 			{"set_packet_handler", &set_packet_handler, METH_VARARGS, "This function allows you to specify a packet handler which can react to incoming packets from the game server."},
 			{"set_command_handler", &set_command_handler, METH_VARARGS, "This function allows you to specify a console command handler which is called when the user has entered a command in the module's console."},
 			{"set_keyboard_handler", &set_keyboard_handler, METH_VARARGS, "This function allows you to specify a keyboard handler which is called whenever a key is pressed in game when the player is not chatting."},
+			{"set_bncs_packet_handler", &set_bncs_packet_handler, METH_VARARGS, "This function allows you to specify a packet handler for incoming Battle.net Chat Server packets."},
 
 			{"draw_line", &draw_line, METH_VARARGS, "Draws a single line."},
 			{"draw_text", &draw_text, METH_VARARGS, "Draws text on the screen."},
@@ -50,6 +52,7 @@ namespace python
 			{"get_players", &get_players, METH_VARARGS, "Returns a list of players currently in the game."},
 			{"reveal_act", &reveal_act, METH_VARARGS, "Reveal the current act on the automap."},
 			{"receive_packet", &receive_packet, METH_VARARGS, "Artificially receives a packet on the client side."},
+			{"send_bncs_packet", &send_bncs_packet, METH_VARARGS, "Sends a packet to the Battle.net Chat Server."},
 
 			{0, 0, 0, 0}
 		};
@@ -195,8 +198,6 @@ namespace python
 			exit_process();
 		}
 	}
-
-
 	
 	PyMODINIT_FUNC initialise_module()
 	{

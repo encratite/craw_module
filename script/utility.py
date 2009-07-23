@@ -107,7 +107,7 @@ def get_character_string(character):
 def get_player_data_by_name(name):
 	players = craw.get_players()
 	for player in players:
-		print '%s == %s' % (player.name, name)
+		#print '%s == %s' % (player.name, name)
 		if player.name == name:
 			return player
 	return None

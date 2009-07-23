@@ -133,4 +133,23 @@ namespace python
 
 		return true;
 	}
+
+	bool perform_bncs_callback(std::string const & packet)
+	{
+		if(!bncs_packet_handler)
+			return false;
+
+		PyObject * argument = PyString_FromStringAndSize(packet.c_str(), packet.size());
+		PyObject * return_value = PyObject_CallFunction(bncs_packet_handler, "O", argument);
+		if(!return_value)
+		{
+			PyErr_Print();
+			return false;
+		}
+
+		Py_XDECREF(argument);
+		Py_DECREF(return_value);
+
+		return true;
+	}
 }

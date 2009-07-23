@@ -2,6 +2,7 @@
 #include "d2_functions.hpp"
 #include "utility.hpp"
 #include "reveal_map.hpp"
+#include "patch.hpp"
 
 namespace python
 {
@@ -50,6 +51,11 @@ namespace python
 	PyObject * set_keyboard_handler(PyObject * self, PyObject * arguments)
 	{
 		return set_handler(self, arguments, "set_keyboard_handler", keyboard_handler);
+	}
+
+	PyObject * set_bncs_packet_handler(PyObject * self, PyObject * arguments)
+	{
+		return set_handler(self, arguments, "set_bncs_packet_handler", bncs_packet_handler);
 	}
 
 	void fix_coordinate(int & coordinate, int maximum)
@@ -265,6 +271,20 @@ namespace python
 			return 0;
 
 		d2_receive_packet(data, size);
+
+		Py_RETURN_NONE;
+	}
+
+	PyObject * send_bncs_packet(PyObject * self, PyObject * arguments)
+	{
+		char const * data;
+		Py_ssize_t size;
+
+		if(!PyArg_ParseTuple(arguments, "s#", &data, &size))
+			return 0;
+
+		std::string packet(data, size);
+		send_bncs_data(packet);
 
 		Py_RETURN_NONE;
 	}

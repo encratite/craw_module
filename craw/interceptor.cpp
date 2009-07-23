@@ -250,6 +250,20 @@ bool process_thread_entry(DWORD process_id, DWORD current_thread_id, THREADENTRY
 	if(verbose)
 		write_line("Main thread: " + ail::hex_string_32(thread_id));
 	main_thread_id = thread_id;
+	HANDLE thread_handle = OpenThread(THREAD_SET_INFORMATION, FALSE, main_thread_id);
+	if(thread_handle == 0)
+	{
+		last_error("Unable to open the main thread with the permissions required to change the thread priority");
+		exit_process();
+		return true;
+	}
+	if(SetThreadPriority(thread_handle, 0) == 0)
+	{
+		last_error("Unable to change thread priority");
+		exit_process();
+		return true;
+	}
+	CloseHandle(thread_handle);
 	return true;
 }
 

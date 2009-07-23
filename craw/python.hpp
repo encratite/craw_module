@@ -10,7 +10,8 @@ namespace python
 		* automap_handler,
 		* packet_handler,
 		* command_handler,
-		* keyboard_handler;
+		* keyboard_handler,
+		* bncs_packet_handler;
 
 	extern PyMemberDef
 		monster_data_members[],
@@ -76,6 +77,7 @@ namespace python
 	PyObject * set_packet_handler(PyObject * self, PyObject * arguments);
 	PyObject * set_command_handler(PyObject * self, PyObject * arguments);
 	PyObject * set_keyboard_handler(PyObject * self, PyObject * arguments);
+	PyObject * set_bncs_packet_handler(PyObject * self, PyObject * arguments);
 
 	PyObject * draw_line(PyObject * self, PyObject * arguments);
 	PyObject * draw_text(PyObject * self, PyObject * arguments);
@@ -90,11 +92,13 @@ namespace python
 	PyObject * get_players(PyObject * self, PyObject * arguments);
 	PyObject * reveal_act(PyObject * self, PyObject * arguments);
 	PyObject * receive_packet(PyObject * self, PyObject * arguments);
+	PyObject * send_bncs_packet(PyObject * self, PyObject * arguments);
 
 	void perform_automap_callback(unit & current_unit, int x, int y, uchar colour);
 	bool perform_packet_callback(std::string const & packet);
 	bool perform_command_callback(std::string const & line);
 	bool perform_keyboard_callback(unsigned virtual_key);
+	bool perform_bncs_callback(std::string const & packet);
 
 	PyMODINIT_FUNC initialise_module();
 
