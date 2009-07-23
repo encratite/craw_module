@@ -29,11 +29,15 @@ class player_kill_handler_class:
 	
 	def victim_whois_handler(self, account):
 		self.request_lock.acquire()
+		print 'victim_whois_handler received %s' % account
 		self.pending_requests[0].victim.account = account
+		killer_name = self.pending_requests[0].killer.name
 		self.request_lock.release()
+		self.bncs_handler.whois(killer_name, self.killer_whois_handler)
 		
 	def killer_whois_handler(self, account):
 		self.request_lock.acquire()
+		print 'killer_whois_handler received %s' % account
 		request = self.pending_requests[0]
 		self.pending_requests = self.pending_requests[1 : ]
 		request.killer.account = account
@@ -64,8 +68,7 @@ class player_kill_handler_class:
 		print line
 		
 		self.request_lock.acquire()
-		self.pending_requests.append(player_kill_whois_request(killer_name, victim_name))
+		self.pending_requests.append(player_kill_whois_request(victim_name, killer_name))
 		self.request_lock.release()
 		
 		self.bncs_handler.whois(victim_name, self.victim_whois_handler)
-		self.bncs_handler.whois(killer_name, self.killer_whois_handler)

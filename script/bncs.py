@@ -12,8 +12,9 @@ class bncs_packet_handler_class:
 				return
 			print 'Account: %s' % account
 			self.queue_lock.acquire()
-			self.whois_handler_queue[0](account)
-			self.whois_handler_queue = self.whois_handler_queue[1 : ]
+			if len(self.whois_handler_queue) > 0:
+				self.whois_handler_queue[0](account)
+				self.whois_handler_queue = self.whois_handler_queue[1 : ]
 			self.queue_lock.release()
 			
 			
@@ -21,6 +22,7 @@ class bncs_packet_handler_class:
 		self.queue_lock.acquire()
 		self.whois_handler_queue.append(handler)
 		command = '/whois %s' % name;
-		packet = '\xff\x0e' + utility.pack_number(len(command) + 5, 1) + '\x00\x00'
+		packet = '\xff\x0e' + utility.pack_number(len(command) + 5, 1) + '\x00' + command + '\x00'
+		print utility.get_packet_string(packet)
 		craw.send_bncs_packet(packet)
 		self.queue_lock.release()

@@ -13,9 +13,10 @@ def tppk():
 	get_tp_handler().tppk()
 	
 def reveal_act():
-	print 'Revealed the currrent act'
+	#print 'Revealed the currrent act'
 	if craw.reveal_act():
-		print 'Successfully revealed the act'
+		#print 'Successfully revealed the act'
+		pass
 	else:
 		print 'Failed to reveal the current act!'
 

@@ -6,6 +6,7 @@ class command_handler_class:
 		self.skill_handler = None
 		self.bind_handler = bind.bind_handler()
 		self.bind_handler.command_handler = self
+		self.bncs_handler = None
 		self.flash_objects = []
 		
 		one_or_more = lambda x: x >= 1
@@ -21,7 +22,8 @@ class command_handler_class:
 			('players', '', 'Print a list of players', 0, self.print_players),
 			('skills', '', 'Sets your skills to the values currently specified', 0, self.set_skills),
 			('flash', '<index> <delay in ms>', 'Flashes a player at the specified rate', 2, self.flash),
-			('stop', '', 'Stop all flashing threads', 0, self.stop)
+			('stop', '', 'Stop all flashing threads', 0, self.stop),
+			('whois', '<player>', 'Whois a player', 1, self.whois)
 		]
 		
 	def process_command(self, line):
@@ -120,3 +122,11 @@ class command_handler_class:
 		for flash_object in self.flash_objects:
 			flash_object.run_thread = False
 		self.flash_objects = []
+		
+	def whois_callback(self, account):
+		print 'Account: %s' % account
+		
+	def whois(self, arguments):
+		name = arguments[0]
+		print 'Running a whois on %s' % name
+		self.bncs_handler.whois(name, self.whois_callback)
