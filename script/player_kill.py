@@ -29,17 +29,13 @@ class player_kill_handler_class:
 	
 	def victim_whois_handler(self, account):
 		self.request_lock.acquire()
-		print 'victim_whois_handler received %s' % account
 		self.pending_requests[0].victim.account = account
 		killer_name = self.pending_requests[0].killer.name
-		print 'Continuing with %s' % killer_name
 		self.request_lock.release()
-		print 'Performing next whois'
 		self.bncs_handler.whois(killer_name, self.killer_whois_handler)
 		
 	def killer_whois_handler(self, account):
 		self.request_lock.acquire()
-		print 'killer_whois_handler received %s' % account
 		request = self.pending_requests[0]
 		self.pending_requests = self.pending_requests[1 : ]
 		request.killer.account = account
@@ -56,6 +52,7 @@ class player_kill_handler_class:
 		victim_name = utility.read_name(bytes, 8)
 		killer_name = utility.read_name(bytes, 24)
 		
+		"""
 		victim = utility.get_player_data_by_name(victim_name)
 		killer = utility.get_player_data_by_name(killer_name)
 		
@@ -68,6 +65,7 @@ class player_kill_handler_class:
 		
 		line = '%s %s (%s) was slain by %s (%s) ' % (nil.time.timestamp(), victim_name, victim_string, killer_name, killer_string)
 		print line
+		"""
 		
 		self.request_lock.acquire()
 		self.pending_requests.append(player_kill_whois_request(victim_name, killer_name))

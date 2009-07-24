@@ -92,6 +92,10 @@ unsigned automap_loop_address;
 
 unsigned get_unit_name_address;
 
+unsigned
+	add_unit_address1,
+	add_unit_address2;
+
 //D2Net.dll
 send_packet_type d2_send_packet;
 receive_packet_type d2_receive_packet;
@@ -154,6 +158,9 @@ void initialise_d2client_addresses(unsigned base)
 	offset_handler.fix(automap_handler_address, 0x6FAEF920);
 	offset_handler.fix(automap_loop_address, 0x6FAF0350);
 	offset_handler.fix(get_unit_name_address, 0x6FACF3D0);
+
+	offset_handler.fix(add_unit_address1, 0x6FACFD9B);
+	offset_handler.fix(add_unit_address2, 0x6FACFD9E);
 
 	d2client_has_been_loaded = true;
 }

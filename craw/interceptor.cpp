@@ -21,6 +21,10 @@ namespace
 	unsigned
 		packet_reception_interceptor_address,
 		packet_reception_post_interceptor_address;
+
+	std::size_t const
+		packet_register_index = 2,
+		add_unit_register_index = 3;
 }
 
 typedef void (* initialisation_function_type)(unsigned base);
@@ -122,9 +126,8 @@ void debug_register_automap_loop(CONTEXT & thread_context)
 
 void debug_register_receive_packet(CONTEXT & thread_context)
 {
-	debug_register_vector debug_registers = main_debug_register_entries;
-	debug_registers.push_back(debug_register_data(packet_reception_post_interceptor_address));
-	set_debug_registers(thread_context, debug_registers);
+	main_debug_register_entries[packet_register_index] = debug_register_data(packet_reception_post_interceptor_address);
+	set_debug_registers(thread_context, main_debug_register_entries);
 
 	std::string packet(reinterpret_cast<char *>(thread_context.Ecx), static_cast<std::size_t>(thread_context.Edx));
 	python::perform_packet_callback(packet);
@@ -132,9 +135,22 @@ void debug_register_receive_packet(CONTEXT & thread_context)
 
 void debug_register_post_receive_packet(CONTEXT & thread_context)
 {
-	debug_register_vector debug_registers = main_debug_register_entries;
-	debug_registers.push_back(debug_register_data(packet_reception_interceptor_address));
-	set_debug_registers(thread_context, debug_registers);
+	main_debug_register_entries[packet_register_index] = debug_register_data(packet_reception_interceptor_address);
+	set_debug_registers(thread_context, main_debug_register_entries);
+}
+
+void debug_register_add_unit1(CONTEXT & thread_context)
+{
+	main_debug_register_entries[add_unit_register_index] = debug_register_data(add_unit_address2);
+	set_debug_registers(thread_context, main_debug_register_entries);
+
+	unit * added_unit_pointer = reinterpret_cast<unit *>(thread_context.Esi);
+}
+
+void debug_register_add_unit2(CONTEXT & thread_context)
+{
+	main_debug_register_entries[add_unit_register_index] = debug_register_data(add_unit_address1);
+	set_debug_registers(thread_context, main_debug_register_entries);
 }
 
 void d2net(unsigned base)
@@ -155,14 +171,15 @@ void d2client(unsigned base)
 	debug_register_entries.push_back(debug_register_entry(automap_loop_address, &debug_register_automap_loop));
 	debug_register_entries.push_back(debug_register_entry(packet_reception_interceptor_address, &debug_register_receive_packet));
 	debug_register_entries.push_back(debug_register_entry(packet_reception_post_interceptor_address, &debug_register_post_receive_packet));
+	debug_register_entries.push_back(debug_register_entry(add_unit_address1, &debug_register_add_unit1));
+	debug_register_entries.push_back(debug_register_entry(add_unit_address2, &debug_register_add_unit2));
 
 	main_debug_register_entries.push_back(debug_register_data(light_handler_address));
 	main_debug_register_entries.push_back(debug_register_data(automap_loop_address));
+	main_debug_register_entries.push_back(debug_register_data(packet_reception_interceptor_address));
+	main_debug_register_entries.push_back(debug_register_data(add_unit_address1));
 
-	debug_register_vector debug_registers = main_debug_register_entries;
-	debug_registers.push_back(debug_register_data(packet_reception_interceptor_address));
-
-	set_own_context(debug_registers);
+	set_own_context(main_debug_register_entries);
 }
 
 void bnclient(unsigned base)
