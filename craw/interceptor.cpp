@@ -157,6 +157,12 @@ void debug_register_add_unit1(CONTEXT & thread_context)
 		return;
 	*/
 
+	wchar_t * unicode_name = get_unit_name(added_unit_pointer);
+	std::string name = wchar_to_string(unicode_name);
+	write_line("Name: " + name);
+
+	/*
+
 	item_data & current_item_data = *current_unit.item_data_pointer;
 	std::string
 		name,
@@ -170,6 +176,7 @@ void debug_register_add_unit1(CONTEXT & thread_context)
 	}
 	else
 		write_line("Failed to receive item name for item " + ail::hex_string_32(reinterpret_cast<unsigned>(added_unit_pointer)));
+	*/
 }
 
 void debug_register_add_unit2(CONTEXT & thread_context)
