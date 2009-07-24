@@ -37,6 +37,7 @@ typedef unit * (__stdcall * get_inventory_item_type)(void * inventory);
 typedef unit * (__stdcall * get_next_inventory_item_type)(unit * item);
 typedef item_text * (__stdcall * get_item_text_type)(unsigned item_number);
 typedef void (__stdcall * receive_packet_type)(char const * packet, std::size_t size);
+typedef bool (__stdcall * get_item_name_type)(unit * item, wchar_t * buffer, std::size_t buffer_size);
 
 extern set_font_size_type d2_set_font_size;
 extern draw_text_type d2_draw_text;
@@ -61,6 +62,7 @@ extern get_inventory_item_type d2_get_inventory_item;
 extern get_next_inventory_item_type d2_get_next_inventory_item;
 extern get_item_text_type d2_get_item_text;
 extern receive_packet_type d2_receive_packet;
+extern get_item_name_type d2_get_item_name;
 
 extern unsigned light_handler_address;
 
@@ -89,3 +91,4 @@ bool get_name_by_id(unsigned id, std::string & output);
 bool get_non_empty_tp_tome_id(unsigned & output);
 bool player_is_in_game();
 roster_vector get_roster_units();
+bool get_item_name(unit * input, std::string & name, std::string & special_name);

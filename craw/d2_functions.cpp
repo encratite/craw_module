@@ -84,6 +84,7 @@ new_automap_cell_type d2_new_automap_cell;
 add_automap_cell_type d2_add_automap_cell;
 leave_game_type d2_leave_game;
 get_unit_pointer_type d2_get_unit_pointer;
+get_item_name_type d2_get_item_name;
 
 unsigned light_handler_address;
 
@@ -148,6 +149,7 @@ void initialise_d2client_addresses(unsigned base)
 	offset_handler.fix(d2_add_automap_cell, 0x6FAEF090);
 	offset_handler.fix(d2_leave_game, 0x6FB2AB00);
 	offset_handler.fix(d2_get_unit_pointer, 0x6FACF1C0);
+	offset_handler.fix(d2_get_item_name, 0x6FB5B3C0);
 
 	offset_handler.fix(roster_list, 0x6FBCC080);
 	offset_handler.fix(player_pointer, 0x6FBCC3D0);
@@ -438,4 +440,37 @@ bool player_is_in_game()
 		return false;
 
 	return d2_get_player_unit() != 0;
+}
+
+bool get_item_name(unit * input, std::string & name, std::string & special_name)
+{
+	wchar_t buffer[0x100];
+	std::memset(buffer, 0, sizeof(buffer));
+	attach_point();
+	if(!d2_get_item_name(input, buffer, ail::countof(buffer)))
+		return false;
+
+	write_line("Returned");
+
+	std::string data = wchar_to_string(buffer);
+	string_vector tokens = ail::tokenise(data, "\n");
+	switch(tokens.size())
+	{
+	default:
+		error("d2_get_item_name returned an invalid item name for item " + ail::hex_string_32(reinterpret_cast<unsigned>(input)) + ": \"" + data + "\"");
+		exit_process();
+		return false;
+
+	case 1:
+		name = data;
+		special_name.clear();
+		break;
+
+	case 2:
+		name = tokens[1];
+		special_name = tokens[0];
+		break;
+	}
+
+	return true;
 }
