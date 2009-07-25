@@ -164,6 +164,7 @@ void debug_register_add_unit2(CONTEXT & thread_context)
 
 void debug_register_item_handler(CONTEXT & thread_context)
 {
+	//write_line("debug_register_item_handler");
 	unit & current_unit = *reinterpret_cast<unit *>(thread_context.Eax);
 	python::perform_item_callback(current_unit);
 	thread_context.Esi = thread_context.Eax;

@@ -219,7 +219,7 @@ std::string wchar_to_string(wchar_t * input)
 	int size = WideCharToMultiByte(CP_ACP, 0, input, -1, 0, 0, default_char, 0);
 	char * buffer = new char[size];
 	WideCharToMultiByte(CP_ACP, 0, input, -1, buffer, size, default_char, 0);
-	std::string output(buffer, static_cast<std::size_t>(size));
+	std::string output(buffer, static_cast<std::size_t>(size - 1));
 	delete buffer;
 	return output;
 }

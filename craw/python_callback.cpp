@@ -184,6 +184,8 @@ namespace python
 		std::string name = wchar_to_string(unicode_name);
 		current_python_item_data.type = PyString_FromStringAndSize(name.c_str(), name.size());
 
+		write_line("\"" + name + "\" (" + ail::hex_string(name) + ")");
+
 		std::string code = item_text_pointer->get_code();
 		current_python_item_data.code = PyString_FromStringAndSize(code.c_str(), code.size());
 

@@ -13,17 +13,21 @@ class item_handler_class:
 		self.is_drop = (bytes[0 : 2] == [0x9c, 0x00])
 				
 	def process_item(self, item):
+		print 'Processing item %s' % item.type
+		
 		if self.is_drop:
 			self.process_drop(item)
 			
+	@staticmethod
 	def dump_item(item):
-		print 'Name: %s' % item.type
-		print 'Code: %s' % item.code
-		print 'ID: %08x' % item.id
-		print 'Quality: %d' % item.quality
-		print 'Level: %d' % item.level
-		print 'Ethereal: %s' % item.ethereal
-		print 'Sockets: %d' % item.sockets
+		output = 'Name: %s\n' % item.type
+		output += 'Code: %s\n' % item.code
+		output += 'ID: %08x\n' % item.id
+		output += 'Quality: %d\n' % item.quality
+		output += 'Level: %d\n' % item.level
+		output += 'Ethereal: %s\n' % item.ethereal
+		output += 'Sockets: %d\n' % item.sockets
+		return output
 		
 	@staticmethod
 	def get_quality_string(quality):
@@ -65,6 +69,11 @@ class item_handler_class:
 		print description
 	
 	def process_drop(self, item):
+	
+		file = open('item.log', 'a')
+		file.write('%s\n' % item_handler_class.dump_item(item))
+		file.close()
+	
 		for rule in item_rules:
 			if rule.applies_to(item):
 				self.print_item(item)

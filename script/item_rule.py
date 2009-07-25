@@ -23,6 +23,10 @@ class item_rule:
 	def debug(self, text):
 		if self.debug_mode:
 			print text
+			
+		file = open('item.log', 'a')
+		file.write('%s\n' % text)
+		file.close()
 		
 	def applies_to(self, item):
 		if self.group != None:
@@ -31,8 +35,9 @@ class item_rule:
 			except KeyError:
 				print 'Unable to find item group "%s"' % self.group
 				return False
+				
 			if item.type not in item_types:
-				self.debug('Group rejection for %s: %s' % (item.type, self.group))
+				self.debug('Group rejection for %s: "%s" (%s)' % (item.type, self.group, item_types))
 				return False
 		
 		elif self.item_type != None and self.item_type != item.type:

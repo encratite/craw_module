@@ -38,16 +38,3 @@ command_handler.bncs_handler = bncs_packet_handler
 item_handler = item_handler.item_handler_class()
 craw.set_item_handler(item_handler.process_item)
 packet_handler.add_byte_handler(item_handler.process_bytes)
-
-class generic_item:
-	pass
-
-test_item = generic_item()
-test_item.id = 0
-test_item.quality = 7
-test_item.type = 'Shako'
-test_item.code = 'shk'
-test_item.level = 83
-test_item.ethereal = True
-test_item.sockets = 0
-item_handler.process_drop(test_item)
