@@ -11,15 +11,18 @@ namespace python
 		* packet_handler,
 		* command_handler,
 		* keyboard_handler,
-		* bncs_packet_handler;
+		* bncs_packet_handler,
+		* item_handler;
 
 	extern PyMemberDef
 		monster_data_members[],
-		player_data_members[];
+		player_data_members[],
+		item_data_members[];
 
 	extern PyTypeObject
 		monster_data_type,
-		player_data_type;
+		player_data_type,
+		item_data_type;
 
 	struct python_monster_data
 	{
@@ -73,11 +76,24 @@ namespace python
 		unsigned y;
 	};
 
+	struct python_item_data
+	{
+		PyObject_HEAD
+
+		unsigned id;
+		PyObject * type;
+		PyObject * code;
+		uchar quality;
+		uchar level;
+		uchar sockets;
+	};
+
 	PyObject * set_automap_handler(PyObject * self, PyObject * arguments);
 	PyObject * set_packet_handler(PyObject * self, PyObject * arguments);
 	PyObject * set_command_handler(PyObject * self, PyObject * arguments);
 	PyObject * set_keyboard_handler(PyObject * self, PyObject * arguments);
 	PyObject * set_bncs_packet_handler(PyObject * self, PyObject * arguments);
+	PyObject * set_item_handler(PyObject * self, PyObject * arguments);
 
 	PyObject * draw_line(PyObject * self, PyObject * arguments);
 	PyObject * draw_text(PyObject * self, PyObject * arguments);

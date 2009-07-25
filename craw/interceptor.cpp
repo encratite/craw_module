@@ -144,39 +144,28 @@ void debug_register_add_unit1(CONTEXT & thread_context)
 	main_debug_register_entries[add_unit_register_index] = debug_register_data(add_unit_address2);
 	set_debug_registers(thread_context, main_debug_register_entries);
 
-	unit * added_unit_pointer = reinterpret_cast<unit *>(thread_context.Esi);
-	unit & current_unit = *added_unit_pointer;
+	unit & current_unit = *reinterpret_cast<unit *>(thread_context.Esi);
 	if(current_unit.type != 4)
 		return;
-	write_line("Item: " + ail::hex_string_32(reinterpret_cast<unsigned>(added_unit_pointer)));
 
-	/*
-	std::string line;
-	std::getline(std::cin, line);
-	if(line.empty())
-		return;
-	*/
-
-	wchar_t * unicode_name = get_unit_name(added_unit_pointer);
+	wchar_t * unicode_name = get_unit_name(&current_unit);
 	std::string name = wchar_to_string(unicode_name);
-	write_line("Name: " + name);
+	write_line("Item: " + name);
 
-	/*
-
-	item_data & current_item_data = *current_unit.item_data_pointer;
-	std::string
-		name,
-		special_name;
-	if(get_item_name(added_unit_pointer, name, special_name))
-	{
-		if(special_name.empty())
-			write_line("New item: " + name);
-		else
-			write_line("New special item: " + special_name + " (" + name + ")");
-	}
+	item_data * item_data_pointer = current_unit.item_data_pointer;
+	if(item_data_pointer == 0)
+		write_line("item_data_pointer NULL");
 	else
-		write_line("Failed to receive item name for item " + ail::hex_string_32(reinterpret_cast<unsigned>(added_unit_pointer)));
-	*/
+	{
+		write_line("item_data_pointer == " + ail::hex_string_32((unsigned)item_data_pointer));
+		item_data & current_item_data = *item_data_pointer;
+		write_line("Location: " + ail::number_to_string((unsigned)current_item_data.item_location));
+		write_line("Location byte pointer: " + ail::hex_string_32((unsigned)&current_item_data.item_location));
+		write_line("Body location " + ail::number_to_string((unsigned)current_item_data.body_location));
+		write_line("Owner inventory " + ail::number_to_string((unsigned)current_item_data.owner_inventory));
+	}
+
+	//attach_point();
 }
 
 void debug_register_add_unit2(CONTEXT & thread_context)

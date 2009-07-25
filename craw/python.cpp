@@ -16,11 +16,13 @@ namespace python
 		* packet_handler = 0,
 		* command_handler = 0,
 		* keyboard_handler = 0,
-		* bncs_packet_handler = 0;
+		* bncs_packet_handler = 0,
+		* item_handler = 0;
 
 	PyTypeObject
 		monster_data_type,
-		player_data_type;
+		player_data_type,
+		item_data_type;
 
 	namespace
 	{
@@ -37,6 +39,7 @@ namespace python
 			{"set_command_handler", &set_command_handler, METH_VARARGS, "This function allows you to specify a console command handler which is called when the user has entered a command in the module's console."},
 			{"set_keyboard_handler", &set_keyboard_handler, METH_VARARGS, "This function allows you to specify a keyboard handler which is called whenever a key is pressed in game when the player is not chatting."},
 			{"set_bncs_packet_handler", &set_bncs_packet_handler, METH_VARARGS, "This function allows you to specify a packet handler for incoming Battle.net Chat Server packets."},
+			{"set_item_handler", &set_item_handler, METH_VARARGS, "This function allows you to specify an item handler which is called when new items are dropped."},
 
 			{"draw_line", &draw_line, METH_VARARGS, "Draws a single line."},
 			{"draw_text", &draw_text, METH_VARARGS, "Draws text on the screen."},
@@ -207,6 +210,7 @@ namespace python
 
 		initialise_python_type(monster_data_type, "monster_data", sizeof(python_monster_data), monster_data_members, module);
 		initialise_python_type(player_data_type, "player_data", sizeof(python_player_data), player_data_members, module);
+		initialise_python_type(item_data_type, "item_data", sizeof(python_item_data), item_data_members, module);
 
 		module_error = PyErr_NewException(const_cast<char *>((module_name + "." + error_name).c_str()), 0, 0);
 		Py_INCREF(module_error);

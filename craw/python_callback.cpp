@@ -1,4 +1,5 @@
 #include <boost/thread/mutex.hpp>
+#include "d2_functions.hpp"
 #include "python.hpp"
 #include "utility.hpp"
 
@@ -157,5 +158,52 @@ namespace python
 		Py_DECREF(return_value);
 
 		return true;
+	}
+
+	void perform_item_callback(unit & current_item)
+	{
+		if(!item_handler)
+			return;
+
+		boost::mutex::scoped_lock lock(python_mutex);
+
+		item_text * item_text_pointer = d2_get_item_text(current_item.table_index);
+		if(item_text_pointer == 0)
+		{
+			error("Item text pointer is 0 for item " + ail::hex_string_32(reinterpret_cast<unsigned>(&current_item)));
+			exit_process();
+			return;
+		}
+
+		python_item_data * item_data_pointer = PyObject_New(python_item_data, &item_data_type);
+		python_item_data & current_python_item_data = *item_data_pointer;
+
+		current_python_item_data.id = current_item.id;
+
+		wchar_t * unicode_name = get_unit_name(&current_item);
+		std::string name = wchar_to_string(unicode_name);
+		current_python_item_data.type = PyString_FromStringAndSize(name.c_str(), name.size());
+
+		std::string code = item_text_pointer->get_code();
+		current_python_item_data.code = PyString_FromStringAndSize(code.c_str(), code.size());
+
+		item_data & current_item_data = *current_item.item_data_pointer;
+
+		current_python_item_data.level = current_item_data.item_level;
+		current_python_item_data.quality = current_item_data.quality;
+
+		current_python_item_data.sockets = d2_get_unit_stat(&current_item, 0xc2, 0);
+
+		PyObject * return_value = PyObject_CallFunction(item_handler, "O", item_data_pointer);
+		if(!return_value)
+		{
+			PyErr_Print();
+			return;
+		}
+
+		Py_XDECREF(current_python_item_data.type);
+		Py_XDECREF(current_python_item_data.code);
+		Py_XDECREF(item_data_pointer);
+		Py_DECREF(return_value);
 	}
 }

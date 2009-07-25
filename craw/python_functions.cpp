@@ -58,6 +58,11 @@ namespace python
 		return set_handler(self, arguments, "set_bncs_packet_handler", bncs_packet_handler);
 	}
 
+	PyObject * set_item_handler(PyObject * self, PyObject * arguments)
+	{
+		return set_handler(self, arguments, "set_item_handler", item_handler);
+	}
+
 	void fix_coordinate(int & coordinate, int maximum)
 	{
 		if(coordinate < 0)
