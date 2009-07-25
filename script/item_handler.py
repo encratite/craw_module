@@ -1,9 +1,6 @@
-import types
+import types, string
 from item_constants import *
-from item_groups import item_groups
-import item_configuration
-		
-item_rules = []
+from item_configuration import item_rules
 
 class item_handler_class:
 	def __init__(self):
@@ -28,6 +25,7 @@ class item_handler_class:
 		print 'Ethereal: %s' % item.ethereal
 		print 'Sockets: %d' % item.sockets
 		
+	@staticmethod
 	def get_quality_string(quality):
 		qualities = {
 			inferior: 'Inferior',
@@ -46,7 +44,7 @@ class item_handler_class:
 			return 'Unknown'
 		
 	def print_item(self, item):
-		quality_string = get_quality_string(item.quality)
+		quality_string = item_handler_class.get_quality_string(item.quality)
 		description = '%s %s' % (quality_string, item.type)
 		if item.ethereal:
 			description = 'Ethereal %s' % description
@@ -60,9 +58,13 @@ class item_handler_class:
 			
 		elif item.sockets > 1:
 			additional_information.append('%d sockets' % item.sockets)
+			
+		if len(additional_information) > 0:
+			description = '%s (%s)' % (description, string.join(additional_information, ', '))
+			
+		print description
 	
 	def process_drop(self, item):
-		print len(item_rules)
 		for rule in item_rules:
 			if rule.applies_to(item):
 				self.print_item(item)
