@@ -3,7 +3,7 @@ import sys, utility
 
 sys.path.append(utility.get_configuration_directory())
 
-import configuration, craw, automap, packets, chicken, command, town_portal, player_kill, skills, bncs, item
+import configuration, craw, automap, packets, chicken, command, town_portal, player_kill, skills, bncs, item_handler
 
 #Set up handlers
 
@@ -35,6 +35,19 @@ craw.set_bncs_packet_handler(bncs_packet_handler.process_packet)
 player_kill_handler.bncs_handler = bncs_packet_handler
 command_handler.bncs_handler = bncs_packet_handler
 
-item_handler = item.item_handler_class()
+item_handler = item_handler.item_handler_class()
 craw.set_item_handler(item_handler.process_item)
 packet_handler.add_byte_handler(item_handler.process_bytes)
+
+class generic_item:
+	pass
+
+test_item = generic_item()
+test_item.id = 0
+test_item.quality = 7
+test_item.type = 'Shako'
+test_item.code = 'shk'
+test_item.level = 83
+test_item.ethereal = True
+test_item.sockets = 0
+item_handler.process_drop(test_item)
