@@ -23,10 +23,6 @@ class item_rule:
 	def debug(self, text):
 		if self.debug_mode:
 			print text
-			
-		file = open('item.log', 'a')
-		file.write('%s\n' % text)
-		file.close()
 		
 	def applies_to(self, item):
 		if self.group != None:

@@ -13,8 +13,6 @@ class item_handler_class:
 		self.is_drop = (bytes[0 : 2] == [0x9c, 0x00])
 				
 	def process_item(self, item):
-		print 'Processing item %s' % item.type
-		
 		if self.is_drop:
 			self.process_drop(item)
 			
@@ -69,11 +67,6 @@ class item_handler_class:
 		print description
 	
 	def process_drop(self, item):
-	
-		file = open('item.log', 'a')
-		file.write('%s\n' % item_handler_class.dump_item(item))
-		file.close()
-	
 		for rule in item_rules:
 			if rule.applies_to(item):
 				self.print_item(item)
