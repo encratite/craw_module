@@ -86,6 +86,7 @@ namespace python
 		uchar quality;
 		uchar level;
 		uchar sockets;
+		PyObject * ethereal;
 	};
 
 	PyObject * set_automap_handler(PyObject * self, PyObject * arguments);

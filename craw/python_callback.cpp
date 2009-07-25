@@ -194,6 +194,10 @@ namespace python
 
 		current_python_item_data.sockets = d2_get_unit_stat(&current_item, 0xc2, 0);
 
+		current_python_item_data.ethereal = (current_item_data.flags & 0x00400000 ? Py_True : Py_False);
+
+		Py_INCREF(current_python_item_data.ethereal);
+
 		PyObject * return_value = PyObject_CallFunction(item_handler, "O", item_data_pointer);
 		if(!return_value)
 		{
@@ -201,6 +205,7 @@ namespace python
 			return;
 		}
 
+		Py_DECREF(current_python_item_data.ethereal);
 		Py_XDECREF(current_python_item_data.type);
 		Py_XDECREF(current_python_item_data.code);
 		Py_XDECREF(item_data_pointer);

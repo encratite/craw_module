@@ -12,6 +12,7 @@ namespace python
 		{"quality", T_UBYTE, offsetof(python_item_data, quality), 0, "Quality"},
 		{"level", T_UBYTE, offsetof(python_item_data, level), 0, "Item level"},
 		{"sockets", T_UBYTE, offsetof(python_item_data, sockets), 0, "Number of sockets"},
+		{"ethereal", T_OBJECT, offsetof(python_item_data, ethereal), 0, "Ethereal flag"},
 
 		{0}
 	};
