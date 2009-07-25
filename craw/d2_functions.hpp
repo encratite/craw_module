@@ -75,6 +75,9 @@ extern unsigned
 	add_unit_address1,
 	add_unit_address2;
 
+extern unsigned
+	item_handler_call_address;
+
 void draw_text(std::string const & text, int x, int y, unsigned colour, bool centered);
 void __stdcall draw_box(int x, int y, unsigned colour);
 bool get_life(unsigned & current_life, unsigned & maximum_life);

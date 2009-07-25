@@ -97,6 +97,9 @@ unsigned
 	add_unit_address1,
 	add_unit_address2;
 
+unsigned
+	item_handler_call_address;
+
 //D2Net.dll
 send_packet_type d2_send_packet;
 receive_packet_type d2_receive_packet;
@@ -163,6 +166,8 @@ void initialise_d2client_addresses(unsigned base)
 
 	offset_handler.fix(add_unit_address1, 0x6FACFD9B);
 	offset_handler.fix(add_unit_address2, 0x6FACFD9E);
+
+	offset_handler.fix(item_handler_call_address, 0x6FB48635);
 
 	d2client_has_been_loaded = true;
 }

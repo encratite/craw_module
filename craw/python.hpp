@@ -115,6 +115,7 @@ namespace python
 	bool perform_command_callback(std::string const & line);
 	bool perform_keyboard_callback(unsigned virtual_key);
 	bool perform_bncs_callback(std::string const & packet);
+	void perform_item_callback(unit & current_item);
 
 	PyMODINIT_FUNC initialise_module();
 

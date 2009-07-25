@@ -148,30 +148,26 @@ void debug_register_add_unit1(CONTEXT & thread_context)
 	if(current_unit.type != 4)
 		return;
 
-	wchar_t * unicode_name = get_unit_name(&current_unit);
-	std::string name = wchar_to_string(unicode_name);
-	write_line("Item: " + name);
+	/*
+	write_line(ail::hex_string_32(thread_context.Esi));
+	error("Attach");
+	*/
 
-	item_data * item_data_pointer = current_unit.item_data_pointer;
-	if(item_data_pointer == 0)
-		write_line("item_data_pointer NULL");
-	else
-	{
-		write_line("item_data_pointer == " + ail::hex_string_32((unsigned)item_data_pointer));
-		item_data & current_item_data = *item_data_pointer;
-		write_line("Location: " + ail::number_to_string((unsigned)current_item_data.item_location));
-		write_line("Location byte pointer: " + ail::hex_string_32((unsigned)&current_item_data.item_location));
-		write_line("Body location " + ail::number_to_string((unsigned)current_item_data.body_location));
-		write_line("Owner inventory " + ail::number_to_string((unsigned)current_item_data.owner_inventory));
-	}
-
-	//attach_point();
+	python::perform_item_callback(current_unit);
 }
 
 void debug_register_add_unit2(CONTEXT & thread_context)
 {
 	main_debug_register_entries[add_unit_register_index] = debug_register_data(add_unit_address1);
 	set_debug_registers(thread_context, main_debug_register_entries);
+}
+
+void debug_register_item_handler(CONTEXT & thread_context)
+{
+	unit & current_unit = *reinterpret_cast<unit *>(thread_context.Eax);
+	python::perform_item_callback(current_unit);
+	thread_context.Esi = thread_context.Eax;
+	thread_context.Eip += 2;
 }
 
 void d2net(unsigned base)
@@ -194,11 +190,13 @@ void d2client(unsigned base)
 	debug_register_entries.push_back(debug_register_entry(packet_reception_post_interceptor_address, &debug_register_post_receive_packet));
 	debug_register_entries.push_back(debug_register_entry(add_unit_address1, &debug_register_add_unit1));
 	debug_register_entries.push_back(debug_register_entry(add_unit_address2, &debug_register_add_unit2));
+	debug_register_entries.push_back(debug_register_entry(item_handler_call_address, &debug_register_item_handler));
 
 	main_debug_register_entries.push_back(debug_register_data(light_handler_address));
 	main_debug_register_entries.push_back(debug_register_data(automap_loop_address));
 	main_debug_register_entries.push_back(debug_register_data(packet_reception_interceptor_address));
-	main_debug_register_entries.push_back(debug_register_data(add_unit_address1));
+	//main_debug_register_entries.push_back(debug_register_data(add_unit_address1));
+	main_debug_register_entries.push_back(debug_register_data(item_handler_call_address));
 
 	set_own_context(main_debug_register_entries);
 }
