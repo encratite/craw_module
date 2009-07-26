@@ -1,10 +1,10 @@
-import os, utility, nil.file, keyboard_configuration, craw
+import os, utility, packets, nil.file, keyboard_configuration, craw
 
 def get_tp_handler():
 	return current_handler.command_handler.town_portal_handler
 
 def say(message):
-	utility.send_chat(message)
+	packets.send_chat(message)
 
 def tp():
 	get_tp_handler().cast_town_portal()

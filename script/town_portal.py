@@ -46,8 +46,6 @@ class town_portal_class:
 			return False
 			
 		x, y = location
-		
-		self.enter_portal = True
 			
 		packet = chr(0x20) + utility.pack_number(tome_id, 4) + utility.pack_number(x, 4) + utility.pack_number(y, 4)
 		craw.send_packet(packet)

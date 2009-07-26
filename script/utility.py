@@ -69,10 +69,6 @@ def town_check():
 		return None
 	return level in [0x01, 0x28, 0x4b, 0x67, 0x6d]
 	
-def send_chat(message):
-	packet = '\x15\x01\x00' + message + '\x00\x00\x00'
-	craw.send_packet(packet)
-	
 def get_configuration_directory():
 	return os.path.join(sys.path[-1], '..', 'configuration')
 	
@@ -107,7 +103,20 @@ def get_character_string(character):
 def get_player_data_by_name(name):
 	players = craw.get_players()
 	for player in players:
-		#print '%s == %s' % (player.name, name)
+		if player.name == name:
+			return player
+	return None
+	
+def get_my_name():
+	players = craw.get_players()
+	if len(players) == 0:
+		return None
+	player = players[0]
+	return player.name
+	
+def get_player_by_name(name):
+	players = craw.get_players()
+	for player in players:
 		if player.name == name:
 			return player
 	return None
