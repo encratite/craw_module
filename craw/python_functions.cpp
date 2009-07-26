@@ -1,3 +1,4 @@
+#include <boost/thread/mutex.hpp>
 #include "python.hpp"
 #include "d2_functions.hpp"
 #include "utility.hpp"
@@ -11,6 +12,8 @@ namespace python
 		int const
 			max_x = 800,
 			max_y = 600;
+
+		boost::mutex d2_function_mutex;
 	}
 
 	PyObject * set_handler(PyObject * self, PyObject * arguments, std::string const & name, PyObject * & output)
@@ -91,6 +94,8 @@ namespace python
 
 		colour &= 0xff;
 
+		boost::mutex::scoped_lock lock(d2_function_mutex);
+
 		d2_draw_line(start_x, start_y, end_x, end_y, colour, 0xff);
 
 		Py_RETURN_NONE;
@@ -114,6 +119,8 @@ namespace python
 
 		bool centered = (bool_object == Py_True);
 
+		boost::mutex::scoped_lock lock(d2_function_mutex);
+
 		::draw_text(text, x, y, 0, centered);
 
 		Py_RETURN_NONE;
@@ -127,6 +134,8 @@ namespace python
 		if(!PyArg_ParseTuple(arguments, "s#", &data, &size))
 			return 0;
 
+		boost::mutex::scoped_lock lock(d2_function_mutex);
+
 		d2_send_packet(static_cast<std::size_t>(size), 1, data);
 
 		Py_RETURN_NONE;
@@ -134,6 +143,8 @@ namespace python
 
 	PyObject * leave_game(PyObject * self, PyObject * arguments)
 	{
+		boost::mutex::scoped_lock lock(d2_function_mutex);
+
 		d2_leave_game();
 		Py_RETURN_NONE;
 	}
@@ -143,6 +154,8 @@ namespace python
 		unsigned
 			current_life,
 			maximum_life;
+
+		boost::mutex::scoped_lock lock(d2_function_mutex);
 
 		if(!::get_life(current_life, maximum_life))
 			Py_RETURN_NONE;
@@ -154,6 +167,8 @@ namespace python
 
 	PyObject * get_player_level(PyObject * self, PyObject * arguments)
 	{
+		boost::mutex::scoped_lock lock(d2_function_mutex);
+
 		unsigned level;
 		if(!get_player_level_number(level))
 			Py_RETURN_NONE;
@@ -163,6 +178,8 @@ namespace python
 
 	PyObject * get_player_id(PyObject * self, PyObject * arguments)
 	{
+		boost::mutex::scoped_lock lock(d2_function_mutex);
+
 		unsigned id;
 		if(!::get_player_id(id))
 			Py_RETURN_NONE;
@@ -175,6 +192,8 @@ namespace python
 		unsigned id;
 		if(!PyArg_ParseTuple(arguments, "i", &id))
 			return 0;
+
+		boost::mutex::scoped_lock lock(d2_function_mutex);
 
 		std::string name;
 		if(!::get_name_by_id(id, name))
@@ -193,6 +212,8 @@ namespace python
 
 	PyObject * get_players(PyObject * self, PyObject * arguments)
 	{
+		boost::mutex::scoped_lock lock(d2_function_mutex);
+
 		roster_vector roster_units = get_roster_units();
 		std::size_t player_count = roster_units.size();
 		PyObject * output = PyList_New(player_count);
@@ -251,6 +272,8 @@ namespace python
 
 	PyObject * get_player_location(PyObject * self, PyObject * arguments)
 	{
+		boost::mutex::scoped_lock lock(d2_function_mutex);
+
 		unit * unit_pointer = d2_get_player_unit();
 		if(unit_pointer == 0)
 			Py_RETURN_NONE;
@@ -260,6 +283,8 @@ namespace python
 
 	PyObject * get_tp_tome_id(PyObject * self, PyObject * arguments)
 	{
+		boost::mutex::scoped_lock lock(d2_function_mutex);
+
 		unsigned id;
 		if(!get_non_empty_tp_tome_id(id))
 			Py_RETURN_NONE;
@@ -269,6 +294,8 @@ namespace python
 
 	PyObject * reveal_act(PyObject * self, PyObject * arguments)
 	{
+		boost::mutex::scoped_lock lock(d2_function_mutex);
+
 		if(::reveal_act())
 			Py_RETURN_TRUE;
 		else
@@ -283,6 +310,8 @@ namespace python
 		if(!PyArg_ParseTuple(arguments, "s#", &data, &size))
 			return 0;
 
+		boost::mutex::scoped_lock lock(d2_function_mutex);
+
 		d2_receive_packet(data, size);
 
 		Py_RETURN_NONE;
@@ -295,6 +324,8 @@ namespace python
 
 		if(!PyArg_ParseTuple(arguments, "s#", &data, &size))
 			return 0;
+
+		boost::mutex::scoped_lock lock(d2_function_mutex);
 
 		std::string packet(data, size);
 		send_bncs_data(packet);

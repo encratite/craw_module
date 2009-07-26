@@ -466,8 +466,6 @@ bool get_item_name(unit * input, std::string & name, std::string & special_name)
 	if(!d2_get_item_name(input, buffer, ail::countof(buffer)))
 		return false;
 
-	write_line("Returned");
-
 	std::string data = wchar_to_string(buffer);
 	string_vector tokens = ail::tokenise(data, "\n");
 	switch(tokens.size())
@@ -493,12 +491,8 @@ bool get_item_name(unit * input, std::string & name, std::string & special_name)
 
 void move_click(int x, int y)
 {
-	write_line("Input coordinates: " + ail::number_to_string(x) + ", " + ail::number_to_string(y));
 	d2_map_to_screen_coordinates(&x, &y);
-	write_line("Screen coordinates: " + ail::number_to_string(x) + ", " + ail::number_to_string(y));
 	x -= *reinterpret_cast<int *>(mouse_x_address);
 	y -= *reinterpret_cast<int *>(mouse_y_address);
-	write_line("Fixed screen coordinates: " + ail::number_to_string(x) + ", " + ail::number_to_string(y));
 	d2_click_map(0, x, y, 8);
-	write_line("Clicked");
 }
