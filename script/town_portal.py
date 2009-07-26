@@ -1,51 +1,34 @@
-import craw, utility, hostile
+import craw, utility, hostile, packets
 
 class town_portal_class:
 
 	def __init__(self):
-		self.enter_portal = False
 		self.debug = False
-		self.town_handler = None
+		self.tp_handler = None
 		
 	def debug_print(self, message):
 		if self.debug:
 			print message
 		
 	def process_bytes(self, bytes):
-		if bytes[0] != 0x82:
-			return
-		
-		self.debug_print('Portal ownership detected: %s' % utility.get_packet_string(map(chr, bytes)))
-			
-		if not self.enter_portal:
-			self.debug_print('Did not cast a TP')
-			return
-			
-		if len(bytes) < 29:
-			self.debug_print('The packet is too short')
+		ownership = packets.portal_ownership(bytes)
+		if ownership == None:
 			return
 			
 		my_id = craw.get_player_id()
 		if my_id == None:
 			self.debug_print('Unable to retrieve my ID')
 			return
-		
-		player_id = utility.read_bytes(bytes, 1, 4)
+			
+		player_id, portal_id = ownership
+			
 		if player_id != my_id:
 			self.debug_print('IDs do not match: %08x vs. %08x (%s, %s)' % (my_id, player_id, str(type(my_id)), str(type(player_id))))
 			return
-			
-		portal_id = utility.read_bytes(bytes, 21, 4)
 		
-		self.enter_portal = False
-		
-		self.debug_print('Entering the portal')
-		packet = chr(0x13) + utility.pack_number(2, 4) + utility.pack_number(portal_id, 4)
-		craw.send_packet(packet)
-		
-		if self.town_handler != None:
-			self.town_handler()
-			self.town_handler = None
+		if self.tp_handler != None:
+			self.tp_handler(portal_id)
+			self.tp_handler = None
 			
 	def cast_town_portal(self):
 		if utility.town_check() != False:
@@ -66,12 +49,22 @@ class town_portal_class:
 		
 		self.enter_portal = True
 			
-		print 'Opening a portal'
 		packet = chr(0x20) + utility.pack_number(tome_id, 4) + utility.pack_number(x, 4) + utility.pack_number(y, 4)
 		craw.send_packet(packet)
 		
 		return True
 		
 	def tppk(self):
-		self.town_handler = hostile.hostile_players
+		self.tp_handler = self.tppk_handler
 		self.cast_town_portal()
+		
+	def tppk_handler(self, portal_id):
+		hostile.hostile_players()
+		packets.enter_portal(portal_id)
+		
+	def town_tp(self):
+		self.tp_handler = self.town_tp_handler
+		self.cast_town_portal()
+		
+	def town_tp_handler(self, portal_id):
+		packets.enter_portal(portal_id)

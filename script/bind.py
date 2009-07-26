@@ -5,17 +5,18 @@ def get_tp_handler():
 
 def say(message):
 	utility.send_chat(message)
-	
+
 def tp():
 	get_tp_handler().cast_town_portal()
+	
+def town_tp():
+	get_tp_handler().town_tp()
 	
 def tppk():
 	get_tp_handler().tppk()
 	
 def reveal_act():
-	#print 'Revealed the currrent act'
 	if craw.reveal_act():
-		#print 'Successfully revealed the act'
 		pass
 	else:
 		print 'Failed to reveal the current act!'
@@ -47,19 +48,19 @@ class bind_handler:
 			data += "\t'%s': '%s',\n" % (key, command)
 		data += '}'
 		
+		data = data.replace(',\n}', '\n}')
+		
 		path = os.path.join(utility.get_configuration_directory(), 'keyboard_configuration.py')
 		
 		nil.file.write_file(path, data)
 		
 	def process_key(self, key):
 		key_char = chr(key)
-		#print 'Pressed key: %s' % key_char
 		
 		try:
 			global current_handler
 			current_handler = self
 			code = self.bindings[key_char]
-			#print 'Executing %s' % code
 			exec(code)
 		except KeyError:
 			pass
