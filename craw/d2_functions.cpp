@@ -87,6 +87,8 @@ leave_game_type d2_leave_game;
 get_unit_pointer_type d2_get_unit_pointer;
 get_item_name_type d2_get_item_name;
 click_map_type d2_click_map;
+find_server_side_unit_type d2_find_server_side_unit;
+find_client_side_unit_type d2_find_client_side_unit;
 
 unsigned light_handler_address;
 
@@ -161,6 +163,8 @@ void initialise_d2client_addresses(unsigned base)
 	offset_handler.fix(d2_get_unit_pointer, 0x6FACF1C0);
 	offset_handler.fix(d2_get_item_name, 0x6FB5B3C0);
 	offset_handler.fix(d2_click_map, 0x6FB0CE80);
+	offset_handler.fix(d2_find_server_side_unit, 0x6FACF1C0);
+	offset_handler.fix(d2_find_client_side_unit, 0x6FACF1A0);
 
 	offset_handler.fix(roster_list, 0x6FBCC080);
 	offset_handler.fix(player_pointer, 0x6FBCC3D0);
@@ -495,4 +499,15 @@ void move_click(int x, int y)
 	x -= *reinterpret_cast<int *>(mouse_x_address);
 	y -= *reinterpret_cast<int *>(mouse_y_address);
 	d2_click_map(0, x, y, 8);
+}
+
+bool get_unit_by_id(unsigned id, unsigned type, unit * & output)
+{
+	output = d2_find_server_side_unit(id, type);
+	if(output != 0)
+		return true;
+
+	output = d2_find_client_side_unit(id, type);
+
+	return output != 0;
 }

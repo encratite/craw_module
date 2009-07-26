@@ -40,6 +40,8 @@ typedef void (__stdcall * receive_packet_type)(char const * packet, std::size_t 
 typedef bool (__stdcall * get_item_name_type)(unit * item, wchar_t * buffer, std::size_t buffer_size);
 typedef void (__stdcall * map_to_screen_coordinates_type)(int * x, int * y);
 typedef void (__stdcall * click_map_type)(unsigned flags, int x, int y, unsigned type);
+typedef unit * (__fastcall * find_server_side_unit_type)(unsigned id, unsigned type);
+typedef unit * (__fastcall * find_client_side_unit_type)(unsigned id, unsigned type);
 
 extern set_font_size_type d2_set_font_size;
 extern draw_text_type d2_draw_text;
@@ -67,6 +69,8 @@ extern receive_packet_type d2_receive_packet;
 extern get_item_name_type d2_get_item_name;
 extern map_to_screen_coordinates_type d2_map_to_screen_coordinates;
 extern click_map_type d2_click_map;
+extern find_server_side_unit_type d2_find_server_side_unit;
+extern find_client_side_unit_type d2_find_client_side_unit;
 
 extern unsigned light_handler_address;
 
@@ -104,3 +108,4 @@ bool player_is_in_game();
 roster_vector get_roster_units();
 bool get_item_name(unit * input, std::string & name, std::string & special_name);
 void move_click(int x, int y);
+bool get_unit_by_id(unsigned id, unsigned type, unit * & output);
