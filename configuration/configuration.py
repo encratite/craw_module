@@ -24,13 +24,17 @@ follow_leaders = []
 followers = []
 
 #Chat trigger strings for the follow bot
-all_follow_command = 'follow'
-all_stop_command = 'stop'
+follow_command = 'follow'
+stop_command = 'stop'
+enter_tp_command = 'enter my tp'
 
-follow_command = '%s, follow'
-stop_command = '%s, stop'
+#Replies to chat triggers for the follow bot
+follow_confirmation = 'Following %s'
+stop_confirmation = 'No longer following %s'
+enter_tp_confirmation = 'Entering the town portal of %s'
 
-enter_my_tp_command = 'enter my tp'
+stop_error = 'Currently not following anybody'
+tp_error = 'Unable to detect the town portal of %s'
 
 #Names of enchanters that will listen to enchant commands issued
 enchanters = []

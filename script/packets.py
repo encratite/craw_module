@@ -60,3 +60,33 @@ def parse_move(bytes):
 def send_chat(message):
 	packet = '\x15\x01\x00' + message + '\x00\x00\x00'
 	craw.send_packet(packet)
+	
+def object_assignment(bytes):
+	if len(bytes) < 12 or bytes[0] != 0x51:
+		return None
+	object_type = bytes[1]
+	object_id = utility.read_bytes(bytes, 2, 4)
+	object_code = utility.read_bytes(bytes, 6, 2)
+	x = utility.read_bytes(bytes, 8, 2)
+	y = utility.read_bytes(bytes, 10, 2)
+	return object_type, object_id, object_code, x, y
+	
+def town_portal_assignment(bytes):
+	assignment = object_assignment(bytes)
+	if assignment == None:
+		return None
+		
+	object_type, object_id, object_code, x, y = assignment
+	if object_type != 0x02 or object_code != 0x003b:
+		return None
+		
+	return object_id, x, y
+	
+def object_removal(bytes):
+	if len(bytes) != 6 or bytes[0] != 0x0a:
+		return None
+		
+	type = bytes[1]
+	id = utility.read_bytes(bytes, 2, 4)
+	
+	return type, id
