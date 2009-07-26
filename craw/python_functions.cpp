@@ -332,4 +332,20 @@ namespace python
 
 		Py_RETURN_NONE;
 	}
+
+	PyObject * move_click(PyObject * self, PyObject * arguments)
+	{
+		int
+			x,
+			y;
+
+		if(!PyArg_ParseTuple(arguments, "ii", &x, &y))
+			return 0;
+
+		boost::mutex::scoped_lock lock(d2_function_mutex);
+
+		::move_click(x, y);
+
+		Py_RETURN_NONE;
+	}
 }

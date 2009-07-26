@@ -56,6 +56,7 @@ namespace python
 			{"reveal_act", &reveal_act, METH_VARARGS, "Reveal the current act on the automap."},
 			{"receive_packet", &receive_packet, METH_VARARGS, "Artificially receives a packet on the client side."},
 			{"send_bncs_packet", &send_bncs_packet, METH_VARARGS, "Sends a packet to the Battle.net Chat Server."},
+			{"move_click", &move_click, METH_VARARGS, "Move to the specified x, y coordinate."},
 
 			{0, 0, 0, 0}
 		};

@@ -110,6 +110,7 @@ namespace python
 	PyObject * reveal_act(PyObject * self, PyObject * arguments);
 	PyObject * receive_packet(PyObject * self, PyObject * arguments);
 	PyObject * send_bncs_packet(PyObject * self, PyObject * arguments);
+	PyObject * move_click(PyObject * self, PyObject * arguments);
 
 	void perform_automap_callback(unit & current_unit, int x, int y, uchar colour);
 	bool perform_packet_callback(std::string const & packet);
