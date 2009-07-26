@@ -1,4 +1,4 @@
-import nil.time, configuration, utility, craw
+import nil.time, configuration, utility, craw, string
 
 class packet_handler_class:
 
@@ -41,6 +41,9 @@ def parse_message(bytes):
 		
 	name = map(chr, bytes[name_offset : zero_offset])
 	message = map(chr, bytes[zero_offset + 1 : - 1])
+	
+	name = string.join(name, '')
+	message = string.join(message, '')
 	
 	return name, message
 		

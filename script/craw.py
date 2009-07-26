@@ -3,7 +3,7 @@ import sys, utility
 
 sys.path.append(utility.get_configuration_directory())
 
-import configuration, craw, automap, packets, chicken, command, town_portal, player_kill, skills, bncs, item_handler
+import configuration, craw, automap, packets, chicken, command, town_portal, player_kill, skills, bncs, item_handler, follow
 
 #Set up handlers
 
@@ -38,3 +38,6 @@ command_handler.bncs_handler = bncs_packet_handler
 item_handler = item_handler.item_handler_class()
 craw.set_item_handler(item_handler.process_item)
 packet_handler.add_byte_handler(item_handler.process_bytes)
+
+follow_handler = follow.follow_handler_class()
+packet_handler.add_byte_handler(follow_handler.process_bytes)

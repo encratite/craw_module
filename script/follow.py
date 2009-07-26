@@ -1,6 +1,6 @@
 import configuration, utility, packets, craw
 
-def follow_handler_class:
+class follow_handler_class:
 	def __init__(self):
 		self.following = False
 		
@@ -22,7 +22,7 @@ def follow_handler_class:
 			if self.following:
 				self.following = False
 				print 'No longer following %s' % self.leader
-				packets.send_chat(configuration.following_confirmation % self.leader)
+				packets.send_chat(configuration.stop_confirmation % self.leader)
 			else:
 				print '%s asked us to stop following the leader but we are currently not following anybody' % name
 				packets.send_chat(configuration.stop_error)
@@ -31,7 +31,6 @@ def follow_handler_class:
 		message = packets.parse_message(bytes)
 		if message != None:
 			name, message = message
-			print 'Processing message: <%s> %s' % (name, message)
 			my_name = utility.get_my_name()
 			if my_name not in configuration.followers or name not in configuration.follow_leaders:
 				return
@@ -41,7 +40,6 @@ def follow_handler_class:
 		move = packets.parse_move(bytes)
 		if move != None:
 			player_id, x, y = move
-			print 'Processing move by %d' % player_id
 			if self.following and player_id == self.leader_id:
-				print 'Following %s to (%d, %d)' % (self.leader, x, y)
+				#print 'Following %s to (%d, %d)' % (self.leader, x, y)
 				craw.move_click(x, y)
