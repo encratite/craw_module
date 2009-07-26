@@ -216,8 +216,16 @@ namespace python
 
 			player_object.life = current_unit.life;
 			player_object.level_id = current_unit.level_id;
+
 			player_object.x = current_unit.position_x;
 			player_object.y = current_unit.position_y;
+
+			/*
+			if(player_object.x == 0 && player_object.y == 0)
+			{
+				path_data * path_data_pointer = current_unit.
+			}
+			*/
 
 			std::string name = current_unit.get_name();
 			PyObject * string = PyString_FromStringAndSize(name.c_str(), name.size());

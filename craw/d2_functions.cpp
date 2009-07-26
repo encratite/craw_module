@@ -75,6 +75,7 @@ get_object_table_entry_type d2_get_object_table_entry;
 get_inventory_item_type d2_get_inventory_item;
 get_next_inventory_item_type d2_get_next_inventory_item;
 get_item_text_type d2_get_item_text;
+map_to_screen_coordinates_type d2_map_to_screen_coordinates;
 
 //D2Client.dll
 get_player_unit_type d2_get_player_unit;
@@ -85,6 +86,7 @@ add_automap_cell_type d2_add_automap_cell;
 leave_game_type d2_leave_game;
 get_unit_pointer_type d2_get_unit_pointer;
 get_item_name_type d2_get_item_name;
+click_map_type d2_click_map;
 
 unsigned light_handler_address;
 
@@ -99,6 +101,10 @@ unsigned
 
 unsigned
 	item_handler_call_address;
+
+unsigned
+	mouse_x_address,
+	mouse_y_address;
 
 //D2Net.dll
 send_packet_type d2_send_packet;
@@ -137,6 +143,7 @@ void initialise_d2common_addresses(unsigned base)
 	offset_handler.fix(d2_get_inventory_item, 0x6FDB7500);
 	offset_handler.fix(d2_get_next_inventory_item, 0x6FDB8400);
 	offset_handler.fix(d2_get_item_text, 0x6FDAC980);
+	offset_handler.fix(d2_map_to_screen_coordinates, 0x6FDABF50);
 
 	offset_handler.fix(data_tables, 0x6FDEB500);
 }
@@ -153,6 +160,7 @@ void initialise_d2client_addresses(unsigned base)
 	offset_handler.fix(d2_leave_game, 0x6FB2AB00);
 	offset_handler.fix(d2_get_unit_pointer, 0x6FACF1C0);
 	offset_handler.fix(d2_get_item_name, 0x6FB5B3C0);
+	offset_handler.fix(d2_click_map, 0x6FB0CE80);
 
 	offset_handler.fix(roster_list, 0x6FBCC080);
 	offset_handler.fix(player_pointer, 0x6FBCC3D0);
@@ -168,6 +176,9 @@ void initialise_d2client_addresses(unsigned base)
 	offset_handler.fix(add_unit_address2, 0x6FACFD9E);
 
 	offset_handler.fix(item_handler_call_address, 0x6FB48635);
+
+	offset_handler.fix(mouse_x_address, 0x6FBC21D0);
+	offset_handler.fix(mouse_y_address, 0x6FBC21CC);
 
 	d2client_has_been_loaded = true;
 }
@@ -478,4 +489,16 @@ bool get_item_name(unit * input, std::string & name, std::string & special_name)
 	}
 
 	return true;
+}
+
+void move_click(int x, int y)
+{
+	write_line("Input coordinates: " + ail::number_to_string(x) + ", " + ail::number_to_string(y));
+	d2_map_to_screen_coordinates(&x, &y);
+	write_line("Screen coordinates: " + ail::number_to_string(x) + ", " + ail::number_to_string(y));
+	x -= *reinterpret_cast<int *>(mouse_x_address);
+	y -= *reinterpret_cast<int *>(mouse_y_address);
+	write_line("Fixed screen coordinates: " + ail::number_to_string(x) + ", " + ail::number_to_string(y));
+	d2_click_map(0, x, y, 8);
+	write_line("Clicked");
 }

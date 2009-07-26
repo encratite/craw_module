@@ -38,6 +38,8 @@ typedef unit * (__stdcall * get_next_inventory_item_type)(unit * item);
 typedef item_text * (__stdcall * get_item_text_type)(unsigned item_number);
 typedef void (__stdcall * receive_packet_type)(char const * packet, std::size_t size);
 typedef bool (__stdcall * get_item_name_type)(unit * item, wchar_t * buffer, std::size_t buffer_size);
+typedef void (__stdcall * map_to_screen_coordinates_type)(int * x, int * y);
+typedef void (__stdcall * click_map_type)(unsigned flags, int x, int y, unsigned type);
 
 extern set_font_size_type d2_set_font_size;
 extern draw_text_type d2_draw_text;
@@ -63,6 +65,8 @@ extern get_next_inventory_item_type d2_get_next_inventory_item;
 extern get_item_text_type d2_get_item_text;
 extern receive_packet_type d2_receive_packet;
 extern get_item_name_type d2_get_item_name;
+extern map_to_screen_coordinates_type d2_map_to_screen_coordinates;
+extern click_map_type d2_click_map;
 
 extern unsigned light_handler_address;
 
@@ -77,6 +81,10 @@ extern unsigned
 
 extern unsigned
 	item_handler_call_address;
+
+extern unsigned
+	mouse_x_address,
+	mouse_y_address;
 
 void draw_text(std::string const & text, int x, int y, unsigned colour, bool centered);
 void __stdcall draw_box(int x, int y, unsigned colour);
@@ -95,3 +103,4 @@ bool get_non_empty_tp_tome_id(unsigned & output);
 bool player_is_in_game();
 roster_vector get_roster_units();
 bool get_item_name(unit * input, std::string & name, std::string & special_name);
+void move_click(int x, int y);

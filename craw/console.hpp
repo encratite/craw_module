@@ -27,5 +27,6 @@ void maphack_test(string_vector const & arguments);
 void reveal_act_command(string_vector const & arguments);
 void get_character_name_command(string_vector const & arguments);
 void get_player_pointer(string_vector const & arguments);
+void move(string_vector const & arguments);
 
 void launch_prompt();

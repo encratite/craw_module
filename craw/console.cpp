@@ -31,6 +31,7 @@ namespace
 		//console_command("test", "", "Perform maphack test", 0, &maphack_test),
 		console_command("name", "", "Retrieve your character's name", 0, &get_character_name_command),
 		console_command("player", "", "Get player pointer", 0, &get_player_pointer),
+		console_command("move", "<x> <y>", "Move to the specified coordinates.", 2, &move),
 	};
 }
 
@@ -62,7 +63,13 @@ void print_life(string_vector const & arguments)
 
 void get_player_pointer(string_vector const & arguments)
 {
-	std::cout << ail::hex_string_32(reinterpret_cast<ulong>(d2_get_player_unit())) << std::endl;
+	unit * player_pointer = d2_get_player_unit();
+	std::cout << ail::hex_string_32(reinterpret_cast<ulong>(player_pointer)) << std::endl;
+	if(player_pointer && player_pointer->path_data_pointer)
+	{
+		path_data & data = *(player_pointer->path_data_pointer);
+		std::cout << "Location: " << data.position_x << ", " << data.position_y << std::endl;
+	}
 }
 
 void maphack_test(string_vector const & arguments)
@@ -97,6 +104,25 @@ void maphack_test(string_vector const & arguments)
 		std::cout << "Failed to reveal the act" << std::endl;
 
 	#endif
+}
+
+void move(string_vector const & arguments)
+{
+	int
+		x,
+		y;
+
+	if(!ail::string_to_number(arguments[0], x) || !ail::string_to_number(arguments[1], y))
+	{
+		std::cout << "Invalid coordinates specified" << std::endl;
+		return;
+	}
+
+	//Sleep(2000);
+
+	std::cout << "Moving to (" << x << ", " << y << ")" << std::endl;
+
+	move_click(x, y);
 }
 
 void reveal_act_command(string_vector const & arguments)
