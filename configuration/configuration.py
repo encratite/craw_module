@@ -51,15 +51,18 @@ enchant_both_confirmation = 'I have enchanted you and your mercenary. (%d/%d man
 
 enchant_range_error = 'You do not appear to be within range.'
 enchant_mercenary_error = 'You do not appear to have a mercenary.'
-enchant_mana_error = 'I currently do not have enough mana to enchant you. (%d/%d)'
+enchant_mana_error = 'I currently do not have enough mana. (%d/%d)'
 
 maximal_enchant_distance = 25
+enchant_delay = 0.3
 
 #Names of BO barbarians for the BO bot
 battle_orders_barbarians = []
 
 #Chat triggers for the BO bot
 battle_orders_command = 'bo'
+
+party_error = 'We are not in the same party.'
 
 """
 The following variable can either be a list of players to whom the enchant and

@@ -58,6 +58,7 @@ def parse_move(bytes):
 	return player_id, x, y
 	
 def send_chat(message):
+	print 'Saying "%s"' % message
 	packet = '\x15\x01\x00' + message + '\x00\x00\x00'
 	craw.send_packet(packet)
 	

@@ -5,23 +5,63 @@ class enchant_handler_class:
 	
 	def __init__(self):
 		self.mercenary_map = {}
+		
+	def perform_mana_check(self, cast_count):
+		mana_usage = cast_count * (self.enchant_level + 24)
+		current_mana, maximum_mana = self.mana
+		output = mana_usage <= current_mana
+		if not output:
+			packets.send_chat(configuration.enchant_mana_error % self.mana)
+		return output
+		
+	def perform_party_check(self):
+		output = self.player.level_id != 0
+		if not output:
+			packets.send_chat(configuration.party_error)
+		return output
+		
+	def perform_pre_cast_check(self, cast_count):
+		if not self.perform_mana_check(cast_count):
+			return False
+		return self.perform_party_check()
 	
 	def process_command(self, name, message):
+		self.player = utility.get_player_data_by_name(name)
+		self.my_player = utility.get_my_player()
+		
+		if self.player.id == self.my_player.id:
+			return
+		
+		if self.player == None or self.my_player == None:
+			return
+		
+		enchant_level = craw.get_skill_level(enchant_handler_class.enchant_skill)
+		if enchant_level == None:
+			print 'Unable to retrieve the enchant skill level'
+			return
+			
+		if enchant_level == 0:
+			print 'Unable to enchant - this character does not even have this skill!'
+			return
+		
+		self.enchant_level = enchant_level
+	
 		if message == configuration.enchant_command:
-			print 'Enchanting %s' % name
+			if not self.perform_pre_cast_check(1):
+				return
 			if self.enchant_player(name):
 				packets.send_chat(configuration.enchant_confirmation % self.mana)
 				
 		elif message == configuration.enchant_mercenary_command:
-			print 'Enchanting the mercenary of %s' % name
+			if not self.perform_pre_cast_check(1):
+				return
 			if self.enchant_mercenary(name):
 				packets.send_chat(configuration.enchant_mercenary_confirmation % self.mana)
 				
 		elif message == configuration.enchant_both_command:
-			print 'Enchanting %s and their mercenary' % name
-			if not self.enchant_player(name):
+			if not self.perform_pre_cast_check(2) or not self.enchant_player(name):
 				return
-			time.sleep(0.2)
+			time.sleep(configuration.enchant_delay)
 			if self.enchant_mercenary(name):
 				packets.send_chat(configuration.enchant_both_confirmation % self.mana)
 		
@@ -52,62 +92,38 @@ class enchant_handler_class:
 			for player_id in self.mercenary_map:
 				if self.mercenary_map[player_id][1] == id:
 					del self.mercenary_map[player_id]
+					break
 					
-	def distance_check(self, my_player, player):
-		my_coordinates = (my_player.x, my_player.y)
-		player_coordinates = (player.x, player.y)
+	def distance_check(self):
+		my_coordinates = (self.my_player.x, self.my_player.y)
+		player_coordinates = (self.player.x, self.player.y)
 		
 		distance = utility.distance(my_coordinates, player_coordinates)
 		
-		return player.x != 0 and distance <= configuration.maximal_enchant_distance
+		return self.player.x != 0 and distance <= configuration.maximal_enchant_distance
 				
 	def enchant_player(self, name):
-		player = utility.get_player_data_by_name(name)
-		my_player = utility.get_my_player()
-		
-		if not self.distance_check(my_player, player):
+		if not self.distance_check():
 			packets.send_chat(configuration.enchant_range_error)
 			return False
 		
-		return self.enchant(player.id, 0)
+		self.enchant(self.player.id, 0)
+		return True
 		
 	def enchant_mercenary(self, name):
-		player = utility.get_player_data_by_name(name)
-		my_player = utility.get_my_player()
-		
-		if not self.distance_check(my_player, player):
+		if not self.distance_check():
 			packets.send_chat(configuration.enchant_range_error)
 			return False
 			
 		try:
-			mercenary_act, mercenary_id = self.mercenary_map[player.id]
+			mercenary_act, mercenary_id = self.mercenary_map[self.player.id]
 		except KeyError:
 			packets.send_chat(configuration.enchant_mercenary_error)
 			return False
 		
-		return self.enchant(mercenary_id, 1)
+		self.enchant(mercenary_id, 1)
+		return True
 			
 	def enchant(self, target, type):
-		level = craw.get_skill_level(enchant_handler_class.enchant_skill)
-		if level == None:
-			print 'Unable to retrieve the enchant skill level'
-			return False
-			
-		if level == 0:
-			print 'Unable to enchant - this character does not even have this skill!'
-			return False
-			
-		self.enchant_level = level
-			
-		current_mana, maximum_mana = self.mana
-		
-		mana_usage = level + 24
-		if mana_usage > current_mana:
-			packets.send_chat(configuration.enchant_mana_error % self.mana)
-			return False
-			
-		current_mana -= mana_usage
-		self.mana = (current_mana, maximum_mana)
 		packets.set_right_skill(enchant_handler_class.enchant_skill)
 		packets.cast_right_skill_at_target(type, target)
-		return True
