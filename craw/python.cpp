@@ -59,6 +59,7 @@ namespace python
 			{"send_bncs_packet", &send_bncs_packet, METH_VARARGS, "Sends a packet to the Battle.net Chat Server."},
 			{"move_click", &move_click, METH_VARARGS, "Move to the specified x, y coordinate."},
 			{"get_skill_level", &get_skill_level, METH_VARARGS, "Takes a skill identifier as its sole argument. Returns None if the level of the skill could not be retrieved or, in the case of success, the skill level (including bonuses from items and such)."},
+			{"get_minions", &get_minions, METH_VARARGS, "Takes a player ID as its sole argument. Returns a list of tuples of the form (id, type) of the minions associated with this player or None in case of failure."},
 
 			{0, 0, 0, 0}
 		};
@@ -259,5 +260,36 @@ namespace python
 		//PyRun_SimpleString(("execfile('" + ail::replace_string(python_script, "\\", "\\\\") + "')").c_str());
 
 		return true;
+	}
+
+	PyObject * create_list(std::size_t size)
+	{
+		PyObject * output = PyList_New(size);
+		if(output == 0)
+		{
+			error("Failed to create a Python list");
+			exit_process();
+		}
+		return output;
+	}
+
+	void set_list_item(PyObject * list, std::size_t index, PyObject * value)
+	{
+		if(PyList_SetItem(list, index, value) < 0)
+		{
+			error("Failed to set a Python list item");
+			exit_process();
+		}
+	}
+
+	PyObject * create_string(std::string const & input)
+	{
+		PyObject * output = PyString_FromStringAndSize(input.c_str(), input.length());
+		if(output == 0)
+		{
+			error("Failed to create a Python string for string \"" + input + "\"");
+			exit_process();
+		}
+		return output;
 	}
 }

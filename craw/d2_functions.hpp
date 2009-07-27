@@ -43,6 +43,8 @@ typedef void (__stdcall * click_map_type)(unsigned flags, int x, int y, unsigned
 typedef unit * (__fastcall * find_server_side_unit_type)(unsigned id, unsigned type);
 typedef unit * (__fastcall * find_client_side_unit_type)(unsigned id, unsigned type);
 typedef unsigned (__stdcall * get_skill_level_type)(unit * unit_pointer, skill_data * skill_pointer, bool total);
+typedef unsigned (__fastcall * get_unit_owner_type)(unsigned unit_id);
+typedef int (__stdcall * get_unit_state_type)(unit * unit_pointer, unsigned state);
 
 extern set_font_size_type d2_set_font_size;
 extern draw_text_type d2_draw_text;
@@ -73,6 +75,8 @@ extern click_map_type d2_click_map;
 extern find_server_side_unit_type d2_find_server_side_unit;
 extern find_client_side_unit_type d2_find_client_side_unit;
 extern get_skill_level_type d2_get_skill_level;
+extern get_unit_owner_type d2_get_unit_owner;
+extern get_unit_state_type d2_get_unit_state;
 
 extern unsigned light_handler_address;
 
@@ -113,3 +117,4 @@ bool get_item_name(unit * input, std::string & name, std::string & special_name)
 void move_click(int x, int y);
 bool get_unit_by_id(unsigned id, unsigned type, unit * & output);
 bool get_skill_level(unsigned skill_id, unsigned & output);
+bool get_minions(unsigned player_id, std::vector<unit> & output);

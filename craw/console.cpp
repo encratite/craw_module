@@ -32,6 +32,8 @@ namespace
 		console_command("name", "", "Retrieve your character's name", 0, &get_character_name_command),
 		console_command("player", "", "Get player pointer", 0, &get_player_pointer),
 		console_command("move", "<x> <y>", "Move to the specified coordinates.", 2, &move),
+		console_command("pid", "", "Print the process ID", 0, &print_pid),
+		console_command("test", "", "Run test function", 0, &run_test),
 	};
 }
 
@@ -186,6 +188,28 @@ void quit_program(string_vector const & arguments)
 {
 	std::cout << "Terminating..." << std::endl;
 	ExitProcess(0);
+}
+
+void print_pid(string_vector const & arguments)
+{
+	std::cout << ail::hex_string_32(GetCurrentProcessId()) << std::endl;
+}
+
+void run_test(string_vector const & arguments)
+{
+	unit * unit_pointer = d2_get_player_unit();
+	if(unit_pointer == 0)
+	{
+		std::cout << "Not in a game" << std::endl;
+		return;
+	}
+
+	std::vector<unit> minions;
+	if(!get_minions(unit_pointer->id, minions))
+	{
+		std::cout << "Failed to retrieve minions" << std::endl;
+	}
+	std::cout << "Counted " << minions.size() << " minion(s)" << std::endl;
 }
 
 void console_prompt()

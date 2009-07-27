@@ -16,6 +16,16 @@ enum
 	difficulty_hell
 };
 
+enum
+{
+	unit_player,
+	unit_monster,
+	unit_object,
+	unit_missile,
+	unit_item,
+	unit_tile
+};
+
 struct act_data;
 struct path_data;
 struct inventory;

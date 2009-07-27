@@ -77,6 +77,7 @@ get_next_inventory_item_type d2_get_next_inventory_item;
 get_item_text_type d2_get_item_text;
 map_to_screen_coordinates_type d2_map_to_screen_coordinates;
 get_skill_level_type d2_get_skill_level;
+get_unit_state_type d2_get_unit_state;
 
 //D2Client.dll
 get_player_unit_type d2_get_player_unit;
@@ -90,6 +91,7 @@ get_item_name_type d2_get_item_name;
 click_map_type d2_click_map;
 find_server_side_unit_type d2_find_server_side_unit;
 find_client_side_unit_type d2_find_client_side_unit;
+get_unit_owner_type d2_get_unit_owner;
 
 unsigned light_handler_address;
 
@@ -102,12 +104,13 @@ unsigned
 	add_unit_address1,
 	add_unit_address2;
 
-unsigned
-	item_handler_call_address;
+unsigned item_handler_call_address;
 
 unsigned
 	mouse_x_address,
 	mouse_y_address;
+
+unsigned server_side_unit_list_address;
 
 //D2Net.dll
 send_packet_type d2_send_packet;
@@ -148,6 +151,7 @@ void initialise_d2common_addresses(unsigned base)
 	offset_handler.fix(d2_get_item_text, 0x6FDAC980);
 	offset_handler.fix(d2_map_to_screen_coordinates, 0x6FDABF50);
 	offset_handler.fix(d2_get_skill_level, 0x6FD5E660);
+	offset_handler.fix(d2_get_unit_state, 0x6FDC09A0);
 
 	offset_handler.fix(data_tables, 0x6FDEB500);
 }
@@ -167,6 +171,7 @@ void initialise_d2client_addresses(unsigned base)
 	offset_handler.fix(d2_click_map, 0x6FB0CE80);
 	offset_handler.fix(d2_find_server_side_unit, 0x6FACF1C0);
 	offset_handler.fix(d2_find_client_side_unit, 0x6FACF1A0);
+	offset_handler.fix(d2_get_unit_owner, 0x6FB73160);
 
 	offset_handler.fix(roster_list, 0x6FBCC080);
 	offset_handler.fix(player_pointer, 0x6FBCC3D0);
@@ -185,6 +190,8 @@ void initialise_d2client_addresses(unsigned base)
 
 	offset_handler.fix(mouse_x_address, 0x6FBC21D0);
 	offset_handler.fix(mouse_y_address, 0x6FBC21CC);
+
+	offset_handler.fix(server_side_unit_list_address, 0x6FBCA964);
 
 	d2client_has_been_loaded = true;
 }
@@ -540,4 +547,27 @@ bool get_skill_level(unsigned skill_id, unsigned & output)
 	}
 
 	return false;
+}
+
+bool get_minions(unsigned player_id, std::vector<unit> & output)
+{
+	unit * unit_pointer;
+	if(!get_unit_by_id(player_id, unit_player, unit_pointer))
+		return false;
+
+	act_data * act_data_pointer = unit_pointer->act_data_pointer;
+	if(act_data_pointer == 0)
+		return false;
+
+	for(room_data_type_1 * room_pointer = act_data_pointer->room_1; room_pointer; room_pointer = room_pointer->next_room)
+	{
+		for(unit * unit_pointer = room_pointer->first_unit; unit_pointer; unit_pointer = unit_pointer->next_list_entry)
+		{
+			unit & current_unit = *unit_pointer;
+			if(current_unit.type == unit_monster && d2_get_unit_owner(current_unit.id) == player_id)
+				output.push_back(current_unit);
+		}
+	}
+
+	return true;
 }

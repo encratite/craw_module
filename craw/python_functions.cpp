@@ -215,13 +215,7 @@ namespace python
 		if(!::get_name_by_id(id, name))
 			Py_RETURN_NONE;
 
-		PyObject * output = PyString_FromStringAndSize(name.c_str(), name.size());
-		if(output == 0)
-		{
-			error("Failed to create a Python string object to store the name of a player retrieved by their ID");
-			exit_process();
-			return 0;
-		}
+		PyObject * output = create_string(name);
 
 		return output;
 	}
@@ -232,13 +226,7 @@ namespace python
 
 		roster_vector roster_units = get_roster_units();
 		std::size_t player_count = roster_units.size();
-		PyObject * output = PyList_New(player_count);
-		if(output == 0)
-		{
-			error("Failed to create a Python list to store the player data");
-			exit_process();
-			return 0;
-		}
+		PyObject * output = create_list(player_count);;
 
 		for(std::size_t i = 0; i < player_count; i++)
 		{
@@ -247,7 +235,7 @@ namespace python
 			path_data * path_data_pointer = 0;
 
 			unit * unit_pointer;
-			if(get_unit_by_id(current_unit.unit_id, 0, unit_pointer))
+			if(get_unit_by_id(current_unit.unit_id, unit_player, unit_pointer))
 			{
 				path_data_pointer = unit_pointer->path_data_pointer;
 				if(path_data_pointer == 0)
@@ -280,22 +268,11 @@ namespace python
 			}
 
 			std::string name = current_unit.get_name();
-			PyObject * string = PyString_FromStringAndSize(name.c_str(), name.size());
-			if(string == 0)
-			{
-				error("Failed to create a Python string object for a player's name");
-				exit_process();
-				return 0;
-			}
+			PyObject * string = create_string(name);
 
 			player_object.name = string;
 
-			if(PyList_SetItem(output, i, reinterpret_cast<PyObject *>(player_pointer)) < 0)
-			{
-				error("Failed to set an element of the player data list");
-				exit_process();
-				return 0;
-			}
+			set_list_item(output, i, reinterpret_cast<PyObject *>(player_pointer));
 		}
 
 		return output;
@@ -394,5 +371,35 @@ namespace python
 			return PyLong_FromUnsignedLong(level);
 
 		Py_RETURN_NONE;
+	}
+
+	PyObject * get_minions(PyObject * self, PyObject * arguments)
+	{
+		unsigned player_id;
+
+		if(!PyArg_ParseTuple(arguments, "i", &player_id))
+			return 0;
+
+		boost::mutex::scoped_lock lock(d2_function_mutex);
+
+		std::vector<unit> minions;
+
+		if(!::get_minions(player_id, minions))
+			Py_RETURN_NONE;
+
+		std::size_t minion_count = minions.size();
+
+		PyObject * output = create_list(minion_count);
+		for(std::size_t i = 0; i < minion_count; i++)
+		{
+			unit & current_unit = minions[i];
+			python_monster_data * monster_data_pointer = PyObject_New(python_monster_data, &monster_data_type);
+			python_monster_data & current_monster_data = *monster_data_pointer;
+			if(!current_monster_data.initialise(current_unit))
+				exit_process();
+			set_list_item(output, i, reinterpret_cast<PyObject *>(monster_data_pointer));
+		}
+
+		return output;
 	}
 }

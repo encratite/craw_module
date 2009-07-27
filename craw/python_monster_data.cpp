@@ -43,6 +43,8 @@ namespace python
 
 		{"colour", T_UBYTE, offsetof(python_monster_data, colour), 0, "Colour"},
 
+		{"enchanted", T_OBJECT, offsetof(python_monster_data, enchanted), 0, "True if the monster is enchanted"},
+
 		{0}
 	};
 
@@ -69,21 +71,12 @@ namespace python
 			treasure_class_entry current_treasure_class = statistics.treasure_classes[difficulty];
 
 			std::size_t treasure_size = ail::countof(current_treasure_class.treasure_class);
-			treasure_class = PyList_New(treasure_size);
-			if(treasure_class == 0)
-			{
-				error("Failed to create the treasure class list");
-				return false;
-			}
+			treasure_class = create_list(treasure_size);
 
 			for(std::size_t i = 0; i < treasure_size; i++)
 			{
 				PyObject * integer = PyLong_FromUnsignedLong(current_treasure_class.treasure_class[i]);
-				if(PyList_SetItem(treasure_class, i, integer) < 0)
-				{
-					error("Failed to initialise a treasure class item");
-					return false;
-				}
+				set_list_item(treasure_class, i, integer);
 			}
 
 			std::vector<uchar> abilities_vector;
@@ -94,24 +87,14 @@ namespace python
 					abilities_vector.push_back(ability);
 			}
 
-
 			std::size_t vector_size = abilities_vector.size();
 
-			special_abilities = PyList_New(vector_size);
-			if(special_abilities == 0)
-			{
-				error("Failed to create the special abilities list");
-				return false;
-			}
+			special_abilities = create_list(vector_size);
 
 			for(std::size_t i = 0; i < vector_size; i++)
 			{
 				PyObject * integer = PyLong_FromUnsignedLong(abilities_vector[i]);
-				if(PyList_SetItem(special_abilities, i, integer) < 0)
-				{
-					error("Failed to initialise a special abilities item");
-					return false;
-				}
+				set_list_item(special_abilities, i, integer);
 			}
 
 			level = statistics.level[difficulty];
@@ -144,15 +127,11 @@ namespace python
 			for(std::size_t i = 0; i < ail::countof(resistance_pointers); i++)
 				*resistance_pointers[i] = d2_get_unit_stat(&current_unit, resistance_stats[i], 0);
 
-			/*
-			damage_resistance = statistics.damage_resistance[difficulty];
-			magic_resistance = statistics.magic_resistance[difficulty];
+			bool is_enchanted = d2_get_unit_state(&current_unit, 16) != 0;
+			
+			enchanted = is_enchanted ? Py_True : Py_False;
 
-			fire_resistance = statistics.fire_resistance[difficulty];
-			lightning_resistance = statistics.lightning_resistance[difficulty];
-			cold_resistance = statistics.cold_resistance[difficulty];
-			poison_resistance = statistics.poison_resistance[difficulty];
-			*/
+			Py_INCREF(enchanted);
 		}
 
 		return true;

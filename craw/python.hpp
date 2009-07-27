@@ -58,6 +58,8 @@ namespace python
 
 		uchar colour;
 
+		PyObject * enchanted;
+
 		bool initialise(unit & current_unit);
 	};
 
@@ -89,6 +91,10 @@ namespace python
 		PyObject * ethereal;
 	};
 
+	PyObject * create_list(std::size_t size);
+	void set_list_item(PyObject * list, std::size_t index, PyObject * value);
+	PyObject * create_string(std::string const & input);
+
 	PyObject * set_automap_handler(PyObject * self, PyObject * arguments);
 	PyObject * set_packet_handler(PyObject * self, PyObject * arguments);
 	PyObject * set_command_handler(PyObject * self, PyObject * arguments);
@@ -113,6 +119,7 @@ namespace python
 	PyObject * send_bncs_packet(PyObject * self, PyObject * arguments);
 	PyObject * move_click(PyObject * self, PyObject * arguments);
 	PyObject * get_skill_level(PyObject * self, PyObject * arguments);
+	PyObject * get_minions(PyObject * self, PyObject * arguments);
 
 	void perform_automap_callback(unit & current_unit, int x, int y, uchar colour);
 	bool perform_packet_callback(std::string const & packet);

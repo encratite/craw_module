@@ -65,13 +65,7 @@ namespace python
 		boost::mutex::scoped_lock lock(python_mutex);
 		//global_interpreter_lock lock;
 
-		PyObject * packet_string = PyString_FromStringAndSize(packet.c_str(), packet.size());
-		if(packet_string == 0)
-		{
-			error("Failed to create Python string object for the packet callback");
-			exit_process();
-			return true;
-		}
+		PyObject * packet_string = create_string(packet);
 
 		PyObject * return_value = PyObject_CallFunction(packet_handler, "O", packet_string);
 		if(!return_value)
@@ -95,13 +89,7 @@ namespace python
 
 		boost::mutex::scoped_lock lock(python_mutex);
 
-		PyObject * argument = PyString_FromStringAndSize(line.c_str(), line.size());
-		if(argument == 0)
-		{
-			error("Failed to create a Python string object for the console command");
-			exit_process();
-			return false;
-		}
+		PyObject * argument = create_string(line);
 
 		PyObject * return_value = PyObject_CallFunction(command_handler, "O", argument);
 		if(!return_value)
@@ -182,10 +170,10 @@ namespace python
 
 		wchar_t * unicode_name = get_unit_name(&current_item);
 		std::string name = wchar_to_string(unicode_name);
-		current_python_item_data.type = PyString_FromStringAndSize(name.c_str(), name.size());
+		current_python_item_data.type = create_string(name);
 
 		std::string code = item_text_pointer->get_code();
-		current_python_item_data.code = PyString_FromStringAndSize(code.c_str(), code.size());
+		current_python_item_data.code = create_string(code);
 
 		item_data & current_item_data = *current_item.item_data_pointer;
 
