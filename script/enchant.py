@@ -12,6 +12,9 @@ class enchant_handler_class:
 		output = mana_usage <= current_mana
 		if not output:
 			packets.send_chat(configuration.enchant_mana_error % self.mana)
+		else:
+			current_mana -= mana_usage
+			self.mana = current_mana, maximum_mana
 		return output
 		
 	def perform_party_check(self):
