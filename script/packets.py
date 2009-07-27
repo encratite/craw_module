@@ -90,3 +90,11 @@ def object_removal(bytes):
 	id = utility.read_bytes(bytes, 2, 4)
 	
 	return type, id
+	
+def set_right_skill(skill):
+	packet = '\x3c' + utility.pack_number(skill, 2) + '\x00\x00\xff\xff\xff\xff'
+	craw.send_packet(packet)
+	
+def cast_right_skill_at_target(type, target):
+	packet = '\x0d' + utility.pack_number(type, 4) + utility.pack_number(target, 4)
+	craw.send_packet(packet)

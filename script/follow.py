@@ -12,7 +12,7 @@ class town_portal_timer(threading.Thread):
 		self.start()
 		
 	def run(self):
-		print 'Entering TP %08x' % self.tp_entry.id
+		#print 'Entering TP %08x' % self.tp_entry.id
 		x, y = self.tp_entry.location
 		craw.send_packet('\x03' + utility.pack_number(x, 2) + utility.pack_number(y, 2))
 		time.sleep(0.4)
@@ -20,7 +20,7 @@ class town_portal_timer(threading.Thread):
 		craw.send_packet('\x04\x02\x00\x00\x00' + portal_id)
 		time.sleep(0.05)
 		craw.send_packet('\x13\x02\x00\x00\x00' + portal_id)
-		print 'Done entering the TP'
+		#print 'Done entering the TP'
 
 class follow_handler_class:
 	def __init__(self):

@@ -120,3 +120,12 @@ def get_player_by_name(name):
 		if player.name == name:
 			return player
 	return None
+	
+def distance(coordinate1, coordinate2):
+	return ((coordinate1[0] - coordinate2[0]) ** 2 + (coordinate1[1] - coordinate2[1]) ** 2) ** 0.5
+	
+def get_my_player():
+	players = craw.get_players()
+	if players == None:
+		return players
+	return players[0]

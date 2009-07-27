@@ -165,6 +165,22 @@ namespace python
 		return tuple;
 	}
 
+	PyObject * get_mana(PyObject * self, PyObject * arguments)
+	{
+		unsigned
+			current_mana,
+			maximum_mana;
+
+		boost::mutex::scoped_lock lock(d2_function_mutex);
+
+		if(!::get_mana(current_mana, maximum_mana))
+			Py_RETURN_NONE;
+
+		PyObject * tuple = Py_BuildValue("(ii)", current_mana, maximum_mana);
+
+		return tuple;
+	}
+
 	PyObject * get_player_level(PyObject * self, PyObject * arguments)
 	{
 		boost::mutex::scoped_lock lock(d2_function_mutex);
@@ -360,6 +376,22 @@ namespace python
 		boost::mutex::scoped_lock lock(d2_function_mutex);
 
 		::move_click(x, y);
+
+		Py_RETURN_NONE;
+	}
+
+	PyObject * get_skill_level(PyObject * self, PyObject * arguments)
+	{
+		unsigned skill;
+
+		if(!PyArg_ParseTuple(arguments, "i", &skill))
+			return 0;
+
+		boost::mutex::scoped_lock lock(d2_function_mutex);
+
+		unsigned level;
+		if(::get_skill_level(skill, level))
+			return PyLong_FromUnsignedLong(level);
 
 		Py_RETURN_NONE;
 	}

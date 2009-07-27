@@ -101,6 +101,7 @@ namespace python
 	PyObject * send_packet(PyObject * self, PyObject * arguments);
 	PyObject * leave_game(PyObject * self, PyObject * arguments);
 	PyObject * get_life(PyObject * self, PyObject * arguments);
+	PyObject * get_mana(PyObject * self, PyObject * arguments);
 	PyObject * get_player_level(PyObject * self, PyObject * arguments);
 	PyObject * get_player_id(PyObject * self, PyObject * arguments);
 	PyObject * get_name_by_id(PyObject * self, PyObject * arguments);
@@ -111,6 +112,7 @@ namespace python
 	PyObject * receive_packet(PyObject * self, PyObject * arguments);
 	PyObject * send_bncs_packet(PyObject * self, PyObject * arguments);
 	PyObject * move_click(PyObject * self, PyObject * arguments);
+	PyObject * get_skill_level(PyObject * self, PyObject * arguments);
 
 	void perform_automap_callback(unit & current_unit, int x, int y, uchar colour);
 	bool perform_packet_callback(std::string const & packet);

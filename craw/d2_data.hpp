@@ -21,6 +21,15 @@ struct path_data;
 struct inventory;
 struct monster_data;
 struct item_data;
+struct skill_data;
+
+struct skill_information
+{
+	uchar * game_byte;
+	skill_data * first_skill;
+	skill_data * left_skill;
+	skill_data * right_skill;
+};
 
 struct unit
 {
@@ -62,7 +71,7 @@ struct unit
 	unsigned owner_id;
 	unsigned unknown8[2];
 	void * overhead_message;
-	void * unit_information;
+	skill_information * skill_pointer;
 	unsigned unknown9[6];
 	unsigned flags1;
 	unsigned flags2;
@@ -407,4 +416,19 @@ struct item_text
 	uchar quest;
 
 	std::string get_code() const;
+};
+
+struct skill_identifier_data
+{
+	ushort identifier;
+};
+
+struct skill_data
+{
+	skill_identifier_data * skill_information_pointer;
+	skill_data * next_skill;
+	unsigned unknown1[8];
+	unsigned skill_level;
+	unsigned unknown2[2];
+	unsigned flags;
 };

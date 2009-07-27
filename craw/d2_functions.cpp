@@ -76,6 +76,7 @@ get_inventory_item_type d2_get_inventory_item;
 get_next_inventory_item_type d2_get_next_inventory_item;
 get_item_text_type d2_get_item_text;
 map_to_screen_coordinates_type d2_map_to_screen_coordinates;
+get_skill_level_type d2_get_skill_level;
 
 //D2Client.dll
 get_player_unit_type d2_get_player_unit;
@@ -146,6 +147,7 @@ void initialise_d2common_addresses(unsigned base)
 	offset_handler.fix(d2_get_next_inventory_item, 0x6FDB8400);
 	offset_handler.fix(d2_get_item_text, 0x6FDAC980);
 	offset_handler.fix(d2_map_to_screen_coordinates, 0x6FDABF50);
+	offset_handler.fix(d2_get_skill_level, 0x6FD5E660);
 
 	offset_handler.fix(data_tables, 0x6FDEB500);
 }
@@ -281,14 +283,24 @@ void __stdcall draw_box(int x, int y, unsigned colour)
 	}
 }
 
-bool get_life(unsigned & current_life, unsigned & maximum_life)
+bool get_life_or_mana(unsigned & current, unsigned & maximum, unsigned stat1, unsigned stat2)
 {
 	unit * player_unit = d2_get_player_unit();
 	if(player_unit == 0)
 		return false;
-	current_life = d2_get_unit_stat(player_unit, 6, 0) >> life_mana_shift;
-	maximum_life = d2_get_unit_stat(player_unit, 7, 0) >> life_mana_shift;
+	current = d2_get_unit_stat(player_unit, stat1, 0) >> life_mana_shift;
+	maximum = d2_get_unit_stat(player_unit, stat2, 0) >> life_mana_shift;
 	return true;
+}
+
+bool get_life(unsigned & current_life, unsigned & maximum_life)
+{
+	return get_life_or_mana(current_life, maximum_life, 6, 7);
+}
+
+bool get_mana(unsigned & current_mana, unsigned & maximum_mana)
+{
+	return get_life_or_mana(current_mana, maximum_mana, 8, 9);
 }
 
 monster_statistics & get_monster_statistics(std::size_t index)
@@ -510,4 +522,22 @@ bool get_unit_by_id(unsigned id, unsigned type, unit * & output)
 	output = d2_find_client_side_unit(id, type);
 
 	return output != 0;
+}
+
+bool get_skill_level(unsigned skill_id, unsigned & output)
+{
+	unit * unit_pointer = d2_get_player_unit();
+	if(!unit_pointer)
+		return false;
+
+	for(skill_data * current_skill = unit_pointer->skill_pointer->first_skill; current_skill; current_skill = current_skill->next_skill)
+	{
+		if(current_skill->skill_information_pointer->identifier == skill_id)
+		{
+			output = d2_get_skill_level(unit_pointer, current_skill, true);
+			return true;
+		}
+	}
+
+	return false;
 }

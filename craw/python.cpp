@@ -47,6 +47,7 @@ namespace python
 			{"send_packet", &send_packet, METH_VARARGS, "Sends a packet to the game server."},
 			{"leave_game", &leave_game, METH_VARARGS, "Leaves the current game."},
 			{"get_life", &get_life, METH_VARARGS, "Returns a (current life, maximum life) tuple or None if the character is not in game yet."},
+			{"get_mana", &get_mana, METH_VARARGS, "Returns a (current mana, maximum mana) tuple or None if the character is not in game yet."},
 			{"get_player_level", &get_player_level, METH_VARARGS, "Returns the numeric identifier of the area the player currently resides in or None if it failed to retrieve the identifier."},
 			{"get_player_id", &get_player_id, METH_VARARGS, "Returns the numeric identifier of the player unit or None if it fails to retrieve it."},
 			{"get_name_by_id", &get_name_by_id, METH_VARARGS, "Returns the name of a player given their numeric identifier or None if it fails to do so."},
@@ -57,6 +58,7 @@ namespace python
 			{"receive_packet", &receive_packet, METH_VARARGS, "Artificially receives a packet on the client side."},
 			{"send_bncs_packet", &send_bncs_packet, METH_VARARGS, "Sends a packet to the Battle.net Chat Server."},
 			{"move_click", &move_click, METH_VARARGS, "Move to the specified x, y coordinate."},
+			{"get_skill_level", &get_skill_level, METH_VARARGS, "Takes a skill identifier as its sole argument. Returns None if the level of the skill could not be retrieved or, in the case of success, the skill level (including bonuses from items and such)."},
 
 			{0, 0, 0, 0}
 		};

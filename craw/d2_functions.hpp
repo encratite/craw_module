@@ -42,6 +42,7 @@ typedef void (__stdcall * map_to_screen_coordinates_type)(int * x, int * y);
 typedef void (__stdcall * click_map_type)(unsigned flags, int x, int y, unsigned type);
 typedef unit * (__fastcall * find_server_side_unit_type)(unsigned id, unsigned type);
 typedef unit * (__fastcall * find_client_side_unit_type)(unsigned id, unsigned type);
+typedef unsigned (__stdcall * get_skill_level_type)(unit * unit_pointer, skill_data * skill_pointer, bool total);
 
 extern set_font_size_type d2_set_font_size;
 extern draw_text_type d2_draw_text;
@@ -71,6 +72,7 @@ extern map_to_screen_coordinates_type d2_map_to_screen_coordinates;
 extern click_map_type d2_click_map;
 extern find_server_side_unit_type d2_find_server_side_unit;
 extern find_client_side_unit_type d2_find_client_side_unit;
+extern get_skill_level_type d2_get_skill_level;
 
 extern unsigned light_handler_address;
 
@@ -93,6 +95,7 @@ extern unsigned
 void draw_text(std::string const & text, int x, int y, unsigned colour, bool centered);
 void __stdcall draw_box(int x, int y, unsigned colour);
 bool get_life(unsigned & current_life, unsigned & maximum_life);
+bool get_mana(unsigned & current_mana, unsigned & maximum_mana);
 monster_statistics & get_monster_statistics(std::size_t index);
 roster_unit * get_player_roster(unsigned player_id);
 unit * get_player();
@@ -109,3 +112,4 @@ roster_vector get_roster_units();
 bool get_item_name(unit * input, std::string & name, std::string & special_name);
 void move_click(int x, int y);
 bool get_unit_by_id(unsigned id, unsigned type, unit * & output);
+bool get_skill_level(unsigned skill_id, unsigned & output);
