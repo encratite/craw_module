@@ -98,3 +98,25 @@ def set_right_skill(skill):
 def cast_right_skill_at_target(type, target):
 	packet = '\x0d' + utility.pack_number(type, 4) + utility.pack_number(target, 4)
 	craw.send_packet(packet)
+
+def assign_mercenary(bytes):
+	mercenary_map = {
+		0x010f: 1,
+		0x0152: 2,
+		0x0167: 3,
+		0x0231: 5
+	}
+	
+	if len(bytes) != 20 or bytes[0] != 0x81:
+		return None
+		
+	type = utility.read_bytes(bytes, 2, 2)
+	try:
+		mercenary_act = mercenary_map[type]
+	except KeyError:
+		mercenary_act = None
+	
+	owner_id = utility.read_bytes(bytes, 4, 4)
+	mercenary_id = utility.read_bytes(bytes, 8, 4)
+	
+	return mercenary_act, owner_id, mercenary_id

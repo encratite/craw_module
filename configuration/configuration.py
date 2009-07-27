@@ -44,6 +44,17 @@ enchant_command = 'enchant'
 enchant_mercenary_command = 'enchant mercenary'
 enchant_both_command = 'enchant us'
 
+#Replies to chat triggers for the enchant bot
+enchant_confirmation = 'I have enchanted you. (%d/%d mana remaining)'
+enchant_mercenary_confirmation = 'I have enchanted your mercenary. (%d/%d mana remaining)'
+enchant_both_confirmation = 'I have enchanted you and your mercenary. (%d/%d mana remaining)'
+
+enchant_range_error = 'You do not appear to be within range.'
+enchant_mercenary_error = 'You do not appear to have a mercenary.'
+enchant_mana_error = 'I currently do not have enough mana to enchant you. (%d/%d)'
+
+maximal_enchant_distance = 25
+
 #Names of BO barbarians for the BO bot
 battle_orders_barbarians = []
 
