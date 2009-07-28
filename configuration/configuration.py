@@ -28,6 +28,10 @@ follow_command = 'follow'
 stop_command = 'stop'
 enter_tp_command = 'enter my tp'
 
+#Timing for the follow bot
+follow_portal_move_delay = 0.4
+follow_portal_interact_delay = 0.05
+
 #Replies to chat triggers for the follow bot
 follow_confirmation = 'Following %s'
 stop_confirmation = 'No longer following %s'
@@ -36,22 +40,26 @@ enter_tp_confirmation = 'Entering the town portal of %s'
 stop_error = 'Currently not following anybody'
 tp_error = 'Unable to detect the town portal of %s'
 
+mana_remaining = ' (%d/%d mana remaining)'
+
 #Names of enchanters that will listen to enchant commands issued
 enchanters = []
 
 #Chat trigger for the enchant bot
 enchant_command = 'enchant'
-enchant_mercenary_command = 'enchant mercenary'
-enchant_both_command = 'enchant us'
+enchant_minions_command = 'enchant minions'
+enchant_all_command = 'enchant all'
 
 #Replies to chat triggers for the enchant bot
-enchant_confirmation = 'I have enchanted you. (%d/%d mana remaining)'
-enchant_mercenary_confirmation = 'I have enchanted your mercenary. (%d/%d mana remaining)'
-enchant_both_confirmation = 'I have enchanted you and your mercenary. (%d/%d mana remaining)'
+
+enchant_confirmation = 'I have enchanted you.' + mana_remaining
+enchant_minions_confirmation = 'I have enchanted %d of your minions.' + mana_remaining
+enchant_all_confirmation = 'I have enchanted you and %d of your minions.' + mana_remaining
 
 enchant_range_error = 'You do not appear to be within range.'
-enchant_mercenary_error = 'You do not appear to have a mercenary.'
-enchant_mana_error = 'I currently do not have enough mana. (%d/%d)'
+enchant_mercenary_error = 'You do not appear to have any minions.'
+enchant_mana_error = 'I currently do not have enough mana.' + mana_remaining
+enchant_mana_lack_warning = 'Warning: I currently do not have enough mana to fully complete this operation.' + mana_remaining
 
 maximal_enchant_distance = 25
 enchant_delay = 0.3
@@ -61,6 +69,9 @@ battle_orders_barbarians = []
 
 #Chat triggers for the BO bot
 battle_orders_command = 'bo'
+
+#Cast delay for the BO barbarian
+battle_orders_delay = 0.3
 
 party_error = 'We are not in the same party.'
 

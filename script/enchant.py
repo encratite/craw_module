@@ -142,6 +142,9 @@ class enchant_handler_class:
 			return False
 			
 		targets = self.get_minions()
+		if targets == None:
+			print 'Unable to retrieve minions!'
+			targets = []
 		targets = [(0, self.player.id)] + targets
 		targets_enchanted = self.process_targets(targets)
 		if targets_enchanted == None:

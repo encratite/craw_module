@@ -205,9 +205,7 @@ namespace python
 
 	PyObject * get_name_by_id(PyObject * self, PyObject * arguments)
 	{
-		unsigned id;
-		if(!PyArg_ParseTuple(arguments, "l", &id))
-			return 0;
+		unsigned id = static_cast<unsigned>(PyLong_AsUnsignedLong(PyTuple_GetItem(arguments, 0)));
 
 		boost::mutex::scoped_lock lock(d2_function_mutex);
 
@@ -376,10 +374,7 @@ namespace python
 
 	PyObject * get_minions(PyObject * self, PyObject * arguments)
 	{
-		unsigned player_id;
-
-		if(!PyArg_ParseTuple(arguments, "l", &player_id))
-			return 0;
+		unsigned player_id = static_cast<unsigned>(PyLong_AsUnsignedLong(PyTuple_GetItem(arguments, 0)));
 
 		boost::mutex::scoped_lock lock(d2_function_mutex);
 

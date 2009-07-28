@@ -15,10 +15,10 @@ class town_portal_timer(threading.Thread):
 		#print 'Entering TP %08x' % self.tp_entry.id
 		x, y = self.tp_entry.location
 		craw.send_packet('\x03' + utility.pack_number(x, 2) + utility.pack_number(y, 2))
-		time.sleep(0.4)
+		time.sleep(configuration.follow_portal_move_delay)
 		portal_id = utility.pack_number(self.tp_entry.id, 4)
 		craw.send_packet('\x04\x02\x00\x00\x00' + portal_id)
-		time.sleep(0.05)
+		time.sleep(configuration.follow_portal_interact_delay)
 		craw.send_packet('\x13\x02\x00\x00\x00' + portal_id)
 		#print 'Done entering the TP'
 
