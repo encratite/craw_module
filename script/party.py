@@ -20,7 +20,6 @@ class party_handler_class:
 	def process_bytes(self, bytes):
 		if bytes[0] == 0x01:
 			self.new_game = True
-			print 'New game'
 			return
 			
 		assignment = packets.parse_assignment(bytes)
@@ -45,7 +44,6 @@ class party_handler_class:
 		player_id = packets.parse_invitiation(bytes)
 		if player_id != None:
 			player = utility.get_player_by_id(player_id)
-			print 'Got an invitation by %s' % player.name
 			if configuration.auto_accept_invitations_by_friends and privileges.is_friend(player.name):
 				print 'Accepting the invitation of friend %s' % player.name
 				packets.accept_invitation(player_id)
