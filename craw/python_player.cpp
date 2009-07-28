@@ -16,6 +16,8 @@ namespace python
 		{"x", T_UINT, offsetof(python_player_data, x), 0, "x position"},
 		{"y", T_UINT, offsetof(python_player_data, y), 0, "y position"},
 
+		{"party", T_UINT, offsetof(python_player_data, party), 0, "Party ID"},
+
 		{0}
 	};
 }

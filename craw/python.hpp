@@ -78,6 +78,8 @@ namespace python
 		unsigned level_id;
 		unsigned x;
 		unsigned y;
+
+		unsigned party;
 	};
 
 	struct python_item_data

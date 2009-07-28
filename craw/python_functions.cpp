@@ -206,7 +206,7 @@ namespace python
 	PyObject * get_name_by_id(PyObject * self, PyObject * arguments)
 	{
 		unsigned id;
-		if(!PyArg_ParseTuple(arguments, "i", &id))
+		if(!PyArg_ParseTuple(arguments, "l", &id))
 			return 0;
 
 		boost::mutex::scoped_lock lock(d2_function_mutex);
@@ -226,7 +226,7 @@ namespace python
 
 		roster_vector roster_units = get_roster_units();
 		std::size_t player_count = roster_units.size();
-		PyObject * output = create_list(player_count);;
+		PyObject * output = create_list(player_count);
 
 		for(std::size_t i = 0; i < player_count; i++)
 		{
@@ -255,6 +255,7 @@ namespace python
 
 			player_object.life = current_unit.life;
 			player_object.level_id = current_unit.level_id;
+			player_object.party = current_unit.party_id;
 
 			if(path_data_pointer)
 			{
@@ -377,7 +378,7 @@ namespace python
 	{
 		unsigned player_id;
 
-		if(!PyArg_ParseTuple(arguments, "i", &player_id))
+		if(!PyArg_ParseTuple(arguments, "l", &player_id))
 			return 0;
 
 		boost::mutex::scoped_lock lock(d2_function_mutex);

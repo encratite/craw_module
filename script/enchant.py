@@ -22,7 +22,7 @@ class enchant_handler_class:
 			return True
 		
 	def perform_party_check(self):
-		is_in_party = self.player.level_id != 0
+		is_in_party = utility.same_party(self.player, self.my_player)
 		if not is_in_party:
 			packets.send_chat(configuration.party_error)
 		return is_in_party
@@ -33,7 +33,10 @@ class enchant_handler_class:
 		
 		distance = utility.distance(my_coordinates, player_coordinates)
 		
-		return self.player.x != 0 and distance <= configuration.maximal_enchant_distance
+		is_in_range = self.player.x != 0 and distance <= configuration.maximal_enchant_distance
+		if not is_in_range:
+			packets.send_chat(configuration.enchant_range_error)
+		return is_in_range
 		
 	def perform_pre_cast_check(self):
 		if not self.perform_party_check():

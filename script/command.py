@@ -97,6 +97,7 @@ class command_handler_class:
 			print 'Life: %d' % player.life
 			print 'Area: %d' % player.level_id
 			print 'Location: (%d, %d)\n' % (player.x, player.y)
+			print 'Party ID: %08x' % player.party
 			index += 1
 			
 	def flash(self, arguments):

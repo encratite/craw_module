@@ -139,3 +139,7 @@ mercenary_map = {
 
 def is_mercenary(id):
 	return id in mercenary_map
+	
+def same_party(player1, player2):
+	not_in_party = 0x0000ffff
+	return not_in_party not in [player1.party, player2.party] and player1.party == player2.party
