@@ -121,13 +121,20 @@ def get_player_by_name(name):
 			return player
 	return None
 	
+def get_player_by_id(player_id):
+	players = craw.get_players()
+	for player in players:
+		if player.id == player_id:
+			return player
+	return None
+	
 def distance(coordinate1, coordinate2):
 	return ((coordinate1[0] - coordinate2[0]) ** 2 + (coordinate1[1] - coordinate2[1]) ** 2) ** 0.5
 	
 def get_my_player():
 	players = craw.get_players()
-	if players == None:
-		return players
+	if players == None or len(players) == 0:
+		return None
 	return players[0]
 	
 mercenary_map = {

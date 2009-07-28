@@ -88,7 +88,16 @@ that all players have access to the commands.
 
 remote_command_privilege_users = None
 
+#Friends/party settings
+
+friends = enchanters + battle_orders_barbarians + [
+]
+
+party_invitation_command = 'invite'
+auto_accept_invitations_by_friends = True
+auto_loot_permission_to_friends = True
+
 #Packet logging for experiments/debugging
 
-packet_logging = False
+packet_logging = True
 packet_log = 'packets.log'

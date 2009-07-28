@@ -128,3 +128,44 @@ def assign_mercenary(bytes):
 	mercenary_id = utility.read_bytes(bytes, 8, 4)
 	
 	return mercenary_act, owner_id, mercenary_id
+	
+def accept_invitation(player_id):
+	packet = '\x5e\x08' + utility.pack_number(player_id, 4)
+	craw.send_packet(packet)
+	
+def grant_loot_permission(player_id):
+	packet = '\x5d\x01\x01' + utility.pack_number(player_id, 4)
+	craw.send_packet(packet)
+
+def invite_player(player_id):
+	packet = '\x5e\x06' + utility.pack_number(player_id, 4)
+	craw.send_packet(packet)
+	
+def parse_invitiation(bytes):
+	if len(bytes) < 6 or bytes[0] != 0x8b or bytes[5] != 0x02:
+		return None
+		
+	player_id = utility.read_bytes(bytes, 1, 4)
+	return player_id
+
+def parse_join(bytes):
+	if len(bytes) < 26 or bytes[0] != 0x5b:
+		return None
+		
+	player_id = utility.read_bytes(bytes, 3, 4)
+	player_name = utility.read_name(bytes, 8)
+	character_class = bytes[7]
+	level = utility.read_bytes(bytes, 24, 2)
+	
+	return player_id, player_name, character_class, level
+	
+def parse_assignment(bytes):
+	if len(bytes) < 26 or bytes[0] != 0x59:
+		return None
+		
+	player_id = utility.read_bytes(bytes, 1, 4)
+	character_class = bytes[5]
+	player_name = utility.read_name(bytes, 6)
+	x = utility.read_bytes(bytes, 22, 2)
+	y = utility.read_bytes(bytes, 24, 2)
+	return player_id, character_class, player_name, x, y

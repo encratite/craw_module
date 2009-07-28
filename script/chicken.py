@@ -28,6 +28,10 @@ class chicken_handler_class:
 		
 		print '%d damage, %d/%d left (%s)' % (damage, new_life, maximum_life, percent)
 		
+		if new_life <= 0:
+			print 'I am dead.'
+			return
+		
 		in_town = utility.town_check()
 		
 		if in_town == None:

@@ -6,3 +6,6 @@ def has_remote_privileges(name):
 		return False
 		
 	return configuration.remote_command_privilege_users == None or name in configuration.remote_command_privilege_users
+	
+def is_friend(name):
+	return name in configuration.friends

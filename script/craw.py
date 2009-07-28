@@ -3,7 +3,7 @@ import sys, utility
 
 sys.path.append(utility.get_configuration_directory())
 
-import configuration, craw, automap, packets, chicken, command, town_portal, player_kill, skills, bncs, item_handler, follow, enchant, battle_orders
+import configuration, craw, automap, packets, chicken, command, town_portal, player_kill, skills, bncs, item_handler, follow, enchant, battle_orders, party
 
 #Set up handlers
 
@@ -47,3 +47,6 @@ packet_handler.add_byte_handler(enchant_handler.process_bytes)
 
 battle_orders_handler = battle_orders.battle_orders_handler_class()
 packet_handler.add_byte_handler(battle_orders_handler.process_bytes)
+
+party_handler = party.party_handler_class()
+packet_handler.add_byte_handler(party_handler.process_bytes)
