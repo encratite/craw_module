@@ -1,4 +1,4 @@
-import utility, craw, configuration, packets, time, nil.thread, threading
+import utility, craw, configuration, packets, time, nil.thread, threading, privileges
 
 class enchant_handler_class:
 	enchant_skill = 0x0034
@@ -13,7 +13,7 @@ class enchant_handler_class:
 		current_mana, maximum_mana = self.mana
 		output = mana_usage <= current_mana
 		if self.mana_per_cast > current_mana:
-			packets.send_chat(configuration.enchant_mana_error % self.mana)
+			packets.send_chat(configuration.mana_error % self.mana)
 			return False
 		elif mana_usage > current_mana:
 			packets.send_chat(configuration.enchant_mana_lack_warning % self.mana)
@@ -176,7 +176,7 @@ class enchant_handler_class:
 		message = packets.parse_message(bytes)
 		if message != None:
 			name, message = message
-			if configuration.remote_command_privilege_users == None or name in configuration.remote_command_privilege_users:
+			if privileges.has_remote_privileges(name):
 				self.process_command(name, message)
 			
 	def enchant(self, target, type):

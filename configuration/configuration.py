@@ -58,7 +58,6 @@ enchant_all_confirmation = 'I have enchanted you and %d of your minions.' + mana
 
 enchant_range_error = 'You do not appear to be within range.'
 enchant_mercenary_error = 'You do not appear to have any minions.'
-enchant_mana_error = 'I currently do not have enough mana.' + mana_remaining
 enchant_mana_lack_warning = 'Warning: I currently do not have enough mana to fully complete this operation.' + mana_remaining
 
 maximal_enchant_distance = 25
@@ -71,9 +70,15 @@ battle_orders_barbarians = []
 battle_orders_command = 'bo'
 
 #Cast delay for the BO barbarian
-battle_orders_delay = 0.3
+battle_orders_switch_delay = 0.1
+battle_orders_cast_delay = 0.3
+
+battle_orders_confirmation = 'Casting Battle Command, Battle Orders and Shout, please wait...'
+
+battle_orders_town_error = 'Cannot cast Battle Orders in town.'
 
 party_error = 'We are not in the same party.'
+mana_error = 'I currently do not have enough mana.' + mana_remaining
 
 """
 The following variable can either be a list of players to whom the enchant and

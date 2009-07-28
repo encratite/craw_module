@@ -1,4 +1,4 @@
-import nil.time, configuration, utility, craw, string
+import nil.time, configuration, utility, craw, string, time
 
 class packet_handler_class:
 
@@ -99,6 +99,20 @@ def set_right_skill(skill):
 def cast_right_skill_at_target(type, target):
 	packet = '\x0d' + utility.pack_number(type, 4) + utility.pack_number(target, 4)
 	craw.send_packet(packet)
+	
+def cast_right_skill_at_location(x, y):
+	packet = '\x0c' + utility.pack_number(x, 2) +utility.pack_number(y, 2)
+	craw.send_packet(packet)
+	
+def cast_right_skill():
+	player = utility.get_my_player()
+	cast_right_skill_at_location(player.x, player.y)
+	
+def perform_cast(skill, switch_delay, cast_delay):
+	set_right_skill(skill)
+	time.sleep(switch_delay)
+	cast_right_skill()
+	time.sleep(cast_delay)
 
 def assign_mercenary(bytes):
 	if len(bytes) != 20 or bytes[0] != 0x81:
