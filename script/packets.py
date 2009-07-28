@@ -101,19 +101,12 @@ def cast_right_skill_at_target(type, target):
 	craw.send_packet(packet)
 
 def assign_mercenary(bytes):
-	mercenary_map = {
-		0x010f: 1,
-		0x0152: 2,
-		0x0167: 3,
-		0x0231: 5
-	}
-	
 	if len(bytes) != 20 or bytes[0] != 0x81:
 		return None
 		
 	type = utility.read_bytes(bytes, 2, 2)
 	try:
-		mercenary_act = mercenary_map[type]
+		mercenary_act = utility.mercenary_map[type]
 	except KeyError:
 		mercenary_act = None
 	

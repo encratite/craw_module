@@ -129,3 +129,13 @@ def get_my_player():
 	if players == None:
 		return players
 	return players[0]
+	
+mercenary_map = {
+	0x010f: 1,
+	0x0152: 2,
+	0x0167: 3,
+	0x0231: 5
+}
+
+def is_mercenary(id):
+	return id in mercenary_map
