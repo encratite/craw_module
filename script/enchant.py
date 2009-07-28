@@ -4,7 +4,6 @@ class enchant_handler_class:
 	enchant_skill = 0x0034
 	
 	def __init__(self):
-		self.mercenary_map = {}
 		self.running = False
 		self.lock = threading.Lock()
 		
@@ -23,15 +22,23 @@ class enchant_handler_class:
 			return True
 		
 	def perform_party_check(self):
-		output = self.player.level_id != 0
-		if not output:
+		is_in_party = self.player.level_id != 0
+		if not is_in_party:
 			packets.send_chat(configuration.party_error)
-		return output
+		return is_in_party
 		
-	def perform_pre_cast_check(self, cast_count):
-		if not self.perform_mana_check(cast_count):
+	def distance_check(self):
+		my_coordinates = (self.my_player.x, self.my_player.y)
+		player_coordinates = (self.player.x, self.player.y)
+		
+		distance = utility.distance(my_coordinates, player_coordinates)
+		
+		return self.player.x != 0 and distance <= configuration.maximal_enchant_distance
+		
+	def perform_pre_cast_check(self):
+		if not self.perform_party_check():
 			return False
-		return self.perform_party_check()
+		return self.distance_check()
 	
 	def process_command(self, name, message):
 		self.player = utility.get_player_data_by_name(name)
@@ -53,6 +60,11 @@ class enchant_handler_class:
 			return
 		
 		self.enchant_level = enchant_level
+		
+		self.mana = craw.get_mana()
+		if self.mana == None:
+			print 'Unable to retrieve mana'
+			return
 	
 		if message == configuration.enchant_command:
 			self.launch_function(self.enchant_player)
@@ -69,65 +81,83 @@ class enchant_handler_class:
 			print 'Received an enchant request that was blocked because the thread is still running.'
 		else:
 			self.running = True
-			nil.thread.create_thread(function)
+			nil.thread.create_thread(lambda: self.function_wrapper(function))
 		self.lock.release()
+		
+	def thread_termination(self):
+		self.lock.acquire()
+		self.running = False
+		self.lock.release()
+		
+	def function_wrapper(self, function):
+		function()
+		self.thread_termination()
 			
 	def enchant_player(self):
-		if not self.distance_check() or not self.perform_pre_cast_check(1):
+		if not self.perform_pre_cast_check() or not self.perform_mana_check(1):
 			return False
 		self.enchant(self.player.id, 0)
 		packets.send_chat(configuration.enchant_confirmation % self.mana)
+		return True
 		
-	def process_minions(self):
+	def get_minions(self):
 		minions = craw.get_minions(self.player.id)
 		if minions == None:
 			print 'Unable to retrieve the minions of player %s' % self.player.name
 			return None
 			
 		minions = filter(lambda minion: not minion.enchanted, minions)
-		minion_count = len(minions)
+		return map(lambda minion: (1, minion.id), minions)
 		
-		if not self.perform_pre_cast_check(minion_count):
+	def process_targets(self, targets):
+		if not self.perform_mana_check(len(targets)):
 			return None
 			
-		minions_enchanted = 0
-		for minion in minions:
-			if not self.enchant(minion.id, 1):
+		targets_enchanted = 0
+		for type, id in targets:
+			if not self.enchant(id, type):
 				break
-			minions_enchanted += 1
+			targets_enchanted += 1 
 			
-		return minions_enchanted
+		return targets_enchanted
 	
 	def enchant_minions(self):
-		if not self.distance_check():
+		if not self.perform_pre_cast_check():
 			return False
 			
-		minions_enchanted =  self.process_minions()
+		minions = self.get_minions()
+		minions_enchanted = self.process_targets(minions)
 		if minions_enchanted == None:
 			return False
-		
-		packets.send_chat(configuration.enchant_confirmation % (minions_enchanted, self.mana))
+			
+		current_mana, maximum_mana = self.mana
+		packets.send_chat(configuration.enchant_minions_confirmation % (minions_enchanted, current_mana, maximum_mana))
 		return True
 	
 	def enchant_all(self):
-		if not self.distance_check():
+		if not self.perform_pre_cast_check():
 			return False
 			
-		self.enchant(self.player.id, 0)
-		
-		minions_enchanted =  self.process_minions()
-		if minions_enchanted == None:
+		targets = self.get_minions()
+		targets = [(0, self.player.id)] + targets
+		targets_enchanted = self.process_targets(targets)
+		if targets_enchanted == None:
 			return False
 			
-		packets.send_chat(configuration.enchant_all_confirmation % (minions_enchanted, self.mana))
+		minions_enchanted = targets_enchanted - 1
+			
+		current_mana, maximum_mana = self.mana
+		packets.send_chat(configuration.enchant_all_confirmation % (minions_enchanted, current_mana, maximum_mana))
 		return True
 		
 	def process_bytes(self, bytes):
-		mercenary = packets.assign_mercenary(bytes)
-		if mercenary != None:
-			mercenary_act, owner_id, mercenary_id = mercenary
-			self.mercenary_map[owner_id] = (mercenary_act, mercenary_id)
-
+		self.lock.acquire()
+		running = self.running
+		self.lock.release()
+		
+		if running:
+			return
+		
 		my_name = utility.get_my_name()
 		if my_name not in configuration.enchanters:
 			return
@@ -142,22 +172,6 @@ class enchant_handler_class:
 			name, message = message
 			if configuration.remote_command_privilege_users == None or name in configuration.remote_command_privilege_users:
 				self.process_command(name, message)
-			
-		removal = packets.object_removal(bytes)
-		if removal != None:
-			type, id = removal
-			for player_id in self.mercenary_map:
-				if self.mercenary_map[player_id][1] == id:
-					del self.mercenary_map[player_id]
-					break
-					
-	def distance_check(self):
-		my_coordinates = (self.my_player.x, self.my_player.y)
-		player_coordinates = (self.player.x, self.player.y)
-		
-		distance = utility.distance(my_coordinates, player_coordinates)
-		
-		return self.player.x != 0 and distance <= configuration.maximal_enchant_distance
 			
 	def enchant(self, target, type):
 		packets.set_right_skill(enchant_handler_class.enchant_skill)

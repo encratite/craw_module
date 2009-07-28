@@ -13,6 +13,8 @@ namespace python
 {
 	PyMemberDef monster_data_members[] =
 	{
+		{"id", T_UINT, offsetof(python_monster_data, id), 0, "Unit identifier"},
+
 		{"type", T_UINT, offsetof(python_monster_data, type), 0, "Unit type"},
 		{"table_index", T_UINT, offsetof(python_monster_data, table_index), 0, "Offset into the monstats.bin table"},
 		{"mode", T_UINT, offsetof(python_monster_data, mode), 0, "Mode of the monster"},
@@ -55,6 +57,7 @@ namespace python
 		monster_statistics & statistics = get_monster_statistics(current_unit.table_index);
 		monster_data & data = *reinterpret_cast<monster_data *>(current_unit.unit_data);
 
+		id = current_unit.id;
 		type = current_unit.type;
 		table_index = current_unit.table_index;
 		mode = current_unit.mode;
