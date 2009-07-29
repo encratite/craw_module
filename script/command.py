@@ -1,4 +1,4 @@
-import craw, string, utility, types, bind, flash
+import craw, string, utility, types, bind, flash, hostile
 
 class command_handler_class:
 	def __init__(self):
@@ -23,7 +23,8 @@ class command_handler_class:
 			('skills', '', 'Sets your skills to the values currently specified', 0, self.set_skills),
 			('flash', '<index> <delay in ms>', 'Flashes a player at the specified rate', 2, self.flash),
 			('stop', '', 'Stop all flashing threads', 0, self.stop),
-			('whois', '<player>', 'Whois a player', 1, self.whois)
+			('whois', '<player>', 'Whois a player', 1, self.whois),
+			('hostile', '', 'Declares hostility to all players', 0, self.hostile),
 		]
 		
 	def process_command(self, line):
@@ -131,3 +132,6 @@ class command_handler_class:
 		name = arguments[0]
 		print 'Running a whois on %s' % name
 		self.bncs_handler.whois(name, self.whois_callback)
+		
+	def hostile(self, arguments):
+		hostile.hostile_players()

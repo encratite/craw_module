@@ -57,8 +57,8 @@ class town_portal_class:
 		self.cast_town_portal()
 		
 	def tppk_handler(self, portal_id):
-		hostile.hostile_players()
 		packets.enter_portal(portal_id)
+		hostile.hostile_players()
 		
 	def town_tp(self):
 		self.tp_handler = self.town_tp_handler

@@ -49,7 +49,7 @@ class item_rule:
 			return False
 			
 		elif self.sockets != None and item.sockets not in self.sockets:
-			self.debug('Socket rejection: %d not in %s' % item.sockets, self.sockets)
+			self.debug('Socket rejection: %d not in %s' % (item.sockets, self.sockets))
 			return False
 			
 		self.debug('Item rule success')

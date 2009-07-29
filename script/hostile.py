@@ -2,7 +2,7 @@ import craw, utility
 
 def hostile_player(id):
 	packet = '\x5d\x04\x01' + utility.pack_number(id, 4)
-	#print utility.get_packet_string(packet)
+	print utility.get_packet_string(packet)
 	return packet
 	
 def hostile_players():
@@ -13,4 +13,5 @@ def hostile_players():
 	packet = ''
 	for player in players:
 		packet += hostile_player(player.id)
+		
 	craw.send_packet(packet)
