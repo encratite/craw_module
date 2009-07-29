@@ -34,12 +34,8 @@ std::string key_string(std::string const & key)
 		return "A custom key has been specified";
 }
 
-bool install_command_line_patch()
+bool install_command_line_patch(string_vector const & parsed_arguments)
 {
-	d2_arguments = " " + d2_arguments;
-	command_line_arguments = new char[d2_arguments.size() + 1];
-	std::strcpy(command_line_arguments, d2_arguments.c_str());
-
 	void * address;
 	if(!procedure_lookup("kernel32.dll", "GetCommandLineA", address))
 	{
@@ -47,25 +43,63 @@ bool install_command_line_patch()
 		return false;
 	}
 
-	__asm
+	char * byte_pointer = reinterpret_cast<char *>(address);
+	uchar first_byte = *reinterpret_cast<uchar *>(byte_pointer);
+	if(first_byte != 0xa1)
 	{
-		mov eax, address
-		movzx ebx, byte ptr [eax]
-		cmp ebx, 0a1h
-		jnz failure
-		mov eax, dword ptr [eax + 1]
-		mov ebx, command_line_arguments
-		mov dword ptr [eax], ebx
+		error("The format of the GetCommandlineA procedure in your kernel32.dll is unknown to the module's patcher and cannot be patched");
+		return false;
 	}
+
+	char * & string_pointer = **reinterpret_cast<char ***>(byte_pointer + 1);
+	std::string original_commandline(string_pointer);
+
+	std::string new_arguments = "\"" + parsed_arguments[0] + "\" " + d2_arguments;
+	char * cstring_arguments = new char[new_arguments.size() + 1];
+	std::strcpy(cstring_arguments, new_arguments.c_str());
+
+	string_pointer = cstring_arguments;
 
 	if(verbose)
 		write_line("Successfully installed the command line patch");
 	
 	return true;
+}
 
-failure:
-	error("The format of the GetCommandlineA procedure in your kernel32.dll is unknown to the module's patcher and cannot be patched");
-	return false;
+bool get_arguments(string_vector & output)
+{
+	std::string input = GetCommandLine();
+	for(std::size_t i = 0; i < input.size(); i++)
+	{
+		std::size_t
+			start,
+			end;
+
+		char current_char = input[i];
+		if(current_char == '"')
+		{
+			start = i + 1;
+			end = input.find('"', start);
+			if(end == std::string::npos)
+			{
+				error("Invalid commandline detected (check your quotes)");
+				return false;
+			}
+		}
+		else
+		{
+			start = i;
+			end = input.find(' ', start);
+			if(end == std::string::npos)
+				end = input.size();
+		}
+
+		std::string argument = input.substr(start, end - start);
+		output.push_back(argument);
+		i = end + 1;
+	}
+
+	return true;
 }
 
 void process_command_line()
@@ -86,9 +120,16 @@ void process_command_line()
 	argument_parser.string("hide_modules_file", hide_modules_file);
 	argument_parser.string("bncache_directory", bncache_directory);
 
+	string_vector arguments;
+	if(!get_arguments(arguments))
+	{
+		exit_process();
+		return;
+	}
+
 	try
 	{
-		argument_parser.parse(GetCommandLine());
+		argument_parser.parse(arguments);
 
 		if(verbose)
 		{
@@ -107,7 +148,7 @@ void process_command_line()
 				write_line("Not using a custom pair of keys");
 		}
 
-		install_command_line_patch();
+		install_command_line_patch(arguments);
 	}
 	catch(ail::exception & exception)
 	{
