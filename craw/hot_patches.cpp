@@ -6,6 +6,7 @@
 #include <ail/memory.hpp>
 #include <ail/time.hpp>
 #include <ail/file.hpp>
+#include <ail/net.hpp>
 #include <winsock2.h>
 #include "patch.hpp"
 #include "arguments.hpp"
@@ -29,6 +30,7 @@ typedef int (WINAPI * recv_type)(SOCKET s, char *buf, int len, int flags);
 typedef int (WINAPI * send_type)(SOCKET s, const char * buf, int len, int flags);
 typedef SIZE_T (WINAPI * VirtualQuery_type)(LPCVOID lpAddress, PMEMORY_BASIC_INFORMATION lpBuffer, SIZE_T dwLength);
 typedef ATOM (WINAPI * RegisterClass_type)(CONST WNDCLASS *lpWndClass);
+typedef int (WINAPI * connect_type)(SOCKET s, const struct sockaddr * name, int namelen);
 
 namespace
 {
@@ -37,6 +39,7 @@ namespace
 	CreateThread_type real_CreateThread;
 	LoadLibrary_type real_LoadLibrary;
 	CreateWindowEx_type real_CreateWindowEx;
+	connect_type real_connect;
 	recv_type real_recv;
 	send_type real_send;
 	VirtualQuery_type real_VirtualQuery;
@@ -168,6 +171,156 @@ HWND WINAPI patched_CreateWindowEx(DWORD dwExStyle, LPCTSTR lpClassName, LPCTSTR
 	return output;
 }
 
+bool socket_recv(int socket, std::string & output)
+{
+	char buffer[2048];
+	int result = real_recv(socket, buffer, static_cast<int>(sizeof(buffer)), 0);
+	if(result == SOCKET_ERROR || result == 0)
+	{
+		write_line("Failed to receive data from the SOCKS server");
+		return false;
+	}
+
+	output.assign(buffer, static_cast<std::size_t>(result));
+
+	return true;
+}
+
+bool socket_send(int socket, std::string const & data)
+{
+	if(!real_send(socket, data.c_str(), static_cast<int>(data.size()), 0))
+	{
+		write_line("Failed to send data to SOCKS server");
+		return false;
+	}
+	return true;
+}
+
+namespace
+{
+	ulong last_ip;
+}
+
+int WINAPI patched_connect(SOCKET s, const struct sockaddr * name, int namelen)
+{
+	sockaddr_in const & d2_server_address = *reinterpret_cast<sockaddr_in const *>(name);
+
+	ulong d2_ip = ::ntohl(d2_server_address.sin_addr.s_addr);
+	ushort d2_port = ::ntohs(d2_server_address.sin_port);
+
+	if(use_socks)
+	{
+		write_line("Diablo II client is connecting to " + ail::convert_ipv4(d2_ip) + ":" + ail::number_to_string(d2_port) + " on socket " + ail::hex_string_32(s));
+
+		if(namelen != sizeof(sockaddr_in))
+		{
+			write_line("connect: Invalid name length!");
+			return SOCKET_ERROR;
+		}
+
+		u_long ioctl_argument = 0;
+		if(::ioctlsocket(s, FIONBIO, &ioctl_argument) != 0)
+		{
+			write_line("Unable to make socket blocking");
+			return SOCKET_ERROR;
+		}
+
+		ulong result = ::inet_addr(socks_server.c_str());
+		ulong address_number;
+		if(result == INADDR_NONE)
+		{
+			::hostent * host_entity = ::gethostbyname(socks_server.c_str());
+			if(host_entity == 0)
+			{
+				write_line("Failed to perform DNS lookup for the SOCKS server");
+				return SOCKET_ERROR;
+			}
+			address_number = *reinterpret_cast<ulong *>(host_entity->h_addr);
+		}
+		else
+			address_number = result;
+
+		sockaddr_in server_address;
+		server_address.sin_family = AF_INET;
+		server_address.sin_addr.s_addr = static_cast<u_long>(address_number);
+		server_address.sin_port = ::htons(static_cast<u_short>(socks_port));
+
+		write_line("Connecting to SOCKS server " + socks_server + ":" + ail::number_to_string(socks_port));
+
+		int output = real_connect(s, reinterpret_cast<sockaddr *>(&server_address), static_cast<int>(sizeof(server_address)));
+		if(output == SOCKET_ERROR)
+		{
+			write_line("Failed to connect the SOCKS server: " + ail::number_to_string(GetLastError()));
+			return output;
+		}
+
+		write_line("Connected to SOCKS server");
+
+		if(!socket_send(s, std::string("\x05\x01\x00", 3)))
+			return SOCKET_ERROR;
+
+		write_line("Waiting for login confirmation");
+		
+		std::string packet;
+		if(!socket_recv(s, packet))
+			return SOCKET_ERROR;
+
+		write_line("Got login reply");
+
+		if(packet != std::string("\x05\x00", 2))
+		{
+			write_line("Failed to log onto SOCKS server: " + ail::hex_string(packet));
+			return SOCKET_ERROR;
+		}
+
+		ulong target_ip = d2_ip;
+		if(::htonl(target_ip) == address_number)
+		{
+			target_ip = last_ip;
+			write_line("Diablo II is attempting to connect directly to the SOCKS server, setting the IP to " + ail::convert_ipv4(target_ip));
+		}
+
+		std::string connect_packet("\x05\x01\x00\x01", 4);
+		connect_packet += ail::big_endian_string(target_ip, 4);
+		connect_packet += ail::big_endian_string(d2_port, 2);
+
+		write_line("Sending connect packet " + ail::hex_string(connect_packet));
+
+		if(!socket_send(s, connect_packet))
+			return SOCKET_ERROR;
+
+		write_line("Waiting for connection confirmation");
+
+		if(!socket_recv(s, packet))
+			return SOCKET_ERROR;
+
+		write_line("Returned " + ail::hex_string(packet));
+
+		ioctl_argument = 1;
+		if(::ioctlsocket(s, FIONBIO, &ioctl_argument) != 0)
+		{
+			write_line("Unable to make socket nonblocking");
+			return SOCKET_ERROR;
+		}
+
+		//if(packet != std::string("\x05\x00\x00\x01\x00\x00\x00\x00\x00\x00", 10))
+
+		if(packet.size() < 2 || packet[1] != 0)
+		{
+			write_line("SOCKS connection failed");
+			return SOCKET_ERROR;
+		}
+
+		last_ip = target_ip;
+
+		write_line("Successfully established a connection through the SOCKS server");
+
+		return 0;
+	}
+	else
+		return real_connect(s, name, namelen);
+}
+
 int WINAPI patched_recv(SOCKET s, char * buf, int len, int flags)
 {
 	int output = real_recv(s, buf, len, flags);
@@ -245,11 +398,14 @@ SIZE_T WINAPI patched_VirtualQuery(LPCVOID lpAddress, PMEMORY_BASIC_INFORMATION 
 
 LRESULT CALLBACK patched_window_procedure(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam)
 {
-	//write_line("Message: " + ail::hex_string_32(Msg));
-	if(Msg == WM_CHAR)
+	switch(Msg)
 	{
-		unsigned virtual_key = static_cast<unsigned>(wParam);
-		process_key(virtual_key);
+		case WM_CHAR:
+		{
+			unsigned virtual_key = static_cast<unsigned>(wParam);
+			process_key(virtual_key);
+			break;
+		}
 	}
 	return d2_window_procedure(hWnd, Msg, wParam, lParam);
 }
@@ -263,6 +419,8 @@ ATOM WINAPI patched_RegisterClass(CONST WNDCLASS * lpWndClass)
 		write_line("Replaced the Diablo II window procedure with our own");
 	return real_RegisterClass(lpWndClass);
 }
+
+
 
 bool apply_hot_patches()
 {
@@ -282,6 +440,7 @@ bool apply_hot_patches()
 		hot_patch_entry(kernel, "CreateFileA", &patched_CreateFile, reinterpret_cast<void * &>(real_CreateFile)),
 		hot_patch_entry(kernel, "CreateThread", &patched_CreateThread, reinterpret_cast<void * &>(real_CreateThread)),
 		hot_patch_entry(kernel, "LoadLibraryA", &patched_LoadLibrary, reinterpret_cast<void * &>(real_LoadLibrary)),
+		hot_patch_entry(winsock2, "connect", &patched_connect, reinterpret_cast<void * &>(real_connect)),
 		hot_patch_entry(winsock, "recv", &patched_recv, reinterpret_cast<void * &>(real_recv)),
 		hot_patch_entry(winsock2, "send", &patched_send, reinterpret_cast<void * &>(real_send)),
 		hot_patch_entry(kernel, "VirtualQuery", &patched_VirtualQuery, reinterpret_cast<void * &>(real_VirtualQuery)),

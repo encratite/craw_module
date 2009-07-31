@@ -17,6 +17,11 @@ extern std::string
 	d2_arguments,
 	python_script,
 	hide_modules_file,
-	bncache_directory;
+	bncache_directory,
+	socks;
+
+extern bool use_socks;
+extern std::string socks_server;
+extern ushort socks_port;
 
 void process_command_line();

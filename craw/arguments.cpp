@@ -19,7 +19,12 @@ std::string
 	d2_arguments,
 	python_script,
 	hide_modules_file,
-	bncache_directory;
+	bncache_directory,
+	socks;
+
+bool use_socks;
+std::string socks_server;
+ushort socks_port;
 
 namespace
 {
@@ -119,6 +124,7 @@ void process_command_line()
 	argument_parser.string("python_script", python_script);
 	argument_parser.string("hide_modules_file", hide_modules_file);
 	argument_parser.string("bncache_directory", bncache_directory);
+	argument_parser.string("socks", socks);
 
 	string_vector arguments;
 	if(!get_arguments(arguments))
@@ -153,5 +159,27 @@ void process_command_line()
 	catch(ail::exception & exception)
 	{
 		error("Argument parser error: " + exception.get_message());
+	}
+
+	use_socks = false;
+	if(!socks.empty())
+	{
+		string_vector tokens = ail::tokenise(socks, ":");
+		if(tokens.size() != 2)
+		{
+			error("Invalid SOCKS5 server address specified, should be \"host:port\", encountered \"" + socks + "\"");
+			exit_process();
+			return;
+		}
+
+		socks_server = tokens[0];
+		std::string const & socks_port_string = tokens[1];
+		if(!ail::string_to_number(socks_port_string, socks_port))
+		{
+			error("Invalid SOCKS5 server port specified: " + socks_port_string);
+			exit_process();
+			return;
+		}
+		use_socks = true;
 	}
 }
