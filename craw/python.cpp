@@ -60,6 +60,7 @@ namespace python
 			{"move_click", &move_click, METH_VARARGS, "Move to the specified x, y coordinate."},
 			{"get_skill_level", &get_skill_level, METH_VARARGS, "Takes a skill identifier as its sole argument. Returns None if the level of the skill could not be retrieved or, in the case of success, the skill level (including bonuses from items and such)."},
 			{"get_minions", &get_minions, METH_VARARGS, "Takes a player ID as its sole argument. Returns a list of tuples of the form (id, type) of the minions associated with this player or None in case of failure."},
+			{"print_text", &print_text, METH_VARARGS, "Print text to the chat (client-side)."},
 
 			{0, 0, 0, 0}
 		};

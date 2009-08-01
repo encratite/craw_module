@@ -92,6 +92,7 @@ click_map_type d2_click_map;
 find_server_side_unit_type d2_find_server_side_unit;
 find_client_side_unit_type d2_find_client_side_unit;
 get_unit_owner_type d2_get_unit_owner;
+print_chat_text_type d2_print_chat_text;
 
 unsigned light_handler_address;
 
@@ -172,6 +173,7 @@ void initialise_d2client_addresses(unsigned base)
 	offset_handler.fix(d2_find_server_side_unit, 0x6FACF1C0);
 	offset_handler.fix(d2_find_client_side_unit, 0x6FACF1A0);
 	offset_handler.fix(d2_get_unit_owner, 0x6FB73160);
+	offset_handler.fix(d2_print_chat_text, 0x6FB21740);
 
 	offset_handler.fix(roster_list, 0x6FBCC080);
 	offset_handler.fix(player_pointer, 0x6FBCC3D0);
@@ -570,4 +572,13 @@ bool get_minions(unsigned player_id, std::vector<unit> & output)
 	}
 
 	return true;
+}
+
+void print_chat_text(std::string const & message)
+{
+	//write_line(ail::hex_string(message));
+	wchar_t * wide_string = string_to_wchar(message);
+	//write_line(ail::hex_string(std::string((char *)wide_string, message.size() * 2)));
+	d2_print_chat_text(wide_string, 0);
+	delete wide_string;
 }

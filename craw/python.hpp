@@ -124,6 +124,7 @@ namespace python
 	PyObject * move_click(PyObject * self, PyObject * arguments);
 	PyObject * get_skill_level(PyObject * self, PyObject * arguments);
 	PyObject * get_minions(PyObject * self, PyObject * arguments);
+	PyObject * print_text(PyObject * self, PyObject * arguments);
 
 	void perform_automap_callback(unit & current_unit, int x, int y, uchar colour);
 	bool perform_packet_callback(std::string const & packet);

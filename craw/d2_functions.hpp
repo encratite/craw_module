@@ -45,6 +45,7 @@ typedef unit * (__fastcall * find_client_side_unit_type)(unsigned id, unsigned t
 typedef unsigned (__stdcall * get_skill_level_type)(unit * unit_pointer, skill_data * skill_pointer, bool total);
 typedef unsigned (__fastcall * get_unit_owner_type)(unsigned unit_id);
 typedef int (__stdcall * get_unit_state_type)(unit * unit_pointer, unsigned state);
+typedef void (__stdcall * print_chat_text_type)(wchar_t * message, unsigned colour);
 
 extern set_font_size_type d2_set_font_size;
 extern draw_text_type d2_draw_text;
@@ -77,6 +78,7 @@ extern find_client_side_unit_type d2_find_client_side_unit;
 extern get_skill_level_type d2_get_skill_level;
 extern get_unit_owner_type d2_get_unit_owner;
 extern get_unit_state_type d2_get_unit_state;
+extern print_chat_text_type d2_print_chat_text;
 
 extern unsigned light_handler_address;
 
@@ -118,3 +120,4 @@ void move_click(int x, int y);
 bool get_unit_by_id(unsigned id, unsigned type, unit * & output);
 bool get_skill_level(unsigned skill_id, unsigned & output);
 bool get_minions(unsigned player_id, std::vector<unit> & output);
+void print_chat_text(std::string const & message);

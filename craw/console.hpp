@@ -13,10 +13,10 @@ struct console_command
 		command,
 		argument_description,
 		description;
-	std::size_t argument_count;
+	long argument_count;
 	command_handler handler;
 
-	console_command(std::string const & command, std::string const & argument_description, std::string const & description, std::size_t argument_count, command_handler handler);
+	console_command(std::string const & command, std::string const & argument_description, std::string const & description, long argument_count, command_handler handler);
 	bool match(std::string const & match_command, string_vector const & arguments) const;
 };
 
@@ -30,5 +30,6 @@ void get_player_pointer(string_vector const & arguments);
 void move(string_vector const & arguments);
 void print_pid(string_vector const & arguments);
 void run_test(string_vector const & arguments);
+void print_text(string_vector const & arguments);
 
 void launch_prompt();

@@ -34,10 +34,11 @@ namespace
 		console_command("move", "<x> <y>", "Move to the specified coordinates.", 2, &move),
 		console_command("pid", "", "Print the process ID", 0, &print_pid),
 		console_command("test", "", "Run test function", 0, &run_test),
+		console_command("print", " <text>", "Print chat text", -1, &print_text),
 	};
 }
 
-console_command::console_command(std::string const & command, std::string const & argument_description, std::string const & description, std::size_t argument_count, command_handler handler):
+console_command::console_command(std::string const & command, std::string const & argument_description, std::string const & description, long argument_count, command_handler handler):
 	command(command),
 	argument_description(argument_description),
 	description(description),
@@ -48,7 +49,7 @@ console_command::console_command(std::string const & command, std::string const 
 
 bool console_command::match(std::string const & match_command, string_vector const & arguments) const
 {
-	return command == match_command && argument_count == arguments.size();
+	return command == match_command && (argument_count == -1 || argument_count == arguments.size());
 }
 
 void print_life(string_vector const & arguments)
@@ -210,6 +211,22 @@ void run_test(string_vector const & arguments)
 		std::cout << "Failed to retrieve minions" << std::endl;
 	}
 	std::cout << "Counted " << minions.size() << " minion(s)" << std::endl;
+}
+
+void print_text(string_vector const & arguments)
+{
+	std::string text;
+	bool first = true;
+	BOOST_FOREACH(std::string const & argument, arguments)
+	{
+		if(first)
+			first = false;
+		else
+			text += " ";
+		text += argument;
+	}
+	std::cout << "Printing \"" << text << "\"" << std::endl;
+	print_chat_text(text);
 }
 
 void console_prompt()

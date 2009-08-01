@@ -398,4 +398,20 @@ namespace python
 
 		return output;
 	}
+
+	PyObject * print_text(PyObject * self, PyObject * arguments)
+	{
+		char const * text_pointer;
+		Py_ssize_t size;
+
+		if(!PyArg_ParseTuple(arguments, "s#", &text_pointer, &size))
+			return 0;
+
+		boost::mutex::scoped_lock lock(d2_function_mutex);
+
+		std::string text(text_pointer, size);
+		print_chat_text(text);
+
+		Py_RETURN_NONE;
+	}
 }

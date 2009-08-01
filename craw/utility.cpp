@@ -223,3 +223,11 @@ std::string wchar_to_string(wchar_t * input)
 	delete buffer;
 	return output;
 }
+
+wchar_t * string_to_wchar(std::string const & input)
+{
+	int length = MultiByteToWideChar(CP_ACP, 0, input.c_str(), -1, 0, 0);
+	wchar_t * buffer = new wchar_t[length];
+	MultiByteToWideChar(CP_ACP, 0, input.c_str(), -1, buffer, length);
+	return buffer;
+}
