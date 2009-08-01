@@ -65,8 +65,12 @@ class follow_handler_class:
 		elif self.command_match(message, configuration.enter_town_tp_command) and utility.town_check():
 			self.enter_tp(player)
 				
-		elif self.command_match(message, configuration.go_to_town):
+		elif self.command_match(message, configuration.go_to_town_command):
 			self.town_portal_handler.town_tp()
+			
+		elif self.command_match(message, configuration.leave_command):
+			print '%s ordered us to leave the game' % name
+			craw.leave_game()
 			
 	def enter_tp(self, player):
 		try:

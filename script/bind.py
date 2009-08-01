@@ -20,6 +20,15 @@ def reveal_act():
 		pass
 	else:
 		print 'Failed to reveal the current act!'
+		
+def invite_all():
+	print 'Inviting all players'
+	my_player = utility.get_my_player()
+	players = craw.get_players()
+	for player in players:
+		if my_player.id == player.id:
+			continue
+		packets.invite_player(player.id)
 
 current_handler = None
 

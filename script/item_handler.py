@@ -1,4 +1,4 @@
-import types, string
+import types, string, craw
 from item_constants import *
 from item_configuration import item_rules
 
@@ -65,6 +65,7 @@ class item_handler_class:
 			description = '%s (%s)' % (description, string.join(additional_information, ', '))
 			
 		print description
+		craw.print_text(description)
 	
 	def process_drop(self, item):
 		for rule in item_rules:
