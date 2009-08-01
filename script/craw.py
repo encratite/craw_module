@@ -39,7 +39,7 @@ item_handler = item_handler.item_handler_class()
 craw.set_item_handler(item_handler.process_item)
 packet_handler.add_byte_handler(item_handler.process_bytes)
 
-follow_handler = follow.follow_handler_class()
+follow_handler = follow.follow_handler_class(town_portal_handler)
 packet_handler.add_byte_handler(follow_handler.process_bytes)
 
 enchant_handler = enchant.enchant_handler_class()

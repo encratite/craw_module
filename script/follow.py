@@ -23,9 +23,10 @@ class town_portal_timer(threading.Thread):
 		#print 'Done entering the TP'
 
 class follow_handler_class:
-	def __init__(self):
+	def __init__(self, town_portal_handler):
 		self.following = False
 		self.town_portal_map = {}
+		self.town_portal_handler = town_portal_handler
 		self.current_portal = None
 		
 	def command_match(self, input, command):
@@ -34,6 +35,10 @@ class follow_handler_class:
 	def process_command(self, name, message):
 		self.my_name = utility.get_my_name()
 		player = utility.get_player_by_name(name)
+		
+		if self.my_name == name:
+			return
+		
 		if player == None:
 			print 'Unable to retrieve player data of player %s' % player
 			return
@@ -54,15 +59,24 @@ class follow_handler_class:
 				print '%s asked us to stop following the leader but we are currently not following anybody' % name
 				packets.send_chat(configuration.stop_error)
 				
-		elif self.command_match(message, configuration.enter_tp_command):
-			try:
-				tp_entry = self.town_portal_map[player.id]
-			except KeyError:
-				packets.send_chat(configuration.tp_error % player.name)
-				return
+		elif self.command_match(message, configuration.enter_tp_command) and not utility.town_check():
+			self.enter_tp(player)
+			
+		elif self.command_match(message, configuration.enter_town_tp_command) and utility.town_check():
+			self.enter_tp(player)
 				
-			packets.send_chat(configuration.enter_tp_confirmation % player.name)
-			town_portal_timer(tp_entry)
+		elif self.command_match(message, configuration.go_to_town):
+			self.town_portal_handler.town_tp()
+			
+	def enter_tp(self, player):
+		try:
+			tp_entry = self.town_portal_map[player.id]
+		except KeyError:
+			packets.send_chat(configuration.tp_error % player.name)
+			return
+			
+		packets.send_chat(configuration.enter_tp_confirmation % player.name)
+		town_portal_timer(tp_entry)
 		
 	def process_bytes(self, bytes):
 		message = packets.parse_message(bytes)
