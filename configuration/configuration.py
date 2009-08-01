@@ -34,7 +34,10 @@ enter_town_tp_command = 'enter town tp'
 enter_tp_command = 'enter tp'
 
 #Attempt to make a town portal and enter it
-go_to_town = 'go to town'
+go_to_town_command = 'go to town'
+
+#Order bots to leave the game
+leave_command = 'leave'
 
 #Timing for the follow bot
 follow_portal_move_delay = 0.4
