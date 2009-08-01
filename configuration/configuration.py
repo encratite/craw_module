@@ -7,7 +7,7 @@ chicken = True
 chicken_ratio = 0.8
 
 #Leave the game when somebody declares hostility to you?
-chicken_on_hostile = True
+chicken_on_hostile = False
 
 #Breakpoint settings
 
@@ -26,7 +26,15 @@ followers = []
 #Chat trigger strings for the follow bot
 follow_command = 'follow'
 stop_command = 'stop'
-enter_tp_command = 'enter my tp'
+
+#Entering TPs in town
+enter_town_tp_command = 'enter town tp'
+
+#Entering TPs outside of town
+enter_tp_command = 'enter tp'
+
+#Attempt to make a town portal and enter it
+go_to_town = 'go to town'
 
 #Timing for the follow bot
 follow_portal_move_delay = 0.4
@@ -90,12 +98,11 @@ remote_command_privilege_users = None
 
 #Friends/party settings
 
-friends = enchanters + battle_orders_barbarians + [
-]
+friends = enchanters + battle_orders_barbarians + followers + []
 
 party_invitation_command = 'invite'
 auto_accept_invitations_by_friends = True
-auto_loot_permission_to_friends = True
+auto_loot_permission_to_friends = False
 
 #Packet logging for experiments/debugging
 
