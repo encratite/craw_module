@@ -7,7 +7,7 @@ chicken = True
 chicken_ratio = 0.8
 
 #Leave the game when somebody declares hostility to you?
-chicken_on_hostile = False
+chicken_on_hostile = True
 
 #Breakpoint settings
 
@@ -99,6 +99,11 @@ that all players have access to the commands.
 
 remote_command_privilege_users = None
 
+#Characters for which to enable automatic casting
+auto_casters = followers
+auto_cast_switch_delay = 0.15
+auto_cast_cast_delay = 0.35
+
 #Friends/party settings
 
 friends = enchanters + battle_orders_barbarians + followers + []
@@ -109,5 +114,5 @@ auto_loot_permission_to_friends = False
 
 #Packet logging for experiments/debugging
 
-packet_logging = True
+packet_logging = False
 packet_log = 'packets.log'
