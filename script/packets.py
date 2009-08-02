@@ -169,3 +169,6 @@ def parse_assignment(bytes):
 	x = utility.read_bytes(bytes, 22, 2)
 	y = utility.read_bytes(bytes, 24, 2)
 	return player_id, character_class, player_name, x, y
+	
+def entering_game(bytes):
+	return bytes[0] == 0x04
