@@ -25,6 +25,7 @@ class command_handler_class:
 			('stop', '', 'Stop all flashing threads', 0, self.stop),
 			('whois', '<player>', 'Whois a player', 1, self.whois),
 			('hostile', '', 'Declares hostility to all players', 0, self.hostile),
+			('experience', '', 'Prints your current experience', 0, self.experience),
 		]
 		
 	def process_command(self, line):
@@ -135,3 +136,10 @@ class command_handler_class:
 		
 	def hostile(self, arguments):
 		hostile.hostile_players()
+		
+	def experience(self, arguments):
+		experience = craw.get_experience()
+		if experience == None:
+			print 'Unable to retrieve experience'
+		else:
+			print 'Experience: %d' % experience

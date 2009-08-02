@@ -414,4 +414,15 @@ namespace python
 
 		Py_RETURN_NONE;
 	}
+
+	PyObject * get_experience(PyObject * self, PyObject * arguments)
+	{
+		boost::mutex::scoped_lock lock(d2_function_mutex);
+
+		unit * unit_pointer = d2_get_player_unit();
+		if(unit_pointer == 0)
+			Py_RETURN_NONE;
+
+		return PyLong_FromUnsignedLong(d2_get_unit_stat(unit_pointer, 13, 0));
+	}
 }
