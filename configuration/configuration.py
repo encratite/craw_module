@@ -7,7 +7,7 @@ chicken = True
 chicken_ratio = 0.8
 
 #Leave the game when somebody declares hostility to you?
-chicken_on_hostile = True
+chicken_on_hostile = False
 
 #Breakpoint settings
 
@@ -21,7 +21,7 @@ faster_run_walk = 60
 follow_leaders = []
 
 #Names of characters that are meant to follow the leader
-followers = []
+followers = [] + follow_leaders
 
 #Chat trigger strings for the follow bot
 follow_command = 'follow'
@@ -116,3 +116,11 @@ auto_loot_permission_to_friends = False
 
 packet_logging = False
 packet_log = 'packets.log'
+
+"""
+This variable is used by the experience information script.
+It allows you to filter out monsters that give you little or no experience.
+If you need to kill more monsters than [experience_peanut_limit] to reach the next level then it will be ignored.
+"""
+
+experience_peanut_limit = 20000
