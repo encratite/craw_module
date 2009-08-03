@@ -179,3 +179,20 @@ item_groups["Elite Spear"] = [
 	"Ghost Spear",
 	"War Pike"
 ]
+
+item_groups["Wand"] = [
+	"Wand",
+	"Yew Wand",
+	"Bone Wand",
+	"Grim Wand",
+	
+	"Burnt Wand",
+	"Petrified Wand",
+	"Tomb Wand",
+	"Grave Wand",
+	
+	"Polished Wand",
+	"Ghost Wand",
+	"Lich Wand",
+	"Unearthed Wand"
+]

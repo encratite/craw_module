@@ -294,10 +294,10 @@ item_rules = [
 	
 	item_rule("Large Shield", quality = superior, sockets = 3),
 	
-	item_rule("Flail", quality = superior, sockets = [0, 4]),
+	item_rule("Flail", quality = superior, sockets = [0, 4, 5]),
 	
 	item_rule("Crystal Sword", quality = white, sockets = 4),
-	item_rule("Broad Sword", quality = white, sockets = [0, 4]),
+	#item_rule("Broad Sword", quality = white, sockets = [0, 4]),
 	
 	item_rule("Monarch", quality = white, sockets = [0, 4]),
 	
@@ -308,7 +308,7 @@ item_rules = [
 	item_rule(group = "Pelt", quality = rare),
 	item_rule(group = "Pelt", quality = white, sockets = [0, 3]),
 	
-	item_rule("Mask", quality = white, sockets = 0),
+	item_rule("Mask", quality = white, sockets = 0, level = 30),
 	item_rule("Mask", sockets = 3),
 	
 	item_rule("Breast Plate", quality = superior, sockets = 3),
@@ -357,9 +357,10 @@ item_rules = [
 	item_rule("Great Helm", quality = set),
 	item_rule("Gothic Plate", quality = set),
 	item_rule("Greaves", quality = set),
-	item_rule("Tower Shield", quality = set),
 	item_rule("Plated Belt", quality = set),
 	item_rule("Gauntlets", quality = set),
 	
-	item_rule("Mithril Coil", quality = set)
+	item_rule("Mithril Coil", quality = set),
+	
+	item_rule(group = "Wand", quality = white, ethereal = False, sockets = [0, 2], level = 30)
 ]
