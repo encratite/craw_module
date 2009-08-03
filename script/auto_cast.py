@@ -8,9 +8,16 @@ auto_cast_skills = [
 ]
 
 class auto_cast_handler_class:
+	def __init__(self):
+		self.entering = False
+		
 	def process_bytes(self, bytes):
 		if packets.entering_game(bytes):
+			self.entering = True
+			
+		if self.entering and packets.load_complete(bytes):
 			self.auto_cast()
+			self.entering = False
 			
 	def auto_cast(self):
 		nil.thread.create_thread(self.auto_cast_thread)

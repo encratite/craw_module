@@ -171,4 +171,7 @@ def parse_assignment(bytes):
 	return player_id, character_class, player_name, x, y
 	
 def entering_game(bytes):
+	return bytes[0] == 0x01
+	
+def load_complete(bytes):
 	return bytes[0] == 0x04

@@ -2,7 +2,7 @@ import item_handler, types
 from item_groups import item_groups
 
 class item_rule:
-	def __init__(self, item_type = None, group = None, quality = None, ethereal = None, sockets = None):
+	def __init__(self, item_type = None, group = None, quality = None, ethereal = None, sockets = None, level = None):
 		quality = item_rule.listify(quality)
 		sockets = item_rule.listify(sockets)
 		self.item_type = item_type
@@ -10,6 +10,7 @@ class item_rule:
 		self.quality = quality
 		self.ethereal = ethereal
 		self.sockets = sockets
+		self.level = level
 		
 		self.debug_mode = False
 		
@@ -50,6 +51,10 @@ class item_rule:
 			
 		elif self.sockets != None and item.sockets not in self.sockets:
 			self.debug('Socket rejection: %d not in %s' % (item.sockets, self.sockets))
+			return False
+			
+		elif self.level != None and item.level < self.level:
+			self.debug('Level rejection: %d < %d' % (item.level, self.level))
 			return False
 			
 		self.debug('Item rule success')
