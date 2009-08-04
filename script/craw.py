@@ -31,6 +31,7 @@ packet_handler.add_byte_handler(skill_handler.process_bytes)
 command_handler.skill_handler = skill_handler
 
 bncs_packet_handler = bncs.bncs_packet_handler_class()
+packet_handler.add_byte_handler(bncs_packet_handler.process_bytes)
 craw.set_bncs_packet_handler(bncs_packet_handler.process_packet)
 player_kill_handler.bncs_handler = bncs_packet_handler
 command_handler.bncs_handler = bncs_packet_handler
