@@ -106,6 +106,8 @@ def cast_right_skill_at_location(x, y):
 	
 def cast_right_skill():
 	player = utility.get_my_player()
+	if player == None:
+		return
 	cast_right_skill_at_location(player.x, player.y)
 	
 def perform_cast(skill, switch_delay, cast_delay):

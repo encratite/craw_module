@@ -29,6 +29,17 @@ def invite_all():
 		if my_player.id == player.id:
 			continue
 		packets.invite_player(player.id)
+		
+def say_file(file):
+	lines = nil.file.read_lines(file)
+	if lines == None:
+		print 'Unable to read %s'
+	elif len(lines) >= 25:
+		print '%s has too many lies' % file
+	else:
+		print 'Reading %s and sending it to the chat' % file
+		for line in lines:
+			packets.send_chat(line)
 
 current_handler = None
 
