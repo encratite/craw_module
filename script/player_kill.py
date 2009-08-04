@@ -66,7 +66,7 @@ class player_kill_handler_class:
 		victim_name = utility.read_name(bytes, 8)
 		killer_name = utility.read_name(bytes, 24)
 		
-		self.lame_print(victim_name, killer_name)
+		#self.lame_print(victim_name, killer_name)
 		
 		self.request_lock.acquire()
 		self.pending_requests.append(player_kill_whois_request(victim_name, killer_name))
