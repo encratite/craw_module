@@ -92,17 +92,35 @@ def object_removal(bytes):
 	
 	return type, id
 	
-def set_right_skill(skill):
-	packet = '\x3c' + utility.pack_number(skill, 2) + '\x00\x00\xff\xff\xff\xff'
+def set_skill(skill, side):
+	packet = '\x3c' + utility.pack_number(skill, 2) + '\x00' + chr(side) + '\xff\xff\xff\xff'
 	craw.send_packet(packet)
+	
+def set_left_skill(skill):
+	set_skill(skill, 0x80)
+	
+def set_right_skill(skill):
+	set_skill(skill, 0x00)
+	
+def cast_skill_at_target(side, type, target):
+	packet = chr(side) + utility.pack_number(type, 4) + utility.pack_number(target, 4)
+	craw.send_packet(packet)
+	
+def cast_left_skill_at_target(type, target):
+	cast_skill_at_target(0x06, type, target)
 	
 def cast_right_skill_at_target(type, target):
-	packet = '\x0d' + utility.pack_number(type, 4) + utility.pack_number(target, 4)
+	cast_skill_at_target(0x0d, type, target)
+	
+def cast_skill_at_location(side, x, y):
+	packet = chr(side) + utility.pack_number(x, 2) +utility.pack_number(y, 2)
 	craw.send_packet(packet)
 	
+def cast_left_skill_at_location(x, y):
+	cast_skill_at_location(0x05, x, y)
+	
 def cast_right_skill_at_location(x, y):
-	packet = '\x0c' + utility.pack_number(x, 2) +utility.pack_number(y, 2)
-	craw.send_packet(packet)
+	cast_skill_at_location(0x0c, x, y)
 	
 def cast_right_skill():
 	player = utility.get_my_player()
@@ -170,6 +188,7 @@ def parse_assignment(bytes):
 	player_name = utility.read_name(bytes, 6)
 	x = utility.read_bytes(bytes, 22, 2)
 	y = utility.read_bytes(bytes, 24, 2)
+	
 	return player_id, character_class, player_name, x, y
 	
 def entering_game(bytes):
@@ -177,3 +196,56 @@ def entering_game(bytes):
 	
 def load_complete(bytes):
 	return bytes[0] == 0x04
+	
+def parse_player_stop(bytes):
+	if len(bytes) < 13 or bytes[0] != 0x0d:
+		return None
+		
+	unit_type = bytes[1]
+	unit_id = utility.read_bytes(bytes, 2, 4)
+	x = utility.read_bytes(bytes, 7, 2)
+	y = utility.read_bytes(bytes, 9, 2)
+	life = bytes[12]
+	
+	return unit_type, unit_id, x, y, life
+	
+def parse_set_skill(bytes):
+	if len(bytes) < 13 or bytes[0] != 0x23:
+		return None
+		
+	unit_type = bytes[1]
+	unit_id = utility.read_bytes(bytes, 2, 4)
+	side = bytes[6]
+	skill = utility.read_bytes(bytes, 7, 2)
+	
+	return unit_type, unit_id, side, skill
+
+def parse_reassignment(bytes):
+	if len(bytes) < 11 or bytes[0] != 0x15:
+		return None
+		
+	unit_type = bytes[1]
+	unit_id = utility.read_bytes(bytes, 2, 4)
+	x = utility.read_bytes(bytes, 6, 2)
+	y = utility.read_bytes(bytes, 8, 2)
+	boolean = bytes[10]
+	
+	return unit_type, unit_id, x, y, boolean
+
+def hostile_player_string(id):
+	packet = '\x5d\x04\x01' + utility.pack_number(id, 4)
+	return packet
+	
+def hostile_player(id):
+	craw.send_packet(hostile_player_string(id))
+	
+def hostile_players():
+	print 'Declaring hostility to all players'
+	players = craw.get_players()
+	my_id = craw.get_player_id()
+	players = filter(lambda player: player.id != my_id and player.level >= 9, players)
+	packet = ''
+	for player in players:
+		packet += hostile_player_string(player.id)
+		
+	craw.send_packet(packet)

@@ -3,18 +3,20 @@ import sys, utility
 
 sys.path.append(utility.get_configuration_directory())
 
-import configuration, craw, automap, packets, chicken, command, town_portal, player_kill, skills, bncs, item_handler, follow, enchant, battle_orders, party, auto_cast, experience
+import configuration, craw, automap, packets, chicken, command, town_portal, player_kill, skills, bncs, item_handler, follow, enchant, battle_orders, party, auto_cast, experience, bind, player_killer
 
 #Set up handlers
 
-command_handler = command.command_handler_class()
+packet_handler = packets.packet_handler_class()
+craw.set_packet_handler(packet_handler.process_data)
+
+bind_handler = bind.bind_handler_class()
+
+command_handler = command.command_handler_class(bind_handler)
 craw.set_command_handler(command_handler.process_command)
 
 automap_handler = automap.automap_handler_class()
 craw.set_automap_handler(automap_handler.process_data)
-
-packet_handler = packets.packet_handler_class()
-craw.set_packet_handler(packet_handler.process_data)
 
 chicken_handler = chicken.chicken_handler_class()
 packet_handler.add_byte_handler(chicken_handler.process_bytes)
@@ -57,3 +59,7 @@ packet_handler.add_byte_handler(auto_cast_handler.process_bytes)
 
 experience_handler = experience.experience_handler_class()
 packet_handler.add_byte_handler(experience_handler.process_bytes)
+
+player_killer_handler = player_killer.player_killer_class(town_portal_handler)
+bind_handler.player_killer_handler = player_killer_handler
+packet_handler.add_byte_handler(player_killer_handler.process_bytes)

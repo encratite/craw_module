@@ -1,4 +1,4 @@
-import os, utility, packets, nil.file, keyboard_configuration, craw
+import os, utility, packets, nil.file, keyboard_configuration, craw, player_killer
 
 def get_tp_handler():
 	return current_handler.command_handler.town_portal_handler
@@ -20,6 +20,9 @@ def reveal_act():
 		pass
 	else:
 		print 'Failed to reveal the current act!'
+		
+def attack():
+	current_handler.player_killer_handler.attack()
 		
 def invite_all():
 	print 'Inviting all players'
@@ -43,9 +46,10 @@ def say_file(file):
 
 current_handler = None
 
-class bind_handler:
+class bind_handler_class:
 	def __init__(self):
 		self.bindings = keyboard_configuration.bindings
+		self.player_killer_handler = None
 		craw.set_keyboard_handler(self.process_key)
 		
 	def bind(self, key, action):

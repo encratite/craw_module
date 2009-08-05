@@ -1,4 +1,4 @@
-import craw, utility, hostile, packets
+import craw, utility, packets
 
 class town_portal_class:
 
@@ -52,13 +52,17 @@ class town_portal_class:
 		
 		return True
 		
-	def tppk(self):
+	def tppk(self, id = None):
 		self.tp_handler = self.tppk_handler
+		self.tppk_target = id
 		self.cast_town_portal()
 		
 	def tppk_handler(self, portal_id):
 		packets.enter_portal(portal_id)
-		hostile.hostile_players()
+		if self.tppk_target == None:
+			packets.hostile_players()
+		else:
+			packets.hostile_player(self.tppk_target)
 		
 	def town_tp(self):
 		self.tp_handler = self.town_tp_handler

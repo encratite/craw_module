@@ -1,10 +1,10 @@
-import craw, string, utility, types, bind, flash, hostile
+import craw, string, utility, types, flash, packets
 
 class command_handler_class:
-	def __init__(self):
+	def __init__(self, bind_handler):
 		self.town_portal_handler = None
 		self.skill_handler = None
-		self.bind_handler = bind.bind_handler()
+		self.bind_handler = bind_handler
 		self.bind_handler.command_handler = self
 		self.bncs_handler = None
 		self.flash_objects = []
@@ -135,7 +135,7 @@ class command_handler_class:
 		self.bncs_handler.whois(name, self.whois_callback)
 		
 	def hostile(self, arguments):
-		hostile.hostile_players()
+		packets.hostile_players()
 		
 	def experience(self, arguments):
 		experience = craw.get_experience()
