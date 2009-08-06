@@ -21,7 +21,7 @@ faster_run_walk = 60
 follow_leaders = []
 
 #Names of characters that are meant to follow the leader
-followers = [] + follow_leaders
+followers = []
 
 #Chat trigger strings for the follow bot
 follow_command = 'follow'
@@ -106,7 +106,7 @@ auto_cast_cast_delay = 0.35
 
 #Friends/party settings
 
-friends = enchanters + battle_orders_barbarians + followers + []
+friends = enchanters + battle_orders_barbarians + follow_leaders + followers
 
 party_invitation_command = 'invite'
 auto_accept_invitations_by_friends = True
@@ -124,3 +124,5 @@ If you need to kill more monsters than [experience_peanut_limit] to reach the ne
 """
 
 experience_peanut_limit = 20000
+
+whois_delay = 1.0
