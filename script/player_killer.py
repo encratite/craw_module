@@ -35,9 +35,12 @@ class player_killer_class:
 		
 		self.left_skill = None
 		
-	def is_in_game(self, id):
-		player_ids = map(lambda x: x.id, craw.get_players())
-		return id in player_ids
+	def is_in_range(self, id):
+		players = filter(lambda x: x.id == id, craw.get_players())
+		if len(players) == 0:
+			return False
+		player = players[0]
+		return player.x != 0
 		
 	def process_bytes(self, bytes):
 		my_player = utility.get_my_player()
@@ -83,8 +86,8 @@ class player_killer_class:
 			if self.attacking and my_player.id == unit_id:
 				self.debug('Detected reassignment, performing attack')
 				
-				if not self.is_in_game(self.target.id):
-					print 'The player has left the game - unable to cast attack spell'
+				if not self.is_in_range(self.target.id):
+					print 'The player is no longer in range - unable to cast attack spell'
 					self.attacking = False
 					return
 					
@@ -94,8 +97,8 @@ class player_killer_class:
 	def town_portal(self):
 		time.sleep(self.town_portal_delay)
 				
-		if not self.is_in_game(self.target.id):
-			print 'The player has left the game - aborting TPPK sequence'
+		if not self.is_in_range(self.target.id):
+			print 'The player is no longer in range - aborting TPPK sequence'
 			self.attacking = False
 			return
 		
