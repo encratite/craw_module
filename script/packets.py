@@ -30,7 +30,7 @@ def enter_portal(portal_id):
 	craw.send_packet(packet)
 	
 def parse_message(bytes):
-	if len(bytes) < 14 or bytes[0 : 4] != [0x26, 0x01, 0x00, 0x02]:
+	if len(bytes) < 14 or bytes[0] != 0x26:
 		return None
 	name_offset = 10
 	zero_offset = name_offset

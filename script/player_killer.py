@@ -12,6 +12,9 @@ def sort_players(left, right):
 	return 1 if difference > 0 else -1
 	
 teleport_skill = 0x36
+bone_spear_skill = 0x54
+bone_prison_skill = 0x58
+bone_spirit_skill = 0x5d
 	
 class player_killer_class:
 	def __init__(self, town_portal_handler):
@@ -19,14 +22,22 @@ class player_killer_class:
 		self.attacking = False
 		self.town_portal_handler = town_portal_handler		
 		
+		self.debugging = True
 		self.safe_mode = True
 		self.unit_teleport = True
 		
-		self.maximal_distance = 60
+		self.maximal_distance = 100
 		
 		self.teleport_delay = 0.1
 		self.attack_delay = 0.4
-		self.town_portal_delay = 0.2
+		self.town_portal_delay = 0.25
+		self.bone_prison_delay = 0.25
+		
+		self.left_skill = None
+		
+	def is_in_game(self, id):
+		player_ids = map(lambda x: x.id, craw.get_players())
+		return id in player_ids
 		
 	def process_bytes(self, bytes):
 		my_player = utility.get_my_player()
@@ -49,23 +60,56 @@ class player_killer_class:
 		set_skill = packets.parse_set_skill(bytes)
 		if set_skill != None:
 			unit_type, unit_id, side, skill = set_skill
-			if self.attacking and unit_id == my_player.id and skill == teleport_skill:
-				print 'Right skill has been changed, performing teleport (%.3f)' % time.time()
-				if self.unit_teleport:
-					packets.cast_right_skill_at_target(0, self.target.id)
-				else:
-					packets.cast_right_skill_at_location(self.teleport_location[0], self.teleport_location[1])
+			if unit_id == my_player.id:
+				if side == 0x01:
+					self.left_skill = skill
+					print 'Left skill is set to %02x' % skill
+					
+				if self.attacking:
+					if skill == teleport_skill:
+						self.debug('Right skill has been changed, casting teleport')
+						if self.unit_teleport:
+							packets.cast_right_skill_at_target(0, self.target.id)
+						else:
+							packets.cast_right_skill_at_location(self.teleport_location[0], self.teleport_location[1])
+					elif skill == bone_prison_skill:
+						self.debug('Right skill has been changed, casting Bone Prison')
+						packets.cast_right_skill_at_target(0, self.target.id)
+						nil.thread.create_thread(self.bone_prison_teleport)
 				
 		reassignment = packets.parse_reassignment(bytes)
 		if reassignment != None:
 			unit_type, unit_id, x, y, boolean = reassignment
 			if self.attacking and my_player.id == unit_id:
-				print 'Detected reassignment, performing attack (%.3f)' % time.time()
+				self.debug('Detected reassignment, performing attack')
+				
+				if not self.is_in_game(self.target.id):
+					print 'The player has left the game - unable to cast attack spell'
+					self.attacking = False
+					return
+					
 				packets.cast_left_skill_at_target(0, self.target.id)
-				time.sleep(self.town_portal_delay)
-				print 'Casting town portal (%.3f)' % time.time()
-				self.town_portal_handler.tppk(self.target.id)
-				self.attacking = False
+				nil.thread.create_thread(self.town_portal)
+				
+	def town_portal(self):
+		time.sleep(self.town_portal_delay)
+				
+		if not self.is_in_game(self.target.id):
+			print 'The player has left the game - aborting TPPK sequence'
+			self.attacking = False
+			return
+		
+		self.debug('Casting town portal')
+		self.town_portal_handler.tppk(self.target.id)
+		self.attacking = False
+				
+	def bone_prison_teleport(self):
+		time.sleep(self.bone_prison_delay)
+		packets.set_right_skill(teleport_skill)
+				
+	def debug(self, message):
+		if self.debugging:
+			print '%s (%.3f)' % (message, time.time())
 
 	def attack(self):
 		if utility.town_check():
@@ -74,15 +118,18 @@ class player_killer_class:
 		
 		players = craw.get_players()
 		my_player = utility.get_my_player()
-		players = filter(lambda x: x.level >= 9 and x.x != 0 and x.id != my_player.id and x.level_id == my_player.level_id, players)
+		players = filter(lambda x: x.level >= 9 and x.x != 0 and x.id != my_player.id, players)
+		print 'First filter: %d' % len(players)
 		players = map(lambda x: (get_distance(my_player, x), x), players)
 		players = filter(lambda x: x[0] <= self.maximal_distance, players)
+		print 'Second filter: %d' % len(players)
 		players.sort(cmp = sort_players)
 		
 		if len(players) == 0:
 			print 'There are no suitable targets in range.'
 			return
 		
+		print 'List of targets:'
 		for distance, player in players:
 			print '%s: %.2f (%d, %d)' % (player.name, distance, player.x, player.y)
 			
@@ -101,15 +148,20 @@ class player_killer_class:
 		self.teleport_location = (teleport_x, teleport_y)
 		
 		if self.safe_mode:
-			print 'Setting the right skill to teleport (%.3f)' % time.time()
 			self.attacking = True
-			packets.set_right_skill(teleport_skill)
+			
+			if craw.get_skill_level(bone_prison_skill) > 0:
+				self.debug('Setting the right skill to Bone Prison')
+				packets.set_right_skill(bone_prison_skill)
+			else:
+				self.debug('Setting the right skill to teleport')
+				packets.set_right_skill(teleport_skill)
 		else:
 			print 'Initiating fast attack (%.3f)' % time.time()
 			nil.thread.create_thread(self.fast_attack)
 			
 	def fast_attack(self):
-		print 'Launching sequence (%.3f)' % time.time()
+		self.debug('Launching sequence')
 		packets.set_right_skill(teleport_skill)
 		time.sleep(self.teleport_delay)
 		if self.unit_teleport:
@@ -120,4 +172,4 @@ class player_killer_class:
 		packets.cast_left_skill_at_target(0, self.target.id)
 		time.sleep(self.town_portal_delay)
 		self.town_portal_handler.tppk(self.target.id)
-		print 'End of sequence (%.3f)' % time.time()
+		self.debug('End of sequence')

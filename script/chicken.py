@@ -26,7 +26,7 @@ class chicken_handler_class:
 			#hack for a strange bug
 			return
 		
-		print time.time()
+		#print time.time()
 		print '%d damage, %d/%d left (%s)' % (damage, new_life, maximum_life, percent)
 		
 		if new_life <= 0:

@@ -1,4 +1,4 @@
-import os, utility, packets, nil.file, keyboard_configuration, craw, player_killer
+import os, utility, packets, nil.file, keyboard_configuration, craw, player_killer, random
 
 def get_tp_handler():
 	return current_handler.command_handler.town_portal_handler
@@ -43,6 +43,11 @@ def say_file(file):
 		print 'Reading %s and sending it to the chat' % file
 		for line in lines:
 			packets.send_chat(line)
+			
+def random_quote(directory):
+	files = os.listdir(directory)
+	source = files[random.randint(0, len(files) - 1)]
+	say_file(os.path.join(directory, source))
 
 current_handler = None
 
