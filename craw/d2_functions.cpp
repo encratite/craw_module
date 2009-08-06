@@ -113,6 +113,10 @@ unsigned
 
 unsigned server_side_unit_list_address;
 
+unsigned
+	unit_is_selectable_address,
+	unit_selection_data_address;
+
 //D2Net.dll
 send_packet_type d2_send_packet;
 receive_packet_type d2_receive_packet;
@@ -194,6 +198,11 @@ void initialise_d2client_addresses(unsigned base)
 	offset_handler.fix(mouse_y_address, 0x6FBC21CC);
 
 	offset_handler.fix(server_side_unit_list_address, 0x6FBCA964);
+
+	//offset_handler.fix(unit_is_selectable_address, 0x6FAD0010);
+	offset_handler.fix(unit_is_selectable_address, 0x6FAD0071);
+
+	//offset_handler.fix(unit_selection_data_address, 0x6FBCC1D0);
 
 	d2client_has_been_loaded = true;
 }

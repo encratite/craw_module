@@ -98,6 +98,10 @@ extern unsigned
 	mouse_x_address,
 	mouse_y_address;
 
+extern unsigned
+	unit_is_selectable_address,
+	unit_selection_data_address;
+
 void draw_text(std::string const & text, int x, int y, unsigned colour, bool centered);
 void __stdcall draw_box(int x, int y, unsigned colour);
 bool get_life(unsigned & current_life, unsigned & maximum_life);

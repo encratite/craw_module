@@ -165,6 +165,69 @@ void debug_register_item_handler(CONTEXT & thread_context)
 	thread_context.Eip += 2;
 }
 
+int __fastcall unit_test(unit * unit_pointer)
+{
+	unit & current_unit = *unit_pointer;
+	//if(current_unit.type == 0 && current_unit.mode != 0 && current_unit.mode != 0x11
+	if(current_unit.type == 0)
+		return 1;
+	return -1;
+}
+
+void __declspec(naked) hackmap_code()
+{
+	__asm
+	{
+		/*
+		shr eax, 015h
+		and eax, 1
+		add [esp], 3
+		ret
+		*/
+
+		shr eax, 0x15
+		and eax, 1
+		jnz donothing
+		mov ecx, ebp
+		call unit_test
+		cmp al, 0xFF
+		jz quitcode
+		jmp quitcode
+		add dword ptr [esp], 0xA2 // adjust return address
+		mov [esp + 4 + 0x34], eax // save return result
+		pop eax // return address to eax
+		push esi // push esi and edi because the return address skips these two instructions
+		push edi
+		jmp eax
+donothing:
+		ret
+quitcode:
+		xor eax, eax
+		ret
+	}
+}
+
+void debug_register_unit_selection(CONTEXT & thread_context)
+{
+	/*
+	unit & current_unit = **reinterpret_cast<unit **>(thread_context.Esp + 4);
+	if(current_unit.type == 0 && current_unit.mode != 0 && current_unit.mode != 0x11)
+	{
+		thread_context.Eax = 1;
+		thread_context.Eip = *reinterpret_cast<unsigned *>(thread_context.Esp);
+		thread_context.Esp += 5 * 4;
+	}
+	else
+	{
+		thread_context.Eax = *reinterpret_cast<unsigned *>(unit_selection_data_address);
+		thread_context.Eip += 5;
+	}*/
+
+	thread_context.Esp -= 4;
+	*reinterpret_cast<DWORD *>(thread_context.Esp) = thread_context.Eip + 5;
+	thread_context.Eip = reinterpret_cast<DWORD>(&hackmap_code);
+}
+
 void d2net(unsigned base)
 {
 	initialise_d2net_addresses(base);
@@ -186,12 +249,14 @@ void d2client(unsigned base)
 	debug_register_entries.push_back(debug_register_entry(add_unit_address1, &debug_register_add_unit1));
 	debug_register_entries.push_back(debug_register_entry(add_unit_address2, &debug_register_add_unit2));
 	debug_register_entries.push_back(debug_register_entry(item_handler_call_address, &debug_register_item_handler));
+	debug_register_entries.push_back(debug_register_entry(unit_is_selectable_address, &debug_register_unit_selection));
 
 	main_debug_register_entries.push_back(debug_register_data(light_handler_address));
 	main_debug_register_entries.push_back(debug_register_data(automap_loop_address));
 	main_debug_register_entries.push_back(debug_register_data(packet_reception_interceptor_address));
 	//main_debug_register_entries.push_back(debug_register_data(add_unit_address1));
 	main_debug_register_entries.push_back(debug_register_data(item_handler_call_address));
+	//main_debug_register_entries.push_back(debug_register_data(unit_is_selectable_address));
 
 	set_own_context(main_debug_register_entries);
 }
