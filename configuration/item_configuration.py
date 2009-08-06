@@ -16,11 +16,24 @@ item_rules = [
 	item_rule("Ring", quality = rare),
 	item_rule("Amulet", quality = rare),
 	
-	item_rule(group = "Any Boots", quality = rare),
+	item_rule("Long Battle Bow", quality = white, sockets = 0, level = 30),
+	item_rule("Long War Bow", quality = white, sockets = 0, level = 30),
+	item_rule("Long Battle Bow", quality = white, sockets = 6),
+	item_rule("Long War Bow", quality = white, sockets = 6),
+	
+	item_rule("Halberd", quality = white, ethereal = True, sockets = 0, level = 30),
+	item_rule("Halberd", quality = white, sockets = 6),
+	
+	item_rule("War Scythe", quality = white, ethereal = True, sockets = 0, level = 30),
+	item_rule("War Scythe", quality = white, sockets = 6),
+	
+	item_rule(group = "Boots", quality = rare),
 	item_rule(group = "Good Belt", quality = rare),
 	item_rule(group = "Gloves", quality = rare),
-	item_rule(group = "Any Circlet", quality = rare),
-	item_rule(group = "Any Circlet", quality = magical),
+	item_rule(group = "Circlet", quality = rare),
+	item_rule(group = "Circlet", quality = magical),
+	
+	item_rule(group = "Orb", quality = rare),
 	
 	item_rule(group = "Elite Javelin", quality = rare, ethereal = True),
 	item_rule("Winged Axe", quality = rare, ethereal = True),
@@ -28,9 +41,6 @@ item_rules = [
 	item_rule("Colossus Sword", quality = rare, ethereal = True),
 	item_rule("Scissors Suwayyah", quality = rare, ethereal = True),
 	item_rule("Runic Talons", quality = rare, ethereal = True),
-	
-	item_rule("Long Battle Bow", quality = white, sockets = [0, 6]),
-	item_rule("Long War Bow", quality = white, sockets = [0, 6]),
 	
 	item_rule("Matriarchal Bow", quality = rare),
 	item_rule("Grand Matron Bow", quality = rare),
@@ -46,8 +56,8 @@ item_rules = [
 	item_rule("Demon Crossbow", quality = rare),
 	item_rule("Hydra Bow", quality = rare),
 	
-	item_rule(group = "Barbarian Helmet", quality = magical),
-	item_rule(group = "Barbarian Helmet", quality = rare),
+	item_rule(group = "Barbarian Helmet", quality = magical, level = 60),
+	item_rule(group = "Barbarian Helmet", quality = rare, level = 60),
 	
 	item_rule("Ring", quality = unique),
 	item_rule("Amulet", quality = unique),
@@ -301,12 +311,12 @@ item_rules = [
 	
 	item_rule("Monarch", quality = white, sockets = [0, 4]),
 	
-	item_rule(group = "Barbarian Helmet", quality = white, sockets = [0, 3]),
+	item_rule(group = "Barbarian Helmet", quality = white, sockets = [0, 3], level = 40),
 	
 	item_rule(group = "Barbarian Helmet", quality = superior, sockets = 3),
 	
 	item_rule(group = "Pelt", quality = rare),
-	item_rule(group = "Pelt", quality = white, sockets = [0, 3]),
+	item_rule(group = "Pelt", quality = white, sockets = [0, 3], level = 40),
 	
 	item_rule("Mask", quality = white, sockets = 0, level = 30),
 	item_rule("Mask", sockets = 3),
@@ -332,7 +342,7 @@ item_rules = [
 	item_rule("Bec-De-Corbin", quality = white, sockets = 4),
 	item_rule("Grim Scythe", quality = white, sockets = 4),
 	
-	item_rule("Voulge", quality = white, sockets = [0, 4]),
+	#item_rule("Voulge", quality = white, sockets = [0, 4]),
 	item_rule("Scythe", quality = white, sockets = 4),
 	item_rule("Poleaxe", quality = white, sockets = 4),
 	item_rule("Halberd", quality = white, sockets = 4),

@@ -107,7 +107,7 @@ item_groups["Elite Polearm"] = [
 	"Giant Thresher"
 ]
 
-item_groups["Any Boots"] = [
+item_groups["Boots"] = [
 	"Boots",
 	"Heavy Boots",
 	"Chain Boots",
@@ -157,7 +157,7 @@ item_groups["Gloves"] = [
 	"Ogre Gauntlets"
 ]
 
-item_groups["Any Circlet"] = [
+item_groups["Circlet"] = [
 	"Circlet",
 	"Coronet",
 	"Tiara",
@@ -178,6 +178,26 @@ item_groups["Elite Spear"] = [
 	"Mancatcher",
 	"Ghost Spear",
 	"War Pike"
+]
+
+item_groups["Orb"] = [
+	"Eagle Orb",
+	"Sacred Globe",
+	"Smoked Sphere",
+	"Clasped Orb",
+	"Jared's Stone",
+	
+	"Glowing Orb",
+	"Crystalline Globe",
+	"Cloudy Sphere",
+	"Sparkling Ball",
+	"Swirling Crystal",
+	
+	"Heavenly Stone",
+	"Eldritch Orb",
+	"Demon Heart",
+	"Vortex Orb",
+	"Dimensional Shard"
 ]
 
 item_groups["Wand"] = [
