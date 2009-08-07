@@ -225,7 +225,7 @@ def setup_boost():
 	print 'Compiling boost'
 	cpus = int(os.environ.get('NUMBER_OF_PROCESSORS', 2))
 	print 'Number of CPUs detected: %d' % cpus
-	execute('%s toolset=%s variant=release threading=multi runtime-link=static link=static stage -j %d --without-graph --without-graph_parallel --without-iostreams --without-math --without-mpi --without-python --without-program_options --without-python --without-regex --without-serialization --without-signals --without-test --without-wave' % (bjam_binary, toolset, cpus))
+	execute('%s toolset=%s variant=release threading=multi runtime-link=static link=static stage -j %d --without-graph --without-graph_parallel --without-iostreams --without-math --without-mpi --without-python --without-program_options --without-python --without-serialization --without-signals --without-test --without-wave' % (bjam_binary, toolset, cpus))
 	os.chdir('..')
 	
 def setup_ail():
