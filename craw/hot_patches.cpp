@@ -86,6 +86,27 @@ HANDLE WINAPI patched_CreateFile(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWOR
 	{
 		std::string file_name = ail::number_to_string<DWORD>(GetCurrentProcessId()) + ".dat";
 		fixed_path = ail::join_paths(bncache_directory, file_name);
+		string_vector
+			files,
+			directories;
+		if(ail::read_directory(bncache_directory, files, directories))
+		{
+			BOOST_FOREACH(std::string const & file, files)
+			{
+				std::string extension;
+				if(file == file_name || !ail::retrieve_extension(file_name, extension) || extension != "dat")
+					continue;
+				std::string path = ail::join_paths(bncache_directory, file);
+				bool success = ail::remove_file(path);
+				if(verbose && success)
+					write_line("Removed bncache file: " + path);
+			}
+		}
+		else
+		{
+			error("Failed to read contents of bncache directory \"" + bncache_directory + "\"!");
+			exit_process();
+		}
 	}
 	else
 		fixed_path = path;
@@ -419,8 +440,6 @@ ATOM WINAPI patched_RegisterClass(CONST WNDCLASS * lpWndClass)
 		write_line("Replaced the Diablo II window procedure with our own");
 	return real_RegisterClass(lpWndClass);
 }
-
-
 
 bool apply_hot_patches()
 {
