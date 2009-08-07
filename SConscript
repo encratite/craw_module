@@ -20,7 +20,8 @@ python_include = os.path.join(python, 'include')
 include_directories = [boost, ail, python_include]
 
 defines = {
-	'_CRT_SECURE_NO_WARNINGS': 1
+	'_CRT_SECURE_NO_WARNINGS': 1,
+	'BOOST_LIB_DIAGNOSTIC': 1
 }
 
 """
