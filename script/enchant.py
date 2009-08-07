@@ -47,8 +47,6 @@ class enchant_handler_class:
 		self.player = utility.get_player_data_by_name(name)
 		self.my_player = utility.get_my_player()
 		
-		print '<%s> %s' % (name, message)
-		
 		if self.player.id == self.my_player.id:
 			return
 		
