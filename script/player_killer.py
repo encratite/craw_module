@@ -21,11 +21,13 @@ teleport_skill = 0x36
 bone_spear_skill = 0x54
 bone_prison_skill = 0x58
 bone_spirit_skill = 0x5d
+fist_of_heavens_skill = 0x79
 
 #These are self-describing 'enums'
-attack_mode_bone_prison_bone_spirit_tppk = 'Cast Bone Prison at the target, teleport right on it, cast one Bone Spirit at it and TPPK'
-attack_mode_bone_prison_bone_spear_tppk = 'Cast Bone Prison and one Bone Spear at the target and TPPK'
+attack_mode_bone_prison_bone_spirit_tppk = 'Cast Bone Prison at the target, teleport right on it, cast one Bone Spirit at it and performs a TPPK'
+attack_mode_bone_prison_bone_spear_tppk = 'Cast Bone Prison and one Bone Spear at the target and performs a TPPK'
 attack_mode_cast_left_skill = 'Casts the left skill at the target'
+attack_mode_cast_left_skill_tppk = 'Casts the left skill at the target and performs a TPPK'
 
 #Research mode chat triggers
 chat_trigger_hostile = 'hostile'
@@ -39,7 +41,7 @@ class player_killer_class:
 		self.debugging = True
 		self.left_skill = None
 		
-		self.research_mode = True
+		self.research_mode = False
 		self.start_of_attack = None
 		
 	def is_in_range(self, id):
@@ -148,8 +150,8 @@ class player_killer_class:
 	def get_ms(self, now, then):
 		return (now - then) * 1000.0
 				
-	def town_portal(self):
-		time.sleep(configuration.town_portal_delay)
+	def town_portal(self, delay = configuration.town_portal_delay):
+		time.sleep(delay)
 				
 		if not self.is_in_range(self.target.id):
 			print 'The player is no longer in range - aborting TPPK sequence'
@@ -225,12 +227,20 @@ class player_killer_class:
 		
 		bone_spirit_attack = self.left_skill == bone_spirit_skill and self.skill_check([bone_prison_skill, teleport_skill], attack_mode_bone_prison_bone_spirit_tppk)
 		bone_spear_attack = self.left_skill == bone_spear_skill and self.skill_check([bone_prison_skill], attack_mode_bone_prison_bone_spear_tppk)
+		foh_attack = self.left_skill == fist_of_heavens_skill and self.skill_check([fist_of_heavens_skill], attack_mode_cast_left_skill_tppk)
 		
 		self.start_of_attack = time.time()
 		
 		if bone_spirit_attack or bone_spear_attack:
 			self.debug('Setting the right skill to Bone Prison')
 			packets.set_right_skill(bone_prison_skill)
+		elif foh_attack:
+			if get_d2_distance(utility.get_my_player(), target) > configuration.fist_of_heavens_distance:
+				print 'You are not in range for a Fist of Heavens attack'
+				return
+			self.debug('Casting Fist of Heavens at the target')
+			packets.cast_left_skill_at_target(0, self.target.id)
+			nil.thread.create_thread(lambda: self.town_portal(configuration.fist_of_heavens_delay))
 		else:
 			print 'Performing default attack "%s"' % attack_mode_cast_left_skill
 			packets.cast_left_skill_at_target(0, self.target.id)
