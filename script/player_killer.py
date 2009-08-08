@@ -1,9 +1,15 @@
-import craw, packets, utility, time, nil.thread
+import craw, packets, utility, time, nil.thread, configuration
 
-def get_distance(player1, player2):
+def get_d2_distance(player1, player2):
 	dx = abs(player1.x - player2.x)
 	dy = abs(player1.y - player2.y)
 	return (dx + dy + max(dx, dy)) / 2.0
+	
+def get_euclidean_distance(player1, player2):
+	dx = player1.x - player2.x
+	dy = player1.y - player2.y
+	
+	return (dx**2 + dy**2)**0.5
 	
 def sort_players(left, right):
 	difference = left[0] - right[0]
@@ -20,21 +26,21 @@ bone_spirit_skill = 0x5d
 attack_mode_bone_prison_bone_spirit_tppk = 'Cast Bone Prison at the target, teleport right on it, cast one Bone Spirit at it and TPPK'
 attack_mode_bone_prison_bone_spear_tppk = 'Cast Bone Prison and one Bone Spear at the target and TPPK'
 attack_mode_cast_left_skill = 'Casts the left skill at the target'
+
+#Research mode chat triggers
+chat_trigger_hostile = 'hostile'
+chat_trigger_damage = 'damage'
 	
 class player_killer_class:
 	def __init__(self, town_portal_handler):
 		self.movement = {}
 		self.attack_mode = None
 		self.town_portal_handler = town_portal_handler		
-		
 		self.debugging = True
-		
-		self.maximal_distance = 100
-		
-		self.town_portal_delay = 0.25
-		self.bone_prison_delay = 0.25
-		
 		self.left_skill = None
+		
+		self.research_mode = True
+		self.start_of_attack = None
 		
 	def is_in_range(self, id):
 		players = filter(lambda x: x.id == id, craw.get_players())
@@ -96,8 +102,54 @@ class player_killer_class:
 				packets.cast_left_skill_at_target(0, self.target.id)
 				nil.thread.create_thread(self.town_portal)
 				
+		message = packets.parse_message(bytes)
+		if self.start_of_attack != None and message != None:
+			name, message = message
+			if name != utility.get_my_name():
+				self.process_message(name, message)
+				
+	def process_message(self, name, message):
+		tokens = message.split(' ')
+		if len(tokens) < 2:
+			return
+		trigger = tokens[0]
+		try:
+			value = float(tokens[1])
+		except ValueError:
+			return
+			
+		difference = self.get_ms(value, self.start_of_attack)
+			
+		if trigger == chat_trigger_hostile:
+			print 'Delay between the start of the attack and the declaration of hostility: %d ms' % difference
+			self.hostile_time = value
+		elif trigger == chat_trigger_damage:
+			euclidean_distance = get_euclidean_distance(self.i, self.target)
+			d2_distance = get_d2_distance(self.i, self.target)
+			print 'Delay between the declaration of hostility and the damage: %d ms' % self.get_ms(value, self.hostile_time)
+			print 'Delay between the start of the attack and the damage: %d ms' % difference
+			print 'Initial euclidean distance between the attacker and the victim: %.1f' % euclidean_distance
+			print 'Initial Diablo II distance between the attacker and the victim: %.1f' % d2_distance
+			if len(tokens) >= 3:
+				try:
+					damage = int(tokens[2])
+					print 'Damage taken by the victim: %d' % damage
+				except	ValueError:
+					pass
+				
+	def process_damage(self, damage, life):
+		if self.research_mode:
+			packets.send_chat('%s %.3f %d' % (chat_trigger_damage, time.time(), damage))
+			
+	def process_hostility(self):
+		if self.research_mode:
+			packets.send_chat('%s %.3f' % (chat_trigger_hostile, time.time()))
+				
+	def get_ms(self, now, then):
+		return (now - then) * 1000.0
+				
 	def town_portal(self):
-		time.sleep(self.town_portal_delay)
+		time.sleep(configuration.town_portal_delay)
 				
 		if not self.is_in_range(self.target.id):
 			print 'The player is no longer in range - aborting TPPK sequence'
@@ -109,11 +161,11 @@ class player_killer_class:
 		self.attack_mode = None
 				
 	def bone_prison_teleport(self):
-		time.sleep(self.bone_prison_delay)
+		time.sleep(configuration.bone_prison_delay)
 		packets.set_right_skill(teleport_skill)
 		
 	def bone_prison_bone_spear(self):
-		time.sleep(self.bone_prison_delay)
+		time.sleep(configuration.bone_prison_delay)
 		if not self.is_in_range(self.target.id):
 			print 'The player is no longer in range - unable to cast Bone Spear'
 			self.attack_mode = None
@@ -133,19 +185,13 @@ class player_killer_class:
 		print 'Performing attack "%s"' % attack_mode
 		self.attack_mode = attack_mode
 		return True
-
-	def attack(self):
-		if utility.town_check():
-			print 'You cannot attack other players in town.'
-			return
 		
+	def get_target(self):
 		players = craw.get_players()
 		my_player = utility.get_my_player()
 		players = filter(lambda x: x.level >= 9 and x.x != 0 and x.id != my_player.id, players)
-		print 'First filter: %d' % len(players)
-		players = map(lambda x: (get_distance(my_player, x), x), players)
-		players = filter(lambda x: x[0] <= self.maximal_distance, players)
-		print 'Second filter: %d' % len(players)
+		players = map(lambda x: (get_d2_distance(my_player, x), x), players)
+		players = filter(lambda x: x[0] <= configuration.maximal_attack_distance, players)
 		players.sort(cmp = sort_players)
 		
 		if len(players) == 0:
@@ -153,25 +199,34 @@ class player_killer_class:
 			return
 		
 		print 'List of targets:'
+		counter = 1
 		for distance, player in players:
-			print '%s: %.2f (%d, %d)' % (player.name, distance, player.x, player.y)
+			print '%d. %s: %.2f (%d, %d)' % (counter, player.name, distance, player.x, player.y)
+			counter += 1
 			
 		target = players[0][1]
+		return target
+
+	def attack(self):
+		if utility.town_check():
+			print 'You cannot attack other players in town.'
+			return
+			
+		self.i = utility.get_my_player()
+		
+		target = self.get_target()
+		self.target = target
+		
+		print 'Picked target %s' % target.name
 		
 		if target.id in self.movement:
 			x, y = self.movement[target.id]
 			print 'It is a moving target: %d, %d' % (x, y)
-			
-		static_distance = 0
-			
-		teleport_x = target.x - static_distance
-		teleport_y = target.y - static_distance
-		
-		self.target = target
-		self.teleport_location = (teleport_x, teleport_y)
 		
 		bone_spirit_attack = self.left_skill == bone_spirit_skill and self.skill_check([bone_prison_skill, teleport_skill], attack_mode_bone_prison_bone_spirit_tppk)
 		bone_spear_attack = self.left_skill == bone_spear_skill and self.skill_check([bone_prison_skill], attack_mode_bone_prison_bone_spear_tppk)
+		
+		self.start_of_attack = time.time()
 		
 		if bone_spirit_attack or bone_spear_attack:
 			self.debug('Setting the right skill to Bone Prison')
@@ -179,3 +234,8 @@ class player_killer_class:
 		else:
 			print 'Performing default attack "%s"' % attack_mode_cast_left_skill
 			packets.cast_left_skill_at_target(0, self.target.id)
+			
+	def ground_attack(self):
+		target = self.get_target()
+		print 'Casting left skill at %s' % target.name
+		packets.cast_left_skill_at_location(self.target.x, self.target.y)

@@ -63,3 +63,5 @@ packet_handler.add_byte_handler(experience_handler.process_bytes)
 player_killer_handler = player_killer.player_killer_class(town_portal_handler)
 bind_handler.player_killer_handler = player_killer_handler
 packet_handler.add_byte_handler(player_killer_handler.process_bytes)
+chicken_handler.add_damage_handler(player_killer_handler.process_damage)
+chicken_handler.add_hostility_handler(player_killer_handler.process_hostility)

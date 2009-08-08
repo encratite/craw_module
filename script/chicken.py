@@ -1,6 +1,10 @@
 import craw, utility, configuration, time
 
 class chicken_handler_class:
+	def __init__(self):
+		self.damage_handlers = []
+		self.hostility_handlers = []
+		
 	def life_check(self, bytes):
 		if len(bytes) < 3:
 			return
@@ -28,6 +32,8 @@ class chicken_handler_class:
 		
 		#print time.time()
 		print '%d damage, %d/%d left (%s)' % (damage, new_life, maximum_life, percent)
+		for damage_handler in self.damage_handlers:
+			damage_handler(damage, (new_life, maximum_life))
 		
 		if new_life <= 0:
 			print 'I am dead.'
@@ -42,7 +48,13 @@ class chicken_handler_class:
 			print 'Leaving the game because the chicken life ratio has been reached'
 			craw.leave_game()
 			
-	def hostile_check(self, bytes):
+	def add_damage_handler(self, handler):
+		self.damage_handlers.append(handler)
+		
+	def add_hostility_handler(self, handler):
+		self.hostility_handlers.append(handler)
+			
+	def hostility_check(self, bytes):
 		if len(bytes) < 10 or bytes[0] != 0x8c:
 			return
 			
@@ -59,6 +71,9 @@ class chicken_handler_class:
 		if bytes[9] < 0x08:
 			return
 			
+		for hostility_handler in self.hostility_handlers:
+			hostility_handler()
+			
 		in_town = utility.town_check()
 		
 		if in_town == None:
@@ -74,4 +89,4 @@ class chicken_handler_class:
 		
 	def process_bytes(self, bytes):
 		self.life_check(bytes)
-		self.hostile_check(bytes)
+		self.hostility_check(bytes)

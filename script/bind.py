@@ -23,6 +23,9 @@ def reveal_act():
 		
 def attack():
 	current_handler.player_killer_handler.attack()
+	
+def ground_attack():
+	current_handler.player_killer_handler.ground_attack()
 		
 def invite_all():
 	print 'Inviting all players'

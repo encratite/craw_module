@@ -113,7 +113,7 @@ def cast_right_skill_at_target(type, target):
 	cast_skill_at_target(0x0d, type, target)
 	
 def cast_skill_at_location(side, x, y):
-	packet = chr(side) + utility.pack_number(x, 2) +utility.pack_number(y, 2)
+	packet = chr(side) + utility.pack_number(x, 2) + utility.pack_number(y, 2)
 	craw.send_packet(packet)
 	
 def cast_left_skill_at_location(x, y):
