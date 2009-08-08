@@ -123,6 +123,17 @@ It allows you to filter out monsters that give you little or no experience.
 If you need to kill more monsters than [experience_peanut_limit] to reach the next level then it will be ignored.
 """
 
-experience_peanut_limit = 20000
+experience_peanut_limit = 2000
+
+#BNCS configuration for auto whois on player kills
 
 whois_delay = 1.0
+
+#PK script configuration
+
+maximal_attack_distance = 100
+
+#delays in seconds
+
+town_portal_delay = 0.25
+bone_prison_delay = 0.25
