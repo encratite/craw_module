@@ -249,3 +249,34 @@ def hostile_players():
 		packet += hostile_player_string(player.id)
 		
 	craw.send_packet(packet)
+
+def parse_add_unit(bytes):
+	if len(bytes) < 7 or bytes[0] != 0xaa:
+		return None
+	unit_type = bytes[1]
+	unit_id = utility.read_bytes(bytes, 2, 4)
+	
+	return unit_type, unit_id
+	
+def parse_npc_move(bytes):
+	if len(bytes) < 10 or bytes[0] not in [0x67, 0x68]:
+		return None
+		
+	unit_id = utility.read_bytes(bytes, 1, 4)
+	running = bytes[5] in [0x17, 0x18]
+	x = utility.read_bytes(bytes, 6, 2)
+	y = utility.read_bytes(bytes, 8, 2)
+	
+	return unit_id, running, x, y
+	
+def parse_npc_assignment(bytes):
+	if len(bytes) < 10 or bytes[0] != 0xac:
+		return None
+		
+	unit_id = utility.read_bytes(bytes, 1, 4)
+	unit_code = utility.read_bytes(bytes, 5, 2)
+	x = utility.read_bytes(bytes, 7, 2)
+	y = utility.read_bytes(bytes, 7, 2)
+	life = bytes[9]
+	
+	return unit_id, unit_code, x, y, life

@@ -425,4 +425,24 @@ namespace python
 
 		return PyLong_FromUnsignedLong(d2_get_unit_stat(unit_pointer, 13, 0));
 	}
+
+	PyObject * get_unit(PyObject * self, PyObject * arguments)
+	{
+		unsigned id = static_cast<unsigned>(PyLong_AsUnsignedLong(PyTuple_GetItem(arguments, 0)));
+		unsigned type = static_cast<unsigned>(PyLong_AsUnsignedLong(PyTuple_GetItem(arguments, 1)));
+
+		unit * unit_pointer;
+
+		boost::mutex::scoped_lock lock(d2_function_mutex);
+
+		if(!get_unit_by_id(id, type, unit_pointer))
+			Py_RETURN_NONE;
+
+		python_monster_data * monster_data_pointer = PyObject_New(python_monster_data, &monster_data_type);
+		python_monster_data & current_monster_data = *monster_data_pointer;
+		if(!current_monster_data.initialise(*unit_pointer))
+			exit_process();
+
+		return reinterpret_cast<PyObject *>(monster_data_pointer);
+	}
 }

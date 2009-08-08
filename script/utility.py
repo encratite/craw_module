@@ -150,3 +150,26 @@ def is_mercenary(id):
 def same_party(player1, player2):
 	not_in_party = 0x0000ffff
 	return not_in_party not in [player1.party, player2.party] and player1.party == player2.party
+	
+def get_d2_distance(player1, player2):
+	dx = abs(player1.x - player2.x)
+	dy = abs(player1.y - player2.y)
+	return (dx + dy + max(dx, dy)) / 2.0
+	
+def get_euclidean_distance(player1, player2):
+	dx = player1.x - player2.x
+	dy = player1.y - player2.y
+	
+	return (dx**2 + dy**2)**0.5
+	
+def sort_units(left, right):
+	difference = left[0] - right[0]
+	if difference == 0:
+		return 0
+	return 1 if difference > 0 else -1
+	
+def get_my_unit():
+	player = get_my_player()
+	if player == None:
+		return None
+	return craw.get_unit(player.id, 0)

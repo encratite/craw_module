@@ -31,7 +31,8 @@ class item_handler_class:
 	def get_quality_string(quality):
 		qualities = {
 			inferior: 'Inferior',
-			normal: 'Normal',
+			#normal: 'Normal',
+			normal: '',
 			superior: 'Superior',
 			magical: 'Magical',
 			set: 'Set',

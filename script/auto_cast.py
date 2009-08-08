@@ -3,7 +3,7 @@ import packets, configuration, nil.thread, craw
 auto_cast_skills = [
 	('Bone Armor', 0x44),
 	('Clay Golem', 0x4b),
-	('Oak Sage', 0xe2),
+	#('Oak Sage', 0xe2),
 	('Cyclone Armor', 0xeb),
 ]
 

@@ -1,21 +1,4 @@
 import craw, packets, utility, time, nil.thread, configuration
-
-def get_d2_distance(player1, player2):
-	dx = abs(player1.x - player2.x)
-	dy = abs(player1.y - player2.y)
-	return (dx + dy + max(dx, dy)) / 2.0
-	
-def get_euclidean_distance(player1, player2):
-	dx = player1.x - player2.x
-	dy = player1.y - player2.y
-	
-	return (dx**2 + dy**2)**0.5
-	
-def sort_players(left, right):
-	difference = left[0] - right[0]
-	if difference == 0:
-		return 0
-	return 1 if difference > 0 else -1
 	
 teleport_skill = 0x36
 bone_spear_skill = 0x54
@@ -126,8 +109,8 @@ class player_killer_class:
 			print 'Delay between the start of the attack and the declaration of hostility: %d ms' % difference
 			self.hostile_time = value
 		elif trigger == chat_trigger_damage:
-			euclidean_distance = get_euclidean_distance(self.i, self.target)
-			d2_distance = get_d2_distance(self.i, self.target)
+			euclidean_distance = utility.get_euclidean_distance(self.i, self.target)
+			d2_distance = utility.get_d2_distance(self.i, self.target)
 			print 'Delay between the declaration of hostility and the damage: %d ms' % self.get_ms(value, self.hostile_time)
 			print 'Delay between the start of the attack and the damage: %d ms' % difference
 			print 'Initial euclidean distance between the attacker and the victim: %.1f' % euclidean_distance
@@ -192,9 +175,9 @@ class player_killer_class:
 		players = craw.get_players()
 		my_player = utility.get_my_player()
 		players = filter(lambda x: x.level >= 9 and x.x != 0 and x.id != my_player.id, players)
-		players = map(lambda x: (get_d2_distance(my_player, x), x), players)
+		players = map(lambda x: (utility.get_d2_distance(my_player, x), x), players)
 		players = filter(lambda x: x[0] <= configuration.maximal_attack_distance, players)
-		players.sort(cmp = sort_players)
+		players.sort(cmp = utility.sort_units)
 		
 		if len(players) == 0:
 			print 'There are no suitable targets in range.'
@@ -235,7 +218,7 @@ class player_killer_class:
 			self.debug('Setting the right skill to Bone Prison')
 			packets.set_right_skill(bone_prison_skill)
 		elif foh_attack:
-			if get_d2_distance(utility.get_my_player(), target) > configuration.fist_of_heavens_distance:
+			if utility.get_d2_distance(utility.get_my_player(), target) > configuration.fist_of_heavens_distance:
 				print 'You are not in range for a Fist of Heavens attack'
 				return
 			self.debug('Casting Fist of Heavens at the target')

@@ -8,15 +8,13 @@ class experience_handler_class:
 			(0x1b, 2)
 		]
 		
-		if packets.entering_game(bytes):
-			self.experience = None
+		self.experience = craw.get_experience()
+		if self.experience == None:
+			return
 			
 		elif len(bytes) >= 5 and bytes[0] == 0x1c:
 			new_experience = utility.read_bytes(bytes, 1, 4)
-			if self.experience == None:
-				self.experience = new_experience
-			else:
-				self.process_experience(new_experience - self.experience)
+			self.process_experience(new_experience - self.experience)
 		
 		else:
 			for identifier, size in experience_formats:

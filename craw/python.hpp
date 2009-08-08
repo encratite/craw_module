@@ -126,6 +126,7 @@ namespace python
 	PyObject * get_minions(PyObject * self, PyObject * arguments);
 	PyObject * print_text(PyObject * self, PyObject * arguments);
 	PyObject * get_experience(PyObject * self, PyObject * arguments);
+	PyObject * get_unit(PyObject * self, PyObject * arguments);
 
 	void perform_automap_callback(unit & current_unit, int x, int y, uchar colour);
 	bool perform_packet_callback(std::string const & packet);

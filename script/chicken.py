@@ -4,6 +4,7 @@ class chicken_handler_class:
 	def __init__(self):
 		self.damage_handlers = []
 		self.hostility_handlers = []
+		self.last_maximal_life = None
 		
 	def life_check(self, bytes):
 		if len(bytes) < 3:
@@ -13,7 +14,12 @@ class chicken_handler_class:
 		if configuration.chicken_data == None:
 			return
 			
-		current_life, maximum_life = configuration.chicken_data
+		current_life, maximal_life = configuration.chicken_data
+		
+		if maximal_life > 0 and maximal_life < self.last_maximal_life and self.last_maximal_life != None:
+			craw.print_text('Warning: Maximal life decreased to %d' % maximal_life)
+			
+		self.last_maximal_life = maximal_life
 			
 		if bytes[0] not in [0x18, 0x95]:
 			return
@@ -23,17 +29,17 @@ class chicken_handler_class:
 			return
 			
 		damage = current_life - new_life
-		ratio = float(new_life) / maximum_life
+		ratio = float(new_life) / maximal_life
 		percent = '%.2f%%' % (ratio * 100)
 		
-		if new_life == maximum_life:
+		if new_life == maximal_life:
 			#hack for a strange bug
 			return
 		
 		#print time.time()
-		print '%d damage, %d/%d left (%s)' % (damage, new_life, maximum_life, percent)
+		print '%d damage, %d/%d left (%s)' % (damage, new_life, maximal_life, percent)
 		for damage_handler in self.damage_handlers:
-			damage_handler(damage, (new_life, maximum_life))
+			damage_handler(damage, (new_life, maximal_life))
 		
 		if new_life <= 0:
 			print 'I am dead.'

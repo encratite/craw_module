@@ -62,6 +62,7 @@ namespace python
 			{"get_minions", &get_minions, METH_VARARGS, "Takes a player ID as its sole argument. Returns a list of tuples of the form (id, type) of the minions associated with this player or None in case of failure."},
 			{"print_text", &print_text, METH_VARARGS, "Print text to the chat (client-side)."},
 			{"get_experience", &get_experience, METH_VARARGS, "Returns the experience of the character or None in case of an error."},
+			{"get_unit", &get_unit, METH_VARARGS, "Takes the ID of a unit and the type of the unit as arguments. Returns the unit data associated with the ID or None in case of failure."},
 
 			{0, 0, 0, 0}
 		};
