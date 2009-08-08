@@ -39,6 +39,21 @@ go_to_town_command = 'go to town'
 #Order bots to leave the game
 leave_command = 'leave'
 
+#Order bots to attack monsters with left skill (BOWS!)
+attack_command = 'attack'
+
+#Order bots to stop firing at monsters
+stop_attacking_command = 'stop attacking'
+
+#Delay between attacks in seconds
+follower_attack_delay = 0.7
+
+#Radius for turning off randomised attacks in follower attack mode
+follower_defence_radius = 20
+follower_attack_radius = 80
+
+follower_attack_maximal_randomisation_position = 3
+
 #Timing for the follow bot
 follow_portal_move_delay = 0.4
 follow_portal_interact_delay = 0.05
@@ -47,9 +62,13 @@ follow_portal_interact_delay = 0.05
 follow_confirmation = 'Following %s'
 stop_confirmation = 'No longer following %s'
 enter_tp_confirmation = 'Entering the town portal of %s'
+attack_confirmation = 'Commencing attack'
+stop_attacking_command = 'Stopping attack'
 
 stop_error = 'Currently not following anybody'
 tp_error = 'Unable to detect the town portal of %s'
+attack_error = 'Already attacking'
+stop_attacking_error = 'Currently not attacking any targets'
 
 mana_remaining = ' (%d/%d mana remaining)'
 
@@ -131,9 +150,12 @@ whois_delay = 1.0
 
 #PK script configuration
 
-maximal_attack_distance = 100
+maximal_attack_distance = 60
 
 #delays in seconds
 
 town_portal_delay = 0.25
 bone_prison_delay = 0.25
+
+fist_of_heavens_distance = 30
+fist_of_heavens_delay = 0.35
