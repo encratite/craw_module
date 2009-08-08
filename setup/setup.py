@@ -126,9 +126,21 @@ def vcvars():
 		key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, 'SOFTWARE\\%sMicrosoft\\VisualStudio\\9.0\\Setup' % get_wow_node())
 		value, type = _winreg.QueryValueEx(key, 'Dbghelp_path')
 		path = value + '..\\..\\VC\\bin\\vcvars32.bat'
-		execute('"%s"' % path)
+		#execute('"%s"' % path)
+		return path
 	except:
-		print 'Unable to locate the Visual C++ 9.0 installation to execute vcvars32.bat!'
+		return None
+		
+def vcvars_check():
+	print 'Checking if the Microsoft Visual C++ environment is set up'
+	path = vcvars()
+	if path == None:
+		print 'Unable to locate the Visual C++ 9.0 installation to get the path to vcvars32.bat!'
+		sys.exit(1)
+	if not has_command('cl'):
+		print 'The Microsoft Visual C++ environment has not been set up!'
+		print 'You need to manually execute the following batch file in this prompt:'
+		print '"%s"' % path
 		sys.exit(1)
 	
 def setup_git():
@@ -213,7 +225,7 @@ def setup_boost():
 	
 	bjam_binary = 'bjam.exe'
 	
-	vcvars()
+	execute(vcvars())
 	
 	if not os.path.exists(bjam_binary):
 		print 'Compiling bjam'
@@ -282,6 +294,7 @@ toolset = 'msvc-9.0'
 
 start = time.time()
 
+vcvars_check()
 setup_git()
 setup_nil()
 setup_scons()
