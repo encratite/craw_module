@@ -216,3 +216,12 @@ item_groups["Wand"] = [
 	"Lich Wand",
 	"Unearthed Wand"
 ]
+
+item_groups["Elite Two-Handed Sword"] = [
+	"Legend Sword",
+	"Highland Blade",
+	"Balrog Blade",
+	"Champion Sword",
+	"Colossus Sword",
+	"Colossus Blade"
+]

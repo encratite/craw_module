@@ -16,15 +16,21 @@ item_rules = [
 	item_rule("Ring", quality = rare),
 	item_rule("Amulet", quality = rare),
 	
-	item_rule("Long Battle Bow", quality = white, sockets = 0, level = 30),
-	item_rule("Long War Bow", quality = white, sockets = 0, level = 30),
+	#for low level amazon TPPKers with OrtOrtOrtOrtOrtOrt bows
+	item_rule("Long Battle Bow", quality = white, sockets = 0, level = 50),
+	item_rule("Long War Bow", quality = white, sockets = 0, level = 50),
 	item_rule("Long Battle Bow", quality = white, sockets = 6),
 	item_rule("Long War Bow", quality = white, sockets = 6),
 	
-	item_rule("Halberd", quality = white, ethereal = True, sockets = 0, level = 30),
+	#Lawbringer sword for A5 mercenaries, as a blocker against Nihlathak - slain monsters rest in peace
+	item_rule("Phase Blade", quality = white, sockets = 3),
+	item_rule(group = "Elite Two-Handed Sword", quality = white, sockets = 3),
+	
+	#For the mercenaries of low level PKers
+	item_rule("Halberd", quality = white, ethereal = True, sockets = 0, level = 50),
 	item_rule("Halberd", quality = white, sockets = 6),
 	
-	item_rule("War Scythe", quality = white, ethereal = True, sockets = 0, level = 30),
+	item_rule("War Scythe", quality = white, ethereal = True, sockets = 0, level = 50),
 	item_rule("War Scythe", quality = white, sockets = 6),
 	
 	item_rule(group = "Boots", quality = rare),
@@ -115,7 +121,7 @@ item_rules = [
 	item_rule("Grand Matron Bow", quality = set),
 	item_rule("Kraken Shell", quality = set),
 	item_rule("Battle Gauntlets", quality = set),
-	item_rule("Sharkskin Belt", quality = set),
+	#item_rule("Sharkskin Belt", quality = set),
 	
 	item_rule("Scissors Suwayyah", quality = set),
 	item_rule("Loricated Mail", quality = set),
