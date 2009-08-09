@@ -78,6 +78,9 @@ class enchant_handler_class:
 		elif message == configuration.enchant_all_command:
 			self.launch_function(self.enchant_all)
 			
+		elif message == configuration.enchant_players_command:
+			self.launch_function(self.enchant_players)
+			
 	def launch_function(self, function):
 		self.lock.acquire()
 		if self.running:
@@ -154,6 +157,14 @@ class enchant_handler_class:
 			
 		current_mana, maximum_mana = self.mana
 		packets.send_chat(configuration.enchant_all_confirmation % (minions_enchanted, current_mana, maximum_mana))
+		return True
+		
+	def enchant_players(self):
+		players = utility.get_party_players()
+		for player in players:
+			self.player = player
+			if not self.enchant_all():
+				pass
 		return True
 		
 	def process_bytes(self, bytes):

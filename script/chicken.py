@@ -91,7 +91,7 @@ class chicken_handler_class:
 				print 'Leaving the game because an unknown player has declared hostility against us'
 			else:
 				print 'Leaving the game because player %s has declared hostility against us' % player_name
-			leave_game()
+			craw.leave_game()
 		
 	def process_bytes(self, bytes):
 		self.life_check(bytes)

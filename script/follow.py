@@ -24,9 +24,12 @@ class town_portal_timer(threading.Thread):
 
 class follow_handler_class:
 	def __init__(self, town_portal_handler):
+		self.town_portal_handler = town_portal_handler
+		self.initialise()
+		
+	def initialise(self):
 		self.following = False
 		self.town_portal_map = {}
-		self.town_portal_handler = town_portal_handler
 		self.current_portal = None
 		self.attacking = False
 		self.monsters = {}
@@ -96,6 +99,9 @@ class follow_handler_class:
 		town_portal_timer(tp_entry)
 		
 	def process_bytes(self, bytes):
+		if packets.entering_game(bytes):
+			self.initialise()
+			
 		message = packets.parse_message(bytes)
 		if message != None:
 			name, message = message

@@ -151,6 +151,14 @@ def same_party(player1, player2):
 	not_in_party = 0x0000ffff
 	return not_in_party not in [player1.party, player2.party] and player1.party == player2.party
 	
+def get_party_players():
+	my_player = get_my_player()
+	if my_player == None:
+		return None
+		
+	players = filter(lambda x: x.id != my_player.id and same_party(my_player, x), craw.get_players())
+	return players
+	
 def get_d2_distance(player1, player2):
 	dx = abs(player1.x - player2.x)
 	dy = abs(player1.y - player2.y)

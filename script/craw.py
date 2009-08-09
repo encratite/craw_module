@@ -3,7 +3,7 @@ import sys, utility
 
 sys.path.append(utility.get_configuration_directory())
 
-import configuration, craw, automap, packets, chicken, command, town_portal, player_kill, skills, bncs, item_handler, follow, enchant, battle_orders, party, auto_cast, experience, bind, player_killer
+import configuration, craw, automap, packets, chicken, command, town_portal, player_kill, skills, bncs, item_handler, follow, enchant, battle_orders, party, auto_cast, experience, bind, player_killer, summoner
 
 #Set up handlers
 
@@ -65,3 +65,6 @@ bind_handler.player_killer_handler = player_killer_handler
 packet_handler.add_byte_handler(player_killer_handler.process_bytes)
 chicken_handler.add_damage_handler(player_killer_handler.process_damage)
 chicken_handler.add_hostility_handler(player_killer_handler.process_hostility)
+
+summoner_handler = summoner.summoner_handler_class()
+packet_handler.add_byte_handler(summoner_handler.process_bytes)
