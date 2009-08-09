@@ -6,12 +6,26 @@ git_url = 'http://msysgit.googlecode.com/files/Git-1.6.3.2-preview20090608.exe'
 scons_url = 'http://surfnet.dl.sourceforge.net/sourceforge/scons/scons-1.2.0.d20090223.win32.exe'
 python_url = 'http://www.python.org/ftp/python/2.6.2/python-2.6.2.msi'
 
-boost_git = 'git://gitorious.org/boost/svn.git'
-
-nil_git = 'git://repo.or.cz/nil.git'
-ail_git = 'git://repo.or.cz/ail.git'
-syringe_git = 'git://repo.or.cz/syringe.git'
-craw_git = 'git://repo.or.cz/craw.git'
+if len(sys.argv) == 2:
+	mode = sys.argv[1]
+	if mode == 'http':
+		boost_git = 'http://git.gitorious.org/boost/svn.git'
+		
+		nil_git = 'http://repo.or.cz/r/nil.git'
+		ail_git = 'http://repo.or.cz/r/ail.git'
+		syringe_git = 'http://repo.or.cz/r/syringe.git'
+		craw_git = 'http://repo.or.cz/r/craw.git'
+		
+		print 'Using http git URLs instead of the git ones'
+	else:
+		print 'Unknown mode "%s" specified' % mode
+else:
+	boost_git = 'git://gitorious.org/boost/svn.git'
+	
+	nil_git = 'git://repo.or.cz/nil.git'
+	ail_git = 'git://repo.or.cz/ail.git'
+	syringe_git = 'git://repo.or.cz/syringe.git'
+	craw_git = 'git://repo.or.cz/craw.git'
 
 #Functions used by the setup:
 
