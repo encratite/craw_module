@@ -28,6 +28,7 @@ class summoner_handler_class:
 		add_unit = packets.parse_add_unit(bytes)
 		if add_unit != None:
 			unit_type, unit_id = add_unit
+			#print 'Added unit of type %d: %08x' % (unit_type, unit_id)
 			if unit_type == 1:
 				self.monsters.append(unit_id)
 			
@@ -81,7 +82,7 @@ class summoner_handler_class:
 					craw.print_text('%s: %08x' % (description, target))
 					packets.set_right_skill(skill)
 					time.sleep(configuration.summoner_switch_delay)
-					packets.cast_right_skill_at_target(1, skill)
+					packets.cast_right_skill_at_target(1, target)
 					time.sleep(configuration.summoner_cast_delay)
 					continue
 				

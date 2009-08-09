@@ -27,8 +27,8 @@ class automap_handler_class:
 		
 		return output
 	
-	def get_immunity_string(self):
-		immunities = [
+	def get_resistance_string(self):
+		resistances = [
 			self.monster_data.fire_resistance,
 			self.monster_data.cold_resistance,
 			self.monster_data.lightning_resistance,
@@ -39,9 +39,11 @@ class automap_handler_class:
 		
 		output = ''
 		offset = 0
-		for immunity in immunities:
-			if immunity >= 100:
-				output += immunity_colours[offset] + immunity_symbol
+		for resistance in resistances:
+			if resistance >= 100:
+				output += resistance_colours[offset] + immunity_symbol
+			elif resistance < 0:
+				output += resistance_colours[offset] + vulnerability_symbol
 			
 			offset += 1
 			
@@ -81,12 +83,12 @@ class automap_handler_class:
 			else:
 				colour = monster_colour
 				
-			immunity_string = self.get_immunity_string()
+			resistance_string = self.get_resistance_string()
 			if special_abilities:
 				special_abilities_string = self.get_special_abilities_string()
 			else:
 				special_abilities_string = ''
-			monster_text = immunity_string + special_abilities_string
+			monster_text = resistance_string + special_abilities_string
 				
 			if len(monster_text) > 0:
 				draw_automap_text(monster_text, coordinate)
