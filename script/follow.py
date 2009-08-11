@@ -48,6 +48,8 @@ class follow_handler_class:
 			print 'Unable to retrieve player data of player %s' % player
 			return
 			
+		#print 'Processing <%s> "%s"' % (name, message)
+			
 		if self.command_match(message, configuration.follow_command):
 			self.following = True
 			self.leader = player.name
@@ -71,6 +73,7 @@ class follow_handler_class:
 			self.enter_tp(player)
 				
 		elif self.command_match(message, configuration.go_to_town_command):
+			print 'Casting a town portal to go to town'
 			self.town_portal_handler.town_tp()
 			
 		elif self.command_match(message, configuration.attack_command):
