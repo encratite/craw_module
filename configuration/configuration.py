@@ -79,6 +79,7 @@ enchanters = []
 enchant_command = 'enchant'
 enchant_minions_command = 'enchant minions'
 enchant_all_command = 'enchant all'
+enchant_players_command = 'enchant players'
 
 #Replies to chat triggers for the enchant bot
 
@@ -100,8 +101,8 @@ battle_orders_barbarians = []
 battle_orders_command = 'bo'
 
 #Cast delay for the BO barbarian
-battle_orders_switch_delay = 0.1
-battle_orders_cast_delay = 0.3
+battle_orders_switch_delay = 0.2
+battle_orders_cast_delay = 0.5
 
 battle_orders_confirmation = 'Casting Battle Command, Battle Orders and Shout, please wait...'
 
@@ -123,9 +124,16 @@ auto_casters = followers
 auto_cast_switch_delay = 0.15
 auto_cast_cast_delay = 0.35
 
+#Necromancers which are supposed to automatically revive dead monsters
+summoners = []
+
+summoner_check_delay = 0.1
+summoner_switch_delay = 0.2
+summoner_cast_delay = 0.4
+
 #Friends/party settings
 
-friends = enchanters + battle_orders_barbarians + follow_leaders + followers
+friends = enchanters + battle_orders_barbarians + follow_leaders + followers + summoners + []
 
 party_invitation_command = 'invite'
 auto_accept_invitations_by_friends = True
@@ -154,8 +162,10 @@ maximal_attack_distance = 60
 
 #delays in seconds
 
-town_portal_delay = 0.25
-bone_prison_delay = 0.25
+town_portal_delay = 0.28
+bone_prison_delay = 0.28
 
-fist_of_heavens_distance = 30
-fist_of_heavens_delay = 0.35
+bone_spirit_teleport_offset = (0, 6)
+
+fist_of_heavens_distance = 40
+fist_of_heavens_delay = 0.3
