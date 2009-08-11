@@ -10,7 +10,8 @@ bool
 	verbose,
 	use_custom_keys,
 	prompt_mode,
-	patch_system_modules;
+	patch_system_modules,
+	do_not_hide_window;
 
 std::string
 	window_title,
@@ -116,6 +117,7 @@ void process_command_line()
 	argument_parser.flag("verbose", verbose).default_flag(false);
 	argument_parser.flag("prompt", prompt_mode).default_flag(false);
 	argument_parser.flag("patch_system_modules", patch_system_modules).default_flag(true);
+	argument_parser.flag("do_not_hide_window", do_not_hide_window).default_flag(false);
 
 	argument_parser.string("window_title", window_title).default_string("Diablo II");
 	argument_parser.string("classic_key", classic_key);

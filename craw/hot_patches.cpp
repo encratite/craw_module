@@ -427,6 +427,11 @@ LRESULT CALLBACK patched_window_procedure(HWND hWnd, UINT Msg, WPARAM wParam, LP
 			process_key(virtual_key);
 			break;
 		}
+
+		case WM_ACTIVATEAPP:
+			if(do_not_hide_window)
+				return 0;
+			break;
 	}
 	return d2_window_procedure(hWnd, Msg, wParam, lParam);
 }

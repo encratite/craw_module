@@ -45,13 +45,13 @@ namespace python
 		ushort max_hp;
 		ushort experience;
 
-		ushort damage_resistance;
-		ushort magic_resistance;
+		short damage_resistance;
+		short magic_resistance;
 
-		ushort fire_resistance;
-		ushort lightning_resistance;
-		ushort cold_resistance;
-		ushort poison_resistance;
+		short fire_resistance;
+		short lightning_resistance;
+		short cold_resistance;
+		short poison_resistance;
 
 		PyObject * special_abilities;
 

@@ -30,13 +30,13 @@ namespace python
 		{"max_hp", T_USHORT, offsetof(python_monster_data, max_hp), 0, "Maximum hit points"},
 		{"experience", T_USHORT, offsetof(python_monster_data, experience), 0, "Experience"},
 
-		{"damage_resistance", T_USHORT, offsetof(python_monster_data, damage_resistance), 0, "Damage resistance"},
-		{"magic_resistance", T_USHORT, offsetof(python_monster_data, magic_resistance), 0, "Resistance to magical damage"},
+		{"damage_resistance", T_SHORT, offsetof(python_monster_data, damage_resistance), 0, "Damage resistance"},
+		{"magic_resistance", T_SHORT, offsetof(python_monster_data, magic_resistance), 0, "Resistance to magical damage"},
 
-		{"fire_resistance", T_USHORT, offsetof(python_monster_data, fire_resistance), 0, "Fire resistance"},
-		{"lightning_resistance", T_USHORT, offsetof(python_monster_data, lightning_resistance), 0, "Lightning resistance"},
-		{"cold_resistance", T_USHORT, offsetof(python_monster_data, cold_resistance), 0, "Cold resistance"},
-		{"poison_resistance", T_USHORT, offsetof(python_monster_data, poison_resistance), 0, "Poison resistance"},
+		{"fire_resistance", T_SHORT, offsetof(python_monster_data, fire_resistance), 0, "Fire resistance"},
+		{"lightning_resistance", T_SHORT, offsetof(python_monster_data, lightning_resistance), 0, "Lightning resistance"},
+		{"cold_resistance", T_SHORT, offsetof(python_monster_data, cold_resistance), 0, "Cold resistance"},
+		{"poison_resistance", T_SHORT, offsetof(python_monster_data, poison_resistance), 0, "Poison resistance"},
 
 		{"special_abilities", T_OBJECT, offsetof(python_monster_data, special_abilities), 0, "Special abilities"},
 
@@ -105,7 +105,7 @@ namespace python
 			max_hp = statistics.max_hp[difficulty];
 			experience = statistics.experience[difficulty];
 
-			ushort * resistance_pointers[] =
+			short * resistance_pointers[] =
 			{
 				&damage_resistance,
 				&magic_resistance,

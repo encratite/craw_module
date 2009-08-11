@@ -8,7 +8,8 @@ extern bool
 	verbose,
 	use_custom_keys,
 	prompt_mode,
-	patch_system_modules;
+	patch_system_modules,
+	do_not_hide_window;
 
 extern std::string
 	window_title,

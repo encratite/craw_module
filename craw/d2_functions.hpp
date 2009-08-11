@@ -18,7 +18,7 @@ typedef unsigned (__fastcall * set_font_size_type)(unsigned new_size);
 typedef void (__fastcall * draw_text_type)(wchar_t const * text, int x, int y, unsigned colour, int unknown);
 typedef unsigned (__fastcall * get_text_width_type)(wchar_t const * text, unsigned * width, unsigned * file_number);
 typedef void (__stdcall * draw_line_type)(int start_x, int start_y, int end_x, int end_y, unsigned colour, unsigned unknown);
-typedef unsigned (__stdcall * get_unit_stat_type)(unit * unit_pointer, unsigned stat, unsigned stat2);
+typedef int (__stdcall * get_unit_stat_type)(unit * unit_pointer, unsigned stat, unsigned stat2);
 typedef unit * (__stdcall * get_player_unit_type)();
 typedef uchar (__stdcall * get_difficulty_type)();
 typedef level_data * (__fastcall * get_level_type)(miscellaneous_act_data * act, unsigned level_number);
