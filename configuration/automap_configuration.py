@@ -9,11 +9,14 @@ minion_colour = 0xab
 champion_colour = 0x9b
 boss_colour = 0x87
 
-#Order of immunities: fire, cold, lightning, poison, damage, magic
-immunity_colours = [red, blue, yellow, green, gold, orange]
+#Order of resistances: fire, cold, lightning, poison, damage, magic
+resistance_colours = [red, blue, yellow, green, gold, orange]
 
 #The symbol to draw above a monster if it is immune to a particular type of damage
 immunity_symbol = 'o'
+
+#The sumbol to draw above a monster which is extremely vulnerable to a particular type of damage
+vulnerability_symbol = 'v'
 
 special_abilities = {}
 
