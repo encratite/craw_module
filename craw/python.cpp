@@ -258,7 +258,10 @@ namespace python
 			PyRun_SimpleString(("import sys\nsys.path.append('" + script_directory + "')\n").c_str());
 
 		if(PyRun_SimpleString(content.c_str()) != 0)
+		{
+			write_line("The main Python script contained errors.");
 			return false;
+		}
 
 		//PyRun_SimpleString(("execfile('" + ail::replace_string(python_script, "\\", "\\\\") + "')").c_str());
 
