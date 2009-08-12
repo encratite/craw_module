@@ -252,11 +252,14 @@ void d2client(unsigned base)
 	debug_register_entries.push_back(debug_register_entry(unit_is_selectable_address, &debug_register_unit_selection));
 
 	main_debug_register_entries.push_back(debug_register_data(light_handler_address));
-	main_debug_register_entries.push_back(debug_register_data(automap_loop_address));
-	main_debug_register_entries.push_back(debug_register_data(packet_reception_interceptor_address));
-	//main_debug_register_entries.push_back(debug_register_data(add_unit_address1));
-	main_debug_register_entries.push_back(debug_register_data(item_handler_call_address));
-	//main_debug_register_entries.push_back(debug_register_data(unit_is_selectable_address));
+	if(!python_script.empty())
+	{
+		main_debug_register_entries.push_back(debug_register_data(automap_loop_address));
+		main_debug_register_entries.push_back(debug_register_data(packet_reception_interceptor_address));
+		//main_debug_register_entries.push_back(debug_register_data(add_unit_address1));
+		main_debug_register_entries.push_back(debug_register_data(item_handler_call_address));
+		//main_debug_register_entries.push_back(debug_register_data(unit_is_selectable_address));
+	}
 
 	set_own_context(main_debug_register_entries);
 }
