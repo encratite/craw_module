@@ -105,7 +105,7 @@ def get_git_path():
 def get_scons_path():
 	target = 'lib'
 	for path in sys.path:
-		if os.path.basename(path) == target:
+		if os.path.basename(path).lower() == target:
 			return os.path.join(path[0 : - len(target)], 'Scripts', 'scons.bat')
 	return None
 	
