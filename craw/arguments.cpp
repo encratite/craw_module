@@ -78,7 +78,7 @@ bool install_command_line_patch(string_vector const & parsed_arguments)
 	}
 	else
 	{
-		error("The format of your kernel32.dll!GetCommandlineA is unknown to the patcher.");
+		error("The format of your kernel32.dll!GetCommandlineA is unknown to the patcher: " + ail::hex_string_8(first_byte));
 		return false;
 	}
 }
