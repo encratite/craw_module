@@ -73,8 +73,8 @@ bool install_command_line_patch(string_vector const & parsed_arguments)
 		if(verbose)
 			write_line("The first instruction of GetCommandLineA is a jump - this is probably Windows 7 code");
 
-		void * unused;
-		return !hot_patch_function("kernel32.dll", "GetCommandLineA", reinterpret_cast<void *>(&patched_GetCommandLineA), unused);
+		void * GetCommandLineA_address;
+		return patch_function("kernel32.dll", "GetCommandLineA", GetCommandLineA_address, reinterpret_cast<void *>(&patched_GetCommandLineA));
 	}
 	else
 	{
