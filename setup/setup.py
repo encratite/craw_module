@@ -212,7 +212,7 @@ def setup_nil():
 def setup_scons():
 	global scons_path
 	scons_path = get_scons_path()
-	if scons_path == False:
+	if scons_path == None:
 		print 'Unable to get the Python library directory to determine the SCons path'
 		sys.exit(1)
 		
