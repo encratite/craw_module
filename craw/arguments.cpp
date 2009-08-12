@@ -3,6 +3,7 @@
 #include <ail/arguments.hpp>
 #include "arguments.hpp"
 #include "utility.hpp"
+#include "patch.hpp"
 
 bool
 	console_output,
@@ -27,10 +28,7 @@ bool use_socks;
 std::string socks_server;
 ushort socks_port;
 
-namespace
-{
-	char * command_line_arguments;
-}
+char * command_line_arguments;
 
 std::string key_string(std::string const & key)
 {
@@ -38,6 +36,11 @@ std::string key_string(std::string const & key)
 		return "Key has not been specified";
 	else
 		return "A custom key has been specified";
+}
+
+char * patched_GetCommandLineA()
+{
+	return command_line_arguments;
 }
 
 bool install_command_line_patch(string_vector const & parsed_arguments)
@@ -49,27 +52,35 @@ bool install_command_line_patch(string_vector const & parsed_arguments)
 		return false;
 	}
 
+	std::string new_arguments = "\"" + parsed_arguments[0] + "\" " + d2_arguments;
+	command_line_arguments = new char[new_arguments.size() + 1];
+	std::strcpy(command_line_arguments, new_arguments.c_str());
+
 	char * byte_pointer = reinterpret_cast<char *>(address);
 	uchar first_byte = *reinterpret_cast<uchar *>(byte_pointer);
-	if(first_byte != 0xa1)
+	if(first_byte == 0xa1)
 	{
-		error("The format of the GetCommandlineA procedure in your kernel32.dll is unknown to the module's patcher and cannot be patched");
+		char * & string_pointer = **reinterpret_cast<char ***>(byte_pointer + 1);
+		string_pointer = command_line_arguments;
+
+		if(verbose)
+			write_line("Successfully installed the command line patch");
+		
+		return true;
+	}
+	else if(first_byte == 0xeb)
+	{
+		if(verbose)
+			write_line("The first instruction of GetCommandLineA is a jump - this is probably Windows 7 code");
+
+		void * unused;
+		return !hot_patch_function("kernel32.dll", "GetCommandLineA", reinterpret_cast<void *>(&patched_GetCommandLineA), unused);
+	}
+	else
+	{
+		error("The format of your kernel32.dll!GetCommandlineA is unknown to the patcher.");
 		return false;
 	}
-
-	char * & string_pointer = **reinterpret_cast<char ***>(byte_pointer + 1);
-	std::string original_commandline(string_pointer);
-
-	std::string new_arguments = "\"" + parsed_arguments[0] + "\" " + d2_arguments;
-	char * cstring_arguments = new char[new_arguments.size() + 1];
-	std::strcpy(cstring_arguments, new_arguments.c_str());
-
-	string_pointer = cstring_arguments;
-
-	if(verbose)
-		write_line("Successfully installed the command line patch");
-	
-	return true;
 }
 
 bool get_arguments(string_vector & output)
