@@ -45,8 +45,30 @@ char * patched_GetCommandLineA()
 
 bool install_command_line_patch(string_vector const & parsed_arguments)
 {
+	OSVERSIONINFOEX version;
+	ZeroMemory(&version, sizeof(OSVERSIONINFOEX));
+	version.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+	if(!GetVersionEx(reinterpret_cast<OSVERSIONINFO *>(&version)))
+	{
+		last_error("GetVersionEx failed");
+		return false;
+	}
+	std::string kernel;
+	if(version.dwMajorVersion == 6 && version.dwMinorVersion == 1 && version.wProductType == VER_NT_WORKSTATION)
+	{
+		kernel = "kernelbase.dll";
+		if(verbose)
+			write_line("Windows 7 detected, using module " + kernel + " for the commandline patch");
+	}
+	else
+	{
+		kernel = "kernel32.dll";
+		if(verbose)
+			write_line("Pre Windows 7 OS detected, using module " + kernel + " for the commandline patch");
+	}
+
 	void * address;
-	if(!procedure_lookup("kernel32.dll", "GetCommandLineA", address))
+	if(!procedure_lookup(kernel.c_str(), "GetCommandLineA", address))
 	{
 		error("Unable to look up the address for the command line patch");
 		return false;
@@ -67,14 +89,6 @@ bool install_command_line_patch(string_vector const & parsed_arguments)
 			write_line("Successfully installed the command line patch");
 		
 		return true;
-	}
-	else if(first_byte == 0xeb)
-	{
-		if(verbose)
-			write_line("The first instruction of GetCommandLineA is a jump - this is probably Windows 7 code");
-
-		void * GetCommandLineA_address;
-		return patch_function("kernel32.dll", "GetCommandLineA", GetCommandLineA_address, reinterpret_cast<void *>(&patched_GetCommandLineA));
 	}
 	else
 	{
