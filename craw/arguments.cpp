@@ -53,6 +53,13 @@ bool install_command_line_patch(string_vector const & parsed_arguments)
 		last_error("GetVersionEx failed");
 		return false;
 	}
+	if(verbose)
+	{
+		write_line("GetVersionEx information for this operating system:");
+		write_line("dwMajorVersion: " + ail::hex_string_32(version.dwMajorVersion));
+		write_line("dwMinorVersion: " + ail::hex_string_32(version.dwMinorVersion));
+		write_line("wProductType: " + ail::hex_string_16(version.wProductType));
+	}
 	std::string kernel;
 	if(version.dwMajorVersion == 6 && version.dwMinorVersion == 1 && version.wProductType == VER_NT_WORKSTATION)
 	{
