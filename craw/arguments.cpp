@@ -60,10 +60,29 @@ bool install_command_line_patch(string_vector const & parsed_arguments)
 		write_line("dwMinorVersion: " + ail::hex_string_32(version.dwMinorVersion));
 		write_line("wProductType: " + ail::hex_string_16(version.wProductType));
 	}
+
 	std::string kernel;
+
+	/*
 	if(version.dwMajorVersion == 6 && version.dwMinorVersion == 1 && version.wProductType == VER_NT_WORKSTATION)
 	{
 		kernel = "kernelbase.dll";
+		if(verbose)
+			write_line("Windows 7 detected, using module " + kernel + " for the commandline patch");
+	}
+	else
+	{
+		kernel = "kernel32.dll";
+		if(verbose)
+			write_line("Pre Windows 7 OS detected, using module " + kernel + " for the commandline patch");
+	}
+	*/
+
+	std::string const kernel_base_module = "kernelbase.dll";
+
+	if(GetModuleHandle(kernel_base_module.c_str()) != 0)
+	{
+		kernel = kernel_base_module;
 		if(verbose)
 			write_line("Windows 7 detected, using module " + kernel + " for the commandline patch");
 	}
