@@ -169,3 +169,6 @@ bone_spirit_teleport_offset = (0, 6)
 
 fist_of_heavens_distance = 40
 fist_of_heavens_delay = 0.3
+
+#Whoising victims and PKs/printing information to the console
+player_kill_information = True
