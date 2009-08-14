@@ -1,7 +1,10 @@
-import craw, nil.time, utility, threading, packets
+import craw, nil.time, utility, threading, packets, configuration
 
 class player_information:
 	def __init__(self, name):
+		if not configuration.player_kill_information:
+			return
+			
 		self.name = name
 		player_data = utility.get_player_data_by_name(name)
 		if player_data == None:
@@ -57,6 +60,9 @@ class player_kill_handler_class:
 		print line
 
 	def process_bytes(self, bytes):
+		if not configuration.player_kill_information:
+			return
+			
 		if len(bytes) < 26:
 			return
 			

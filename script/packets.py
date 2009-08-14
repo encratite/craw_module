@@ -197,6 +197,17 @@ def entering_game(bytes):
 def load_complete(bytes):
 	return bytes[0] == 0x04
 	
+def game_flags(bytes):
+	if len(bytes) < 8 or bytes[0] != 0x01:
+		return None
+	
+	difficulty = bytes[1]
+	hardcore = utility.read_bytes(bytes, 4, 2)
+	expansion = bytes[6]
+	ladder = bytes[7]
+	
+	return difficulty, hardcore, expansion, ladder
+	
 def parse_player_stop(bytes):
 	if len(bytes) < 13 or bytes[0] != 0x0d:
 		return None
