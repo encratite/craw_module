@@ -111,7 +111,7 @@ def get_scons_path():
 	
 def get_python_path():
 	try:
-		key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, 'SOFTWARE\\%sPython\\PythonCore\\2.6\\InstallPath' % get_wow_node())
+		key = _winreg.OpenKey(_winreg.HKEY_CURRENT_USER, 'Software\\%sPython\\PythonCore\\2.6\\InstallPath' % get_wow_node())
 		value, type = _winreg.QueryValueEx(key, '')
 		return value
 	except:
