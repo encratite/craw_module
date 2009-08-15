@@ -292,10 +292,10 @@ def setup_craw():
 	git(craw_git, target)
 	
 	python_path = get_python_path()
-	if python_path == False:
+	if python_path == None:
 		setup_python()
 		python_path = get_python_path()
-		if python_path == False:
+		if python_path == None:
 			print 'Unable to detect the 32-bit installation of Python 2.6'
 			sys.exit(1)
 	
