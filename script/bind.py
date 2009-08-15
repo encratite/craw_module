@@ -71,12 +71,16 @@ class bind_handler_class:
 	def print_bindings(self):
 		for key in self.bindings:
 			print '"%s": %s' % (key, self.bindings[key])
+			
+	def escape(self, input):
+		return input.replace("'", "\\'")
 		
 	def serialise_bindings(self):
 		data = '#This file was generated automatically, do not edit it at runtime\n\n'
 		data += 'bindings = {\n'
 		for key in self.bindings:
-			command = self.bindings[key].replace("'", "\\'")
+			key = self.escape(key)
+			command = self.escape(self.bindings[key])
 			data += "\t'%s': '%s',\n" % (key, command)
 		data += '}'
 		
