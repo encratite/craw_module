@@ -276,7 +276,7 @@ def setup_python():
 	print 'Setting up the 32-bit version of Python (the 64-bit library/DLL is of no use to us because Diablo II is 32-bit)'
 	
 	target_directory = 'python'
-	url = python
+	url = python_url
 	base = os.path.basename(url)
 	path = os.path.join(target_directory, base)
 	make_directory(target_directory)
