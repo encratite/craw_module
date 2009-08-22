@@ -80,6 +80,9 @@ HANDLE WINAPI patched_CreateFile(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWOR
 		file_name = path.substr(offset);
 	}
 
+	if(verbose && ail::create_directory(bncache_directory))
+		write_line("Created BNCache directory " + bncache_directory);
+
 	std::string fixed_path;
 
 	if(!bncache_directory.empty() && file_name == "bncache.dat")
@@ -94,7 +97,7 @@ HANDLE WINAPI patched_CreateFile(LPCTSTR lpFileName, DWORD dwDesiredAccess, DWOR
 			BOOST_FOREACH(std::string const & file, files)
 			{
 				std::string extension;
-				if(file == file_name || !ail::retrieve_extension(file_name, extension) || extension != "dat")
+				if(file == file_name || !ail::retrieve_extension(file, extension) || extension != "dat")
 					continue;
 				std::string path = ail::join_paths(bncache_directory, file);
 				bool success = ail::remove_file(path);
