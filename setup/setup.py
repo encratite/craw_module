@@ -110,12 +110,15 @@ def get_scons_path():
 	return None
 	
 def get_python_path():
-	try:
-		key = _winreg.OpenKey(_winreg.HKEY_CURRENT_USER, 'Software\\%sPython\\PythonCore\\2.6\\InstallPath' % get_wow_node())
-		value, type = _winreg.QueryValueEx(key, '')
-		return value
-	except:
-		return None
+	sources = [_winreg.HKEY_CURRENT_USER, _winreg.HKEY_LOCAL_MACHINE]
+	for source in sources:
+		try:
+			key = _winreg.OpenKey(source, 'Software\\%sPython\\PythonCore\\2.6\\InstallPath' % get_wow_node())
+			value, type = _winreg.QueryValueEx(key, '')
+			return value
+		except:
+			continue
+	return None
 	
 def execute(command):
 	print 'Executing [%s] in directory %s' % (command, os.getcwd())
