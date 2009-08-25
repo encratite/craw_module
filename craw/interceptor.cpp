@@ -356,6 +356,7 @@ bool process_thread_entry(DWORD process_id, DWORD current_thread_id, THREADENTRY
 		exit_process();
 		return true;
 	}
+
 	if(SetThreadPriority(thread_handle, 0) == 0)
 	{
 		last_error("Unable to change thread priority");

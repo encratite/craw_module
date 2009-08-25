@@ -46,6 +46,7 @@ namespace python
 
 		Py_XDECREF(current_monster_data.treasure_class);
 		Py_XDECREF(current_monster_data.special_abilities);
+		Py_XDECREF(current_monster_data.enchanted);
 		Py_DECREF(monster_data_pointer);
 
 		if(!return_value)
