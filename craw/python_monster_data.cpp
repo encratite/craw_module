@@ -64,6 +64,7 @@ namespace python
 
 		treasure_class = 0;
 		special_abilities = 0;
+		enchanted = 0;
 
 		if(type == 1)
 		{
